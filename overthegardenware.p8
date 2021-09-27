@@ -5,7 +5,7 @@ __lua__
 -- accessors
 local walkable={220,238,239,223}
 local text_to_display={maptitle=nil,dialogue={}}
-local active={x=3,y=13,charidx=2,lookingdir=nil}
+local active={x=0,y=0,charidx=nil,lookingdir=nil}
 local party={{charidx=1,x=nil,y=nil},{charidx=4,x=nil,y=nil}}
 local characters={
  {name='greg', mapidx=0, chrsprdailogueidx=2}, 
@@ -47,11 +47,24 @@ local lookingdirselmap={
  {i=250,x=0,y=-1,fliph=false,flipv=false},--up
  {i=250,x=0,y=1,fliph=true,flipv=false}--down
 }
+local stagetype="mainmenu"
+local menuchars={}
 
 -- base functions
 function _init()
 -- init game state
- transition_to_map({mp=1,loc={x=1, y=14}})
+ first=nil
+ second=nil
+ repeat
+  local choice=flr(rnd(#get_chars_w_dialog()))+1
+  if first == nil then
+   first = choice
+  elseif choice != first then
+   second = choice
+  end
+ until first != nil and second != nil
+ menuchars = {first, second}
+
  -- init object member fns
  for char in all(characters) do
   char.get_name_at_idx = function(this, idx)
@@ -65,6 +78,84 @@ function _init()
 end
 
 function _update()
+ if stagetype == "mainmenu" then
+  if btn(2) and active.y == 1 then
+   active.y = 0
+  elseif btn(3) and active.y == 0 then
+   active.y = 1
+  end
+  if btn(4) or btn(5) then
+  -- move to "playmap" stagetype
+  -- transition_to_map({mp=1,loc={x=1, y=14}})active={x=3,y=13,charidx=2,lookingdir=nil}
+  stagetype = "playmap"
+  transition_to_map({mp=1,loc={x=1, y=14}})
+  active={x=3,y=13,charidx=2,lookingdir=nil}
+  end
+ elseif stagetype == "playmap" then
+  update_play_map()
+ end
+end
+
+function _draw()
+ if stagetype == "mainmenu" then
+  draw_main_menu()
+ elseif stagetype == "playmap" then
+  draw_play_map()
+ end
+end
+
+-->8
+function draw_main_menu()
+  cls(0)
+  -- draw logo
+  spr(128,24,8,10,6)
+  -- draw buttons
+  draw_fancy_text_box("start",48,65)
+  draw_fancy_text_box("quit",50,85)
+  -- draw selection chevrons
+  local sel_y=65
+  if active.y==1 then
+   sel_y=85
+  end
+  palt(5,true)
+  pal(12,9)
+  spr(234,24,sel_y,1,1)
+  spr(234,96,sel_y,1,1,true,false)
+  -- draw 2 random chars
+  drawchoices = get_chars_w_dialog()
+  first = menuchars[1]
+  second = menuchars[2]
+  pal(12,12)
+  palt(5,false)
+  palt(13,true)
+  palt(0,false)
+  draw_fancy_text_box("start",48,65)
+  draw_fancy_text_box("quit",50,85)
+  draw_fancy_box(1,69,17,17,2,9)
+  draw_fancy_box(107,69,17,17,2,9)
+  spr(drawchoices[first].chrsprdailogueidx, 2, 70, 2, 2)
+  spr(drawchoices[second].chrsprdailogueidx, 108, 70, 2, 2)
+  palt(13,false)
+  palt(0,true)
+  palt(5,true)
+ end
+
+function get_chars_w_dialog()
+ chars={}
+ for char in all(characters) do
+  if char.chrsprdailogueidx != -1 then
+   chars[#chars+1] = char
+  end
+ end
+ return chars
+end
+
+function draw_fancy_text_box(text,x,y)
+ draw_fancy_box(x,y,#text*4+8, 12, 4, 9)
+ printsp(text, x+4, y+4, 0)
+end
+
+function update_play_map()
  -- check selection direction
  if btn(5) then
   pressed=nil
@@ -144,7 +235,7 @@ function _update()
  end
 end
 
-function _draw()
+function draw_play_map()
 -- color handling
  pal(13,139)
  palt(0,false)
@@ -182,7 +273,7 @@ function _draw()
   curprogressdlg=dlg.dialogue[dlg.progress]
   if curprogressdlg != nil then
    draw_fancy_box(8,100,112,24,4,9)
-   printsp(characters[curprogressdlg.speakeridx].get_name_at_idx(characters[curprogressdlg.speakeridx],1), 28, 104, 5)
+   printsp(characters[curprogressdlg.speakeridx].get_name_at_idx(characters[curprogressdlg.speakeridx],1), 28, 104, 1)
    printsp(curprogressdlg.text, 28, 110, 0)
    spr(characters[curprogressdlg.speakeridx].chrsprdailogueidx, 10, 104, 2, 2)
   end
@@ -195,7 +286,6 @@ function _draw()
  end
 end
 
--->8
 function selection_is_on_location(location)
  if active.lookingdir == nil then
   return false
