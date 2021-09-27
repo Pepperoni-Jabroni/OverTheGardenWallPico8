@@ -5,7 +5,7 @@ __lua__
 -- accessors
 local walkable={220,238,239}
 local text_to_display={maptitle=nil,dialogue=nil}
-local active={x=3,y=13,charidx=2}
+local active={x=3,y=13,charidx=4}
 local party={{charidx=1,x=nil,y=nil},{charidx=4,x=nil,y=nil}}
 local characters={
  {name='greg', mapidx=0, dailogueidx=2}, 
@@ -31,6 +31,15 @@ local maps={
 -- base functions
 function _init()
  transition_to_map({mp=1,loc={x=1, y=14}})
+ for char in all(characters) do
+  char.get_name_at_idx = function(this, idx)
+   if type(this.name) == 'string' then
+    return this.name
+   elseif type(this.name) == 'table' then
+    return this.name[idx]
+   end
+  end 
+ end
 end
 
 function _update()
@@ -72,6 +81,7 @@ function _draw()
  palt(139,false)
  palt(13,true)
  spr(characters[active.charidx].mapidx, active.x*8, active.y*8)
+ print(tostr(characters[active.charidx].get_name_at_idx(characters[active.charidx],1)))
  for npc in all(party) do
   if npc.x != nil and npc.y != nil then
    spr(characters[npc.charidx].mapidx, npc.x*8, npc.y*8)
