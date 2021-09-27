@@ -4,28 +4,35 @@ __lua__
 
 -- accessors
 local walkable={220,238,239}
-local text_to_display={maptitle=nil,dialogue=nil}
+local text_to_display={maptitle=nil,dialogue={}}
 local active={x=3,y=13,charidx=2}
 local party={{charidx=1,x=nil,y=nil},{charidx=4,x=nil,y=nil}}
 local characters={
- {name='greg', mapidx=0, dailogueidx=2}, 
- {name='wirt', mapidx=1, dailogueidx=4}, 
- {name='beatrice', mapidx=16, dailogueidx=6}, 
- {name={'kitty','wirt','wirt jr.','george washington','mr. president','benjamin franklin','doctor cucumber','greg jr.','skipper','ronald','jason funderburker'}, mapidx=17, dailogueidx=8}, 
- {name='the beast', mapidx=32, dailogueidx=34}, 
- {name='the woodsman', mapidx=33, dailogueidx=36}, 
- {name={'the beast?','dog'}, mapidx=48, dailogueidx=38},
- {name='dog', mapidx=49, dailogueidx=40},
- {name='black turtle', mapidx=64, dailogueidx=-1},
- {name='turkey', mapidx=65, dailogueidx=-1},
- {name='pottsfield citizen', mapidx=80, dailogueidx=-1},
- {name='pottsfield harvest', mapidx=81, dailogueidx=-1},
- {name='pottsfield partier', mapidx=96, dailogueidx=-1}  
+ {name='greg', mapidx=0, chrsprdailogueidx=2}, 
+ {name='wirt', mapidx=1, chrsprdailogueidx=4}, 
+ {name='beatrice', mapidx=16, chrsprdailogueidx=6}, 
+ {name={'kitty','wirt','wirt jr.','george washington','mr. president','benjamin franklin','doctor cucumber','greg jr.','skipper','ronald','jason funderburker'}, mapidx=17, chrsprdailogueidx=8}, 
+ {name='the beast', mapidx=32, chrsprdailogueidx=34}, 
+ {name='the woodsman', mapidx=33, chrsprdailogueidx=36}, 
+ {name={'the beast?','dog'}, mapidx=48, chrsprdailogueidx=38},
+ {name='dog', mapidx=49, chrsprdailogueidx=40},
+ {name='black turtle', mapidx=64, chrsprdailogueidx=-1},
+ {name='turkey', mapidx=65, chrsprdailogueidx=-1},
+ {name='pottsfield citizen', mapidx=80, chrsprdailogueidx=-1},
+ {name='pottsfield harvest', mapidx=81, chrsprdailogueidx=-1},
+ {name='pottsfield partier', mapidx=96, chrsprdailogueidx=-1}  
 }
 local mapscurrentidx
 local maps={
  {title='somewhere in the unknown',cellx=0,celly=0,trans={{dest={mp=2,loc={x=1, y=14}},locs={{x=13,y=0},{x=14,y=0},{x=15,y=0}}}}},
  {title='the old grist mill',cellx=16,celly=0,trans={{dest={mp=1,loc={x=14, y=1}},locs={{x=0,y=13},{x=0,y=14},{x=0,y=15}}}}}
+}
+local dialogues={
+ {mapidx=1,trig_locs={{x=10,y=4},{x=11,y=4}},dialogue={
+   {speakeridx=1,text="i sure do love my frog!"},
+   {speakeridx=2,text="greg, please stop..."}
+  },repeatable=false,progress=nil
+ }
 }
 
 -- base functions
@@ -56,14 +63,17 @@ function _update()
   active.x = active.x - 1
  end
  -- check for player switch
- if btnp(4) then
+ if btnp(4) and #text_to_display.dialogue == 0 then
   party[#party+1] = active
   active = party[1]
-  newparty={}
-  for i=2,#party do
-   newparty[#newparty + 1]=party[i]
+  party=drop_first_elem(party)
+ end
+ -- check for dialogue progress
+ if btnp(4) and #text_to_display.dialogue > 0 then
+  text_to_display.dialogue[1].progress+=1
+  if text_to_display.dialogue[1].progress > #text_to_display.dialogue[1].dialogue then
+   text_to_display.dialogue=drop_first_elem(text_to_display.dialogue)
   end
-  party=newparty
  end
  -- check for map switch
  local activemap = maps[mapscurrentidx]
@@ -77,6 +87,30 @@ function _update()
   end
   if mapscurrentidx != initmapidx then
    break
+  end
+ end
+ -- check for dialogue triggers
+ for trig in all(dialogues) do
+  if trig.mapidx == mapscurrentidx then
+   for location in all(trig.trig_locs) do
+    if active.x == location.x and active.y == location.y then
+     alreadyactive=false
+     for i=1,#text_to_display.dialogue do
+      if text_to_display.dialogue[i].dialogue[1].text==trig.dialogue[1].text then
+       alreadyactive=true
+      end
+     end
+     if alreadyactive then
+      break
+     end
+     if trig.repeatable == false and trig.progress != nil then
+      break
+     end
+     trig.progress = 1
+     text_to_display.dialogue[#text_to_display.dialogue+1] = trig
+     break
+    end
+   end
   end
  end
 end
@@ -112,9 +146,27 @@ function _draw()
   printsp(txtobj.txt, txtobj.x+2, txtobj.y+2, 0)
   txtobj.frmcnt = txtobj.frmcnt-1
  end
+ -- draw dialogue if necessary
+ if text_to_display != nil and text_to_display.dialogue != nil and #text_to_display.dialogue > 0 then
+  dlg=text_to_display.dialogue[1]
+  curprogressdlg=dlg.dialogue[dlg.progress]
+  if curprogressdlg != nil then
+   draw_fancy_box(8,100,112,24,4,9)
+   printsp(curprogressdlg.text, 28, 106, 0)
+   spr(characters[curprogressdlg.speakeridx].chrsprdailogueidx, 10, 104, 2, 2)
+  end
+ end
 end
 
 -->8
+function drop_first_elem(arr)
+ newarr={}
+ for i=2,#arr do
+  newarr[#newarr + 1]=arr[i]
+ end
+ return newarr
+end
+
 function draw_fancy_box(x,y,w,h,fg,otln)
  rectfill(x+1,y+1,x+w-1,y+h-1,fg)
  line(x+1,y,x+w-1,y,otln) -- top line
