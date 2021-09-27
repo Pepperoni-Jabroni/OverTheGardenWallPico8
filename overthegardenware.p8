@@ -4,16 +4,17 @@ __lua__
 
 -- accesors
 local walkable={220,238,239}
+local text_to_display={}
 -- local charselidx=1
 local active={x=3,y=13,charidx=1}
 local characters={
  {name='greg', mapidx=0, charidx=2}, 
  {name='wirt', mapidx=1, charidx=4}, 
  {name='beatrice', mapidx=16, charidx=6}, 
- {name='kitty|wirt|wirt jr.|george washington|mr. president|benjamapidxn franklin|doctor cucumber|greg jr.|skipper|ronald|jason funderburker', mapidx=17, charidx=8}, 
+ {name={'kitty','wirt','wirt jr.','george washington','mr. president','benjamin franklin','doctor cucumber','greg jr.','skipper','ronald','jason funderburker'}, mapidx=17, charidx=8}, 
  {name='the beast', mapidx=32, charidx=34}, 
  {name='the woodsman', mapidx=33, charidx=36}, 
- {name='the beast?|dog', mapidx=48, charidx=38},
+ {name={'the beast?','dog'}, mapidx=48, charidx=38},
  {name='dog', mapidx=49, charidx=40},
  {name='black turtle', mapidx=64, charidx=-1},
  {name='turkey', mapidx=65, charidx=-1},
@@ -48,9 +49,7 @@ function _update()
  for transition in all(activemap.trans) do
   for location in all(transition.locs) do
    if active.x == location.x and active.y == location.y then
-    mapidx = transition.dest.mp
-    active.x = transition.dest.loc.x
-    active.y = transition.dest.loc.y
+    transition_to_map(transition.dest)
     break
    end
   end
@@ -58,6 +57,14 @@ function _update()
    break
   end
  end
+ -- clear text requests
+ newtxttodisplay = {}
+ for txtobj in all(text_to_display) do
+  if txtobj.frmcnt != 0 then
+   newtxttodisplay[#newtxttodisplay+1]=txtobj
+  end
+ end
+ text_to_display=newtxttodisplay
 end
 
 function _draw()
@@ -72,6 +79,14 @@ function _draw()
  palt(139,false)
  palt(13,true)
  spr(active.charidx, active.x*8, active.y*8)
+ -- draw request text
+ for txtobj in all(text_to_display) do
+  if txtobj.frmcnt > 0 then
+   draw_fancy_box(txtobj.x, txtobj.y, #txtobj.txt*4+4, 12, 4, 9)
+   printsp(txtobj.txt, txtobj.x+2, txtobj.y+2, 0)
+   txtobj.frmcnt = txtobj.frmcnt-1
+  end
+ end
  -- for i=1,#characters do
  --  spr(characters[i].mapidx, 1, i*8+(i*1))
  --  local name = characters[i].name
@@ -90,6 +105,21 @@ function _draw()
 end
 
 -->8
+function draw_fancy_box(x,y,w,h,fg,otln)
+ rectfill(x,y,x+w,y+h,fg)
+ line(x+1,y,x+w-1,y,otln)
+ line(x+1,y+h,x+w-1,y+h,otln)
+ line(x,y+1,x+h-1,y+1,otln)
+ line(x+w,y+1,x+h-1,y+1,otln)
+end
+
+function transition_to_map(dest)
+ mapidx = dest.mp
+ active.x = dest.loc.x
+ active.y = dest.loc.y
+ text_to_display[#text_to_display+1]={x=16,y=16,txt=maps[mapidx].title,frmcnt=80}
+end
+
 function is_element_in(array, k)
  local match = false
  for elem in all(array) do
