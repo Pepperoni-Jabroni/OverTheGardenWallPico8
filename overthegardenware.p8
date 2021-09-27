@@ -85,11 +85,14 @@ function _update()
    active.y = 1
   end
   if btn(4) or btn(5) then
-  -- move to "playmap" stagetype
-  -- transition_to_map({mp=1,loc={x=1, y=14}})active={x=3,y=13,charidx=2,lookingdir=nil}
-  stagetype = "playmap"
-  transition_to_map({mp=1,loc={x=1, y=14}})
-  active={x=3,y=13,charidx=2,lookingdir=nil}
+   if active.y==0 then
+   -- move to "playmap" stagetype
+   stagetype = "playmap"
+   transition_to_map({mp=1,loc={x=1, y=14}})
+   active={x=3,y=13,charidx=2,lookingdir=nil}
+   else
+    stop()
+   end
   end
  elseif stagetype == "playmap" then
   update_play_map()
