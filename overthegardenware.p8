@@ -2,10 +2,9 @@ pico-8 cartridge // http://www.pico-8.com
 version 30
 __lua__
 
--- accesors
+-- accessors
 local walkable={220,238,239}
 local text_to_display={maptitle=nil,dialogue=nil}
--- local charselidx=1
 local active={x=3,y=13,charidx=2}
 local party={{charidx=1,x=nil,y=nil},{charidx=4,x=nil,y=nil}}
 local characters={
@@ -85,21 +84,6 @@ function _draw()
   printsp(txtobj.txt, txtobj.x+2, txtobj.y+2, 0)
   txtobj.frmcnt = txtobj.frmcnt-1
  end
- -- for i=1,#characters do
- --  spr(characters[i].mapidx, 1, i*8+(i*1))
- --  local name = characters[i].name
- --  local matches = string_n_inst(name, "|", 1)
- --  if matches then
- --   name = sub(name, 1, matches-1)
- --  end
- --  printsp(name, 12, i*8+(i*1)+2, 1)
- -- end
- -- -- draw selection rect
- -- x = 0
- -- y = charselidx*8+(charselidx*1)-1
- -- rect(x,y,x+10, y+10, 8)
- -- -- draw selected character
- -- spr(characters[charselidx].charidx, 80, 8, 2, 2)
 end
 
 -->8
