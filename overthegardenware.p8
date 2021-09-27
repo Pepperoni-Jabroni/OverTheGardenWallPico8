@@ -5,7 +5,7 @@ __lua__
 -- accessors
 local walkable={220,238,239}
 local text_to_display={maptitle=nil,dialogue=nil}
-local active={x=3,y=13,charidx=4}
+local active={x=3,y=13,charidx=2}
 local party={{charidx=1,x=nil,y=nil},{charidx=4,x=nil,y=nil}}
 local characters={
  {name='greg', mapidx=0, dailogueidx=2}, 
@@ -30,7 +30,9 @@ local maps={
 
 -- base functions
 function _init()
+-- init game state
  transition_to_map({mp=1,loc={x=1, y=14}})
+ -- init object member fns
  for char in all(characters) do
   char.get_name_at_idx = function(this, idx)
    if type(this.name) == 'string' then
@@ -80,17 +82,23 @@ function _draw()
  -- draw sprites and characters
  palt(139,false)
  palt(13,true)
+ -- draw player
  spr(characters[active.charidx].mapidx, active.x*8, active.y*8)
- print(tostr(characters[active.charidx].get_name_at_idx(characters[active.charidx],1)))
+ -- draw npcs
  for npc in all(party) do
   if npc.x != nil and npc.y != nil then
    spr(characters[npc.charidx].mapidx, npc.x*8, npc.y*8)
   end
+ -- draw active char, spr and name
+ local charname = tostr(characters[active.charidx].get_name_at_idx(characters[active.charidx],1))
+ draw_fancy_box(4,4,#charname*4+12, 12, 4, 9)
+ printsp(charname, 14, 8, 0)
+ spr(characters[active.charidx].mapidx, 6, 6)
  end
  -- draw map title
  txtobj=text_to_display.maptitle
  if txtobj != nil and txtobj.frmcnt > 0 then
-  draw_fancy_box(txtobj.x, txtobj.y, #txtobj.txt*4+4, 12, 4, 9)
+  draw_fancy_box(txtobj.x, txtobj.y, #txtobj.txt*4+4, 8, 4, 9)
   printsp(txtobj.txt, txtobj.x+2, txtobj.y+2, 0)
   txtobj.frmcnt = txtobj.frmcnt-1
  end
