@@ -33,7 +33,12 @@ local dialogues={
    {speakeridx=2,text="greg, please stop..."},
    {speakeridx=4,text="ribbit."},
    {speakeridx=1,text="haha, yeah!"}
-  },repeatable=false,progress=nil
+  },repeatable=false,progress=nil,triggertype="walk"
+ },
+ {mapidx=1,trig_locs={{x=2,y=1}},dialogue={
+   {speakeridx=2,text="i dont like this at all"},
+   {speakeridx=1,text="its a tree face!"}
+  },repeatable=false,progress=nil,triggertype="select"
  }
 }
 local lookingdirselmap={
@@ -117,7 +122,7 @@ function _update()
  for trig in all(dialogues) do
   if trig.mapidx == mapscurrentidx then
    for location in all(trig.trig_locs) do
-    if active.x == location.x and active.y == location.y then
+    if (trig.triggertype == "walk" and active.x == location.x and active.y == location.y) or selection_is_on_location(location) then
      alreadyactive=false
      for i=1,#text_to_display.dialogue do
       if text_to_display.dialogue[i].dialogue[1].text==trig.dialogue[1].text then
@@ -191,6 +196,14 @@ function _draw()
 end
 
 -->8
+function selection_is_on_location(location)
+ if active.lookingdir == nil then
+  return false
+ end
+ local selection=lookingdirselmap[active.lookingdir+1]
+ return active.x+selection.x == location.x and active.y+selection.y == location.y
+end
+
 function drop_first_elem(arr)
  newarr={}
  for i=2,#arr do
