@@ -55,7 +55,17 @@ function _update()
  elseif btnp(0) and active.x > 0 and is_element_in(walkable, mget(active.x - 1+maps[mapscurrentidx].cellx, active.y+maps[mapscurrentidx].celly)) then
   active.x = active.x - 1
  end
- -- do check for map switch
+ -- check for player switch
+ if btnp(4) then
+  party[#party+1] = active
+  active = party[1]
+  newparty={}
+  for i=2,#party do
+   newparty[#newparty + 1]=party[i]
+  end
+  party=newparty
+ end
+ -- check for map switch
  local activemap = maps[mapscurrentidx]
  local initmapidx = mapscurrentidx
  for transition in all(activemap.trans) do
@@ -91,9 +101,9 @@ function _draw()
   end
  -- draw active char, spr and name
  local charname = tostr(characters[active.charidx].get_name_at_idx(characters[active.charidx],1))
- draw_fancy_box(4,4,#charname*4+12, 12, 4, 9)
- printsp(charname, 14, 8, 0)
- spr(characters[active.charidx].mapidx, 6, 6)
+ draw_fancy_box(1,1,#charname*4+12, 12, 4, 9)
+ printsp(charname, 11, 5, 0)
+ spr(characters[active.charidx].mapidx, 3, 3)
  end
  -- draw map title
  txtobj=text_to_display.maptitle
@@ -129,7 +139,7 @@ function transition_to_map(dest)
    end
   until didadd
  end
- text_to_display.maptitle={x=16,y=16,txt=maps[mapscurrentidx].title,frmcnt=80}
+ text_to_display.maptitle={x=16,y=64,txt=maps[mapscurrentidx].title,frmcnt=60}
 end
 
 function is_element_in(array, k)
@@ -161,6 +171,22 @@ end
 -- print small and pretty
 function printsp(s,...)
  print(smallcaps('^'..s),...)
+end
+
+-- thanks http://lua-users.org/wiki/copytable
+function deepcopy(orig)
+ local orig_type = type(orig)
+ local copy
+ if orig_type == 'table' then
+  copy = {}
+  for orig_key, orig_value in next, orig, nil do
+   copy[deepcopy(orig_key)] = deepcopy(orig_value)
+  end
+  setmetatable(copy, deepcopy(getmetatable(orig)))
+ else -- number, string, boolean, etc
+  copy = orig
+ end
+ return copy
 end
 
 -- thanks felice of lexaloffle.com
