@@ -30,7 +30,9 @@ local maps={
 local dialogues={
  {mapidx=1,trig_locs={{x=10,y=4},{x=11,y=4}},dialogue={
    {speakeridx=1,text="i sure do love my frog!"},
-   {speakeridx=2,text="greg, please stop..."}
+   {speakeridx=2,text="greg, please stop..."},
+   {speakeridx=4,text="ribbit."},
+   {speakeridx=1,text="haha, yeah!"}
   },repeatable=false,progress=nil
  }
 }
@@ -152,7 +154,8 @@ function _draw()
   curprogressdlg=dlg.dialogue[dlg.progress]
   if curprogressdlg != nil then
    draw_fancy_box(8,100,112,24,4,9)
-   printsp(curprogressdlg.text, 28, 106, 0)
+   printsp(characters[curprogressdlg.speakeridx].get_name_at_idx(characters[curprogressdlg.speakeridx],1), 28, 104, 5)
+   printsp(curprogressdlg.text, 28, 110, 0)
    spr(characters[curprogressdlg.speakeridx].chrsprdailogueidx, 10, 104, 2, 2)
   end
  end
