@@ -2,27 +2,27 @@ pico-8 cartridge // http://www.pico-8.com
 version 30
 __lua__
 
--- accesors
+-- accessors
 local walkable={220,238,239}
 local text_to_display={maptitle=nil,dialogue=nil}
--- local charselidx=1
-local active={x=3,y=13,charidx=1}
+local active={x=3,y=13,charidx=2}
+local party={{charidx=1,x=nil,y=nil},{charidx=4,x=nil,y=nil}}
 local characters={
- {name='greg', mapidx=0, charidx=2}, 
- {name='wirt', mapidx=1, charidx=4}, 
- {name='beatrice', mapidx=16, charidx=6}, 
- {name={'kitty','wirt','wirt jr.','george washington','mr. president','benjamin franklin','doctor cucumber','greg jr.','skipper','ronald','jason funderburker'}, mapidx=17, charidx=8}, 
- {name='the beast', mapidx=32, charidx=34}, 
- {name='the woodsman', mapidx=33, charidx=36}, 
- {name={'the beast?','dog'}, mapidx=48, charidx=38},
- {name='dog', mapidx=49, charidx=40},
- {name='black turtle', mapidx=64, charidx=-1},
- {name='turkey', mapidx=65, charidx=-1},
- {name='pottsfield citizen', mapidx=80, charidx=-1},
- {name='pottsfield harvest', mapidx=81, charidx=-1},
- {name='pottsfield partier', mapidx=96, charidx=-1}  
+ {name='greg', mapidx=0, dailogueidx=2}, 
+ {name='wirt', mapidx=1, dailogueidx=4}, 
+ {name='beatrice', mapidx=16, dailogueidx=6}, 
+ {name={'kitty','wirt','wirt jr.','george washington','mr. president','benjamin franklin','doctor cucumber','greg jr.','skipper','ronald','jason funderburker'}, mapidx=17, dailogueidx=8}, 
+ {name='the beast', mapidx=32, dailogueidx=34}, 
+ {name='the woodsman', mapidx=33, dailogueidx=36}, 
+ {name={'the beast?','dog'}, mapidx=48, dailogueidx=38},
+ {name='dog', mapidx=49, dailogueidx=40},
+ {name='black turtle', mapidx=64, dailogueidx=-1},
+ {name='turkey', mapidx=65, dailogueidx=-1},
+ {name='pottsfield citizen', mapidx=80, dailogueidx=-1},
+ {name='pottsfield harvest', mapidx=81, dailogueidx=-1},
+ {name='pottsfield partier', mapidx=96, dailogueidx=-1}  
 }
-local mapidx
+local mapscurrentidx
 local maps={
  {title='somewhere in the unknown',cellx=0,celly=0,trans={{dest={mp=2,loc={x=1, y=14}},locs={{x=13,y=0},{x=14,y=0},{x=15,y=0}}}}},
  {title='the old grist mill',cellx=16,celly=0,trans={{dest={mp=1,loc={x=14, y=1}},locs={{x=0,y=13},{x=0,y=14},{x=0,y=15}}}}}
@@ -35,18 +35,18 @@ end
 
 function _update()
 -- do active movement
- if btnp(2) and active.y > 0 and is_element_in(walkable, mget(active.x+maps[mapidx].cellx, active.y - 1+maps[mapidx].celly)) then
+ if btnp(2) and active.y > 0 and is_element_in(walkable, mget(active.x+maps[mapscurrentidx].cellx, active.y - 1+maps[mapscurrentidx].celly)) then
   active.y = active.y - 1
- elseif btnp(1) and active.x < 15 and is_element_in(walkable, mget(active.x + 1+maps[mapidx].cellx, active.y+maps[mapidx].celly)) then
+ elseif btnp(1) and active.x < 15 and is_element_in(walkable, mget(active.x + 1+maps[mapscurrentidx].cellx, active.y+maps[mapscurrentidx].celly)) then
   active.x = active.x + 1
- elseif btnp(3) and active.y < 15 and is_element_in(walkable, mget(active.x+maps[mapidx].cellx, active.y + 1+maps[mapidx].celly)) then
+ elseif btnp(3) and active.y < 15 and is_element_in(walkable, mget(active.x+maps[mapscurrentidx].cellx, active.y + 1+maps[mapscurrentidx].celly)) then
   active.y = active.y + 1
- elseif btnp(0) and active.x > 0 and is_element_in(walkable, mget(active.x - 1+maps[mapidx].cellx, active.y+maps[mapidx].celly)) then
+ elseif btnp(0) and active.x > 0 and is_element_in(walkable, mget(active.x - 1+maps[mapscurrentidx].cellx, active.y+maps[mapscurrentidx].celly)) then
   active.x = active.x - 1
  end
  -- do check for map switch
- local activemap = maps[mapidx]
- local initmapidx = mapidx
+ local activemap = maps[mapscurrentidx]
+ local initmapidx = mapscurrentidx
  for transition in all(activemap.trans) do
   for location in all(transition.locs) do
    if active.x == location.x and active.y == location.y then
@@ -54,7 +54,7 @@ function _update()
     break
    end
   end
-  if mapidx != initmapidx then
+  if mapscurrentidx != initmapidx then
    break
   end
  end
@@ -67,11 +67,16 @@ function _draw()
  palt(139,true)
  cls(139)
  -- draw map
- map(maps[mapidx].cellx, maps[mapidx].celly)
+ map(maps[mapscurrentidx].cellx, maps[mapscurrentidx].celly)
  -- draw sprites and characters
  palt(139,false)
  palt(13,true)
- spr(active.charidx, active.x*8, active.y*8)
+ spr(characters[active.charidx].mapidx, active.x*8, active.y*8)
+ for npc in all(party) do
+  if npc.x != nil and npc.y != nil then
+   spr(characters[npc.charidx].mapidx, npc.x*8, npc.y*8)
+  end
+ end
  -- draw map title
  txtobj=text_to_display.maptitle
  if txtobj != nil and txtobj.frmcnt > 0 then
@@ -79,21 +84,6 @@ function _draw()
   printsp(txtobj.txt, txtobj.x+2, txtobj.y+2, 0)
   txtobj.frmcnt = txtobj.frmcnt-1
  end
- -- for i=1,#characters do
- --  spr(characters[i].mapidx, 1, i*8+(i*1))
- --  local name = characters[i].name
- --  local matches = string_n_inst(name, "|", 1)
- --  if matches then
- --   name = sub(name, 1, matches-1)
- --  end
- --  printsp(name, 12, i*8+(i*1)+2, 1)
- -- end
- -- -- draw selection rect
- -- x = 0
- -- y = charselidx*8+(charselidx*1)-1
- -- rect(x,y,x+10, y+10, 8)
- -- -- draw selected character
- -- spr(characters[charselidx].charidx, 80, 8, 2, 2)
 end
 
 -->8
@@ -106,10 +96,22 @@ function draw_fancy_box(x,y,w,h,fg,otln)
 end
 
 function transition_to_map(dest)
- mapidx = dest.mp
+ mapscurrentidx = dest.mp
  active.x = dest.loc.x
  active.y = dest.loc.y
- text_to_display.maptitle={x=16,y=16,txt=maps[mapidx].title,frmcnt=80}
+ for i=1,#party do
+  didadd=false
+  repeat
+   x=flr(rnd(3))+active.x-1
+   y=flr(rnd(3))+active.y-1
+   if is_element_in(walkable, mget(x+maps[mapscurrentidx].cellx, y+maps[mapscurrentidx].celly)) then
+    didadd = true
+    party[i].x=x
+    party[i].y=y
+   end
+  until didadd
+ end
+ text_to_display.maptitle={x=16,y=16,txt=maps[mapscurrentidx].title,frmcnt=80}
 end
 
 function is_element_in(array, k)
