@@ -4,7 +4,7 @@ __lua__
 
 -- accesors
 local walkable={220,238,239}
-local text_to_display={}
+local text_to_display={maptitle=nil,dialogue=nil}
 -- local charselidx=1
 local active={x=3,y=13,charidx=1}
 local characters={
@@ -22,7 +22,7 @@ local characters={
  {name='pottsfield harvest', mapidx=81, charidx=-1},
  {name='pottsfield partier', mapidx=96, charidx=-1}  
 }
-local mapidx=1
+local mapidx
 local maps={
  {title='somewhere in the unknown',cellx=0,celly=0,trans={{dest={mp=2,loc={x=1, y=14}},locs={{x=13,y=0},{x=14,y=0},{x=15,y=0}}}}},
  {title='the old grist mill',cellx=16,celly=0,trans={{dest={mp=1,loc={x=14, y=1}},locs={{x=0,y=13},{x=0,y=14},{x=0,y=15}}}}}
@@ -30,6 +30,7 @@ local maps={
 
 -- base functions
 function _init()
+ transition_to_map({mp=1,loc={x=1, y=14}})
 end
 
 function _update()
@@ -57,14 +58,6 @@ function _update()
    break
   end
  end
- -- clear text requests
- newtxttodisplay = {}
- for txtobj in all(text_to_display) do
-  if txtobj.frmcnt != 0 then
-   newtxttodisplay[#newtxttodisplay+1]=txtobj
-  end
- end
- text_to_display=newtxttodisplay
 end
 
 function _draw()
@@ -79,13 +72,12 @@ function _draw()
  palt(139,false)
  palt(13,true)
  spr(active.charidx, active.x*8, active.y*8)
- -- draw request text
- for txtobj in all(text_to_display) do
-  if txtobj.frmcnt > 0 then
-   draw_fancy_box(txtobj.x, txtobj.y, #txtobj.txt*4+4, 12, 4, 9)
-   printsp(txtobj.txt, txtobj.x+2, txtobj.y+2, 0)
-   txtobj.frmcnt = txtobj.frmcnt-1
-  end
+ -- draw map title
+ txtobj=text_to_display.maptitle
+ if txtobj != nil and txtobj.frmcnt > 0 then
+  draw_fancy_box(txtobj.x, txtobj.y, #txtobj.txt*4+4, 12, 4, 9)
+  printsp(txtobj.txt, txtobj.x+2, txtobj.y+2, 0)
+  txtobj.frmcnt = txtobj.frmcnt-1
  end
  -- for i=1,#characters do
  --  spr(characters[i].mapidx, 1, i*8+(i*1))
@@ -106,18 +98,18 @@ end
 
 -->8
 function draw_fancy_box(x,y,w,h,fg,otln)
- rectfill(x,y,x+w,y+h,fg)
- line(x+1,y,x+w-1,y,otln)
- line(x+1,y+h,x+w-1,y+h,otln)
- line(x,y+1,x+h-1,y+1,otln)
- line(x+w,y+1,x+h-1,y+1,otln)
+ rectfill(x+1,y+1,x+w-1,y+h-1,fg)
+ line(x+1,y,x+w-1,y,otln) -- top line
+ line(x+1,y+h,x+w-1,y+h,otln) -- bottom line
+ line(x,y+1,x,y+h-1,otln) -- left line
+ line(x+w,y+1,x+w,y+h-1,otln) -- right line
 end
 
 function transition_to_map(dest)
  mapidx = dest.mp
  active.x = dest.loc.x
  active.y = dest.loc.y
- text_to_display[#text_to_display+1]={x=16,y=16,txt=maps[mapidx].title,frmcnt=80}
+ text_to_display.maptitle={x=16,y=16,txt=maps[mapidx].title,frmcnt=80}
 end
 
 function is_element_in(array, k)
