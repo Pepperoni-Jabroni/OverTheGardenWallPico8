@@ -112,8 +112,15 @@ function draw_main_menu()
   -- draw logo
   spr(128,24,8,10,6)
   -- draw buttons
-  draw_fancy_text_box("start",48,65)
-  draw_fancy_text_box("quit",50,85)
+  local startcol=0
+  local quitcol=0
+  if active.y==0 then
+   startcol=9
+  elseif active.y==1 then
+   quitcol=9
+  end
+  draw_fancy_text_box("start",48,65,active.y==0)
+  draw_fancy_text_box("quit",50,85,active.y==1)
   -- draw selection chevrons
   local sel_y=65
   if active.y==1 then
@@ -131,10 +138,8 @@ function draw_main_menu()
   palt(5,false)
   palt(13,true)
   palt(0,false)
-  draw_fancy_text_box("start",48,65)
-  draw_fancy_text_box("quit",50,85)
-  draw_fancy_box(1,69,17,17,2,9)
-  draw_fancy_box(107,69,17,17,2,9)
+  draw_fancy_box(1,69,17,17,2,10,9)
+  draw_fancy_box(107,69,17,17,2,10,9)
   spr(drawchoices[first].chrsprdailogueidx, 2, 70, 2, 2)
   spr(drawchoices[second].chrsprdailogueidx, 108, 70, 2, 2)
   palt(13,false)
@@ -152,9 +157,13 @@ function get_chars_w_dialog()
  return chars
 end
 
-function draw_fancy_text_box(text,x,y)
- draw_fancy_box(x,y,#text*4+8, 12, 4, 9)
- printsp(text, x+4, y+4, 0)
+function draw_fancy_text_box(text,x,y,active)
+ draw_fancy_box(x,y,#text*4+8, 12, 4, 10, 9)
+ local txtclr=0
+ if active then
+  txtclr=10
+ end
+ printsp(text, x+4, y+4, txtclr)
 end
 
 function update_play_map()
@@ -258,14 +267,14 @@ function draw_play_map()
   end
  -- draw active char, spr and name
  local charname = tostr(characters[active.charidx].get_name_at_idx(characters[active.charidx],1))
- draw_fancy_box(1,1,#charname*4+12, 12, 4, 9)
+ draw_fancy_box(1,1,#charname*4+12, 12, 4,10, 9)
  printsp(charname, 11, 5, 0)
  spr(characters[active.charidx].mapidx, 3, 3)
  end
  -- draw map title
  txtobj=text_to_display.maptitle
  if txtobj != nil and txtobj.frmcnt > 0 then
-  draw_fancy_box(txtobj.x, txtobj.y, #txtobj.txt*4+4, 8, 4, 9)
+  draw_fancy_box(txtobj.x, txtobj.y, #txtobj.txt*4+4, 8, 4,10, 9)
   printsp(txtobj.txt, txtobj.x+2, txtobj.y+2, 0)
   txtobj.frmcnt = txtobj.frmcnt-1
  end
@@ -274,7 +283,7 @@ function draw_play_map()
   dlg=text_to_display.dialogue[1]
   curprogressdlg=dlg.dialogue[dlg.progress]
   if curprogressdlg != nil then
-   draw_fancy_box(8,100,112,24,4,9)
+   draw_fancy_box(8,100,112,24,4,10,9)
    printsp(characters[curprogressdlg.speakeridx].get_name_at_idx(characters[curprogressdlg.speakeridx],1), 28, 104, 1)
    printsp(curprogressdlg.text, 28, 110, 0)
    spr(characters[curprogressdlg.speakeridx].chrsprdailogueidx, 10, 104, 2, 2)
@@ -304,12 +313,12 @@ function drop_first_elem(arr)
  return newarr
 end
 
-function draw_fancy_box(x,y,w,h,fg,otln)
+function draw_fancy_box(x,y,w,h,fg,otlntl,otlnbr)
  rectfill(x+1,y+1,x+w-1,y+h-1,fg)
- line(x+1,y,x+w-1,y,otln) -- top line
- line(x+1,y+h,x+w-1,y+h,otln) -- bottom line
- line(x,y+1,x,y+h-1,otln) -- left line
- line(x+w,y+1,x+w,y+h-1,otln) -- right line
+ line(x+1,y,x+w-1,y,otlntl) -- top line
+ line(x+1,y+h,x+w-1,y+h,otlnbr) -- bottom line
+ line(x,y+1,x,y+h-1,otlntl) -- left line
+ line(x+w,y+1,x+w,y+h-1,otlnbr) -- right line
 end
 
 function transition_to_map(dest)
