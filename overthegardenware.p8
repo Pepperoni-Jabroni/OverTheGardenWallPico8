@@ -19,7 +19,11 @@ local characters={
  {name='greg', mapidx=0, chrsprdailogueidx=2}, 
  {name='wirt', mapidx=1, chrsprdailogueidx=4}, 
  {name='beatrice', mapidx=16, chrsprdailogueidx=6}, 
- {name={'kitty','wirt','wirt jr.','george washington','mr. president','benjamin franklin','doctor cucumber','greg jr.','skipper','ronald','jason funderburker'}, mapidx=17, chrsprdailogueidx=8}, 
+ {
+  name={'kitty','wirt','wirt jr.','george washington','mr. president','benjamin franklin','doctor cucumber','greg jr.','skipper','ronald','jason funderburker'}, 
+  mapidx=17, 
+  chrsprdailogueidx=8
+ }, 
  {name='the beast', mapidx=32, chrsprdailogueidx=34}, 
  {name='the woodsman', mapidx=33, chrsprdailogueidx=36}, 
  {name={'the beast?','dog'}, mapidx=48, chrsprdailogueidx=38},
@@ -283,6 +287,7 @@ function draw_play_map()
    draw_fancy_box(8,100,112,24,4,10,9)
    printsp(characters[curprogressdlg.speakeridx].get_name_at_idx(characters[curprogressdlg.speakeridx],1), 28, 104, 1)
    printsp(curprogressdlg.text, 28, 110, 0)
+   draw_fancy_box(9,103,17,17,0,6,5)
    spr(characters[curprogressdlg.speakeridx].chrsprdailogueidx, 10, 104, 2, 2)
   end
  end
