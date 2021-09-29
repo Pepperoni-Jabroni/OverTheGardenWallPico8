@@ -70,7 +70,7 @@ function _init()
 -- init game state
  local genrandcnt=4
  repeat
-  local choice=get_rand_idx(get_chars_w_dialog)
+  local choice=get_rand_idx(get_chars_w_dialog())
   if not is_element_in(menuchars,choice) then
    menuchars[#menuchars+1]=choice
   end
