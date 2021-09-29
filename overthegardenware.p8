@@ -12,6 +12,7 @@ local alttiles={
  {srcidx=205,dsts={202,203,205}},
  {srcidx=236,dsts={204,236}}
 }
+local altsset={}
 local text_to_display={maptitle=nil,dialogue={}}
 local active={x=0,y=0,charidx=nil,lookingdir=nil}
 local party={{charidx=1,x=nil,y=nil},{charidx=4,x=nil,y=nil}}
@@ -380,16 +381,19 @@ function transition_to_map(dest)
  end
  text_to_display.maptitle={x=16,y=64,txt=maps[mapscurrentidx].title,frmcnt=60}
  -- check alt tiles
- local srctiles=get_sourceidxs()
- for i=0,15 do
-  for j=0,15 do
-   local tilspr=mget(i+maps[mapscurrentidx].cellx, j+maps[mapscurrentidx].celly)
-   if (is_element_in(srctiles,tilspr)) then
-    local dsts=get_by_source(tilspr).dsts
-    local randsel=get_rand_idx(dsts)
-    mset(i+maps[mapscurrentidx].cellx, j+maps[mapscurrentidx].celly, dsts[randsel])
+ if not is_element_in(altsset, mapscurrentidx) then
+  local srctiles=get_sourceidxs()
+  for i=0,15 do
+   for j=0,15 do
+    local tilspr=mget(i+maps[mapscurrentidx].cellx, j+maps[mapscurrentidx].celly)
+    if (is_element_in(srctiles,tilspr)) then
+     local dsts=get_by_source(tilspr).dsts
+     local randsel=get_rand_idx(dsts)
+     mset(i+maps[mapscurrentidx].cellx, j+maps[mapscurrentidx].celly, dsts[randsel])
+    end
    end
   end
+  altsset[#altsset+1]=mapscurrentidx
  end
 end
 
