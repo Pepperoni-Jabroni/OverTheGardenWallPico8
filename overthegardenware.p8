@@ -311,6 +311,12 @@ function draw_play_map()
   if npc.x != nil and npc.y != nil then
    spr(characters[npc.charidx].mapidx, npc.x*8, npc.y*8)
   end
+ -- draw selection direction
+ if active.lookingdir != nil then
+  local selection=lookingdirselmap[active.lookingdir+1]
+  palt(5,true)
+  spr(selection.i,8*(active.x+selection.x),8*(active.y+selection.y),1,1,selection.flipv,selection.fliph)
+ end
  -- draw active char, spr and name
  local charname = tostr(characters[active.charidx].get_name_at_idx(characters[active.charidx],1))
  draw_fancy_box(1,1,#charname*4+12, 12, 4,10, 9)
@@ -341,12 +347,6 @@ function draw_play_map()
    palt(5,false)
    pal(12,12)
   end
- end
- -- draw selection direction
- if active.lookingdir != nil then
-  local selection=lookingdirselmap[active.lookingdir+1]
-  palt(5,true)
-  spr(selection.i,8*(active.x+selection.x),8*(active.y+selection.y),1,1,selection.flipv,selection.fliph)
  end
 end
 
