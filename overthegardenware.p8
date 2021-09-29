@@ -19,7 +19,7 @@ local party={}
 local characters={
  {name='greg', mapidx=0, chrsprdailogueidx=2, idle={'oh frog o mine!','oh potatoes and...'}}, 
  {name='wirt', mapidx=1, chrsprdailogueidx=4, idle={'uh, hi...','oh sorry, just thinking'}}, 
- {name='beatrice', mapidx=16, chrsprdailogueidx=6, idle={}}, 
+ {name='beatrice', mapidx=16, chrsprdailogueidx=6, idle={'yes, i can talk...','lets get out of here!'}}, 
  {
   name={'kitty','wirt','wirt jr.','george washington','mr. president','benjamin franklin','doctor cucumber','greg jr.','skipper','ronald','jason funderburker'}, 
   mapidx=17, 
@@ -27,7 +27,7 @@ local characters={
   idle={'ribbit'}
  }, 
  {name='the beast', mapidx=32, chrsprdailogueidx=34, idle={}}, 
- {name='the woodsman', mapidx=33, chrsprdailogueidx=36, idle={}}, 
+ {name='the woodsman', mapidx=33, chrsprdailogueidx=36, idle={'i need more oil','beware these woods'}}, 
  {name={'the beast?','dog'}, mapidx=48, chrsprdailogueidx=38, idle={}},
  {name='dog', mapidx=49, chrsprdailogueidx=40, idle={}},
  {name='black turtle', mapidx=64, chrsprdailogueidx=66, idle={}},
@@ -44,7 +44,8 @@ local maps={
   title='somewhere in the unknown',
   cellx=0,
   celly=0,
-  trans={{dest={mp=2,loc={x=1, y=14}},locs={{x=13,y=0},{x=14,y=0},{x=15,y=0}}}}
+  trans={{dest={mp=2,loc={x=1, y=14}},locs={{x=13,y=0},{x=14,y=0},{x=15,y=0}}}},
+  npcs={{charidx=3,x=4,y=5}}
  },
  {
   title='the old grist mill',
@@ -53,7 +54,8 @@ local maps={
   trans={
    {dest={mp=1,loc={x=14, y=1}},locs={{x=0,y=13},{x=0,y=14},{x=0,y=15}}},
    {dest={mp=3,loc={x=14, y=14}},locs={{x=0,y=0},{x=1,y=0},{x=2,y=0},{x=0,y=1}}}
-  }
+  },
+  npcs={{charidx=6,x=8,y=6}}
  },
  {
   title='deeper into the unknown',
@@ -263,7 +265,7 @@ function update_play_map()
  end
  -- check for talk w/ npcs
  if #text_to_display.dialogue == 0 then
-  for npc in all(party) do
+  for npc in all(get_all_npcs()) do
    for i=-1,1 do
     for j=-1,1 do
      if i!=j and npc.x+i==active.x and npc.y+j==active.y then
@@ -302,24 +304,45 @@ function update_play_map()
  end
 end
 
+function get_all_npcs()
+ return union_arrs(party, maps[mapscurrentidx].npcs)
+end
+
+function union_arrs(arr1, arr2)
+ local newarr={}
+ for i in all(arr1) do
+  newarr[#newarr+1]=i
+ end
+ for i in all(arr2) do
+  newarr[#newarr+1]=i
+ end
+ return newarr
+end
+
+function draw_chars_from_array(npcs)
+ for npc in all(npcs) do
+  if npc.x != nil and npc.y != nil then
+   spr(characters[npc.charidx].mapidx, npc.x*8, npc.y*8)
+  end
+ end
+end
+
 function draw_play_map()
--- color handling
+ local activemap=maps[mapscurrentidx]
+ -- color handling
  pal(13,139)
  palt(0,false)
  palt(5,false) 
  cls(139)
  -- draw map
- map(maps[mapscurrentidx].cellx, maps[mapscurrentidx].celly)
+ map(activemap.cellx, activemap.celly)
  -- draw sprites and characters
  palt(139,false)
  palt(13,true)
  -- draw player
  spr(characters[active.charidx].mapidx, active.x*8, active.y*8)
  -- draw npcs
- for npc in all(party) do
-  if npc.x != nil and npc.y != nil then
-   spr(characters[npc.charidx].mapidx, npc.x*8, npc.y*8)
-  end
+ draw_chars_from_array(get_all_npcs())
  -- draw selection direction
  if active.lookingdir != nil then
   local selection=lookingdirselmap[active.lookingdir+1]
@@ -335,7 +358,6 @@ function draw_play_map()
  draw_fancy_box(xanchor,1,#charname*4+12, 12, 4,10, 9)
  printsp(charname, xanchor+10, 5, 0)
  spr(characters[active.charidx].mapidx, xanchor+2, 3)
- end
  -- draw map title
  txtobj=text_to_display.maptitle
  if txtobj != nil and txtobj.frmcnt > 0 then
