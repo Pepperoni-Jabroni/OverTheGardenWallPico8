@@ -16,25 +16,26 @@ local text_to_display={maptitle=nil,dialogue={}}
 local active={x=0,y=0,charidx=nil,lookingdir=nil}
 local party={{charidx=1,x=nil,y=nil},{charidx=4,x=nil,y=nil}}
 local characters={
- {name='greg', mapidx=0, chrsprdailogueidx=2}, 
- {name='wirt', mapidx=1, chrsprdailogueidx=4}, 
- {name='beatrice', mapidx=16, chrsprdailogueidx=6}, 
+ {name='greg', mapidx=0, chrsprdailogueidx=2, idle={'oh frog o mine!','oh potatoes and...'}}, 
+ {name='wirt', mapidx=1, chrsprdailogueidx=4, idle={'uh, hi...','oh sorry, just thinking'}}, 
+ {name='beatrice', mapidx=16, chrsprdailogueidx=6, idle={}}, 
  {
   name={'kitty','wirt','wirt jr.','george washington','mr. president','benjamin franklin','doctor cucumber','greg jr.','skipper','ronald','jason funderburker'}, 
   mapidx=17, 
-  chrsprdailogueidx=8
+  chrsprdailogueidx=8,
+  idle={'ribbit'}
  }, 
- {name='the beast', mapidx=32, chrsprdailogueidx=34}, 
- {name='the woodsman', mapidx=33, chrsprdailogueidx=36}, 
- {name={'the beast?','dog'}, mapidx=48, chrsprdailogueidx=38},
- {name='dog', mapidx=49, chrsprdailogueidx=40},
- {name='black turtle', mapidx=64, chrsprdailogueidx=66},
- {name='turkey', mapidx=65, chrsprdailogueidx=68},
- {name='pottsfield citizen #1', mapidx=80, chrsprdailogueidx=98},
- {name='pottsfield citizen #2', mapidx=80, chrsprdailogueidx=102},
- {name='pottsfield harvest', mapidx=81, chrsprdailogueidx=70},
- {name='pottsfield partier', mapidx=96, chrsprdailogueidx=100},
- {name='enoch', mapidx=97, chrsprdailogueidx=72}  
+ {name='the beast', mapidx=32, chrsprdailogueidx=34, idle={}}, 
+ {name='the woodsman', mapidx=33, chrsprdailogueidx=36, idle={}}, 
+ {name={'the beast?','dog'}, mapidx=48, chrsprdailogueidx=38, idle={}},
+ {name='dog', mapidx=49, chrsprdailogueidx=40, idle={}},
+ {name='black turtle', mapidx=64, chrsprdailogueidx=66, idle={}},
+ {name='turkey', mapidx=65, chrsprdailogueidx=68, idle={}},
+ {name='pottsfield citizen #1', mapidx=80, chrsprdailogueidx=98, idle={}},
+ {name='pottsfield citizen #2', mapidx=80, chrsprdailogueidx=102, idle={}},
+ {name='pottsfield harvest', mapidx=81, chrsprdailogueidx=70, idle={}},
+ {name='pottsfield partier', mapidx=96, chrsprdailogueidx=100, idle={}},
+ {name='enoch', mapidx=97, chrsprdailogueidx=72, idle={}}  
 }
 local mapscurrentidx
 local maps={
@@ -117,6 +118,23 @@ function _draw()
 end
 
 -->8
+function get_rand_idx(arr)
+ return flr(rnd(#arr))+1
+end
+
+function get_char_idle_dialogue(charidx)
+ local idle_dialogues={}
+ local idles=characters[charidx].idle
+ for idle in all(idles) do
+  idle_dialogues[#idle_dialogues+1]={
+   dialogue={{speakeridx=charidx,text=idle}},
+   progress=1,
+   repeatable=true
+  }
+ end
+ return idle_dialogues
+end
+
 function draw_main_menu()
   cls(0)
   -- draw logo
@@ -220,6 +238,21 @@ function update_play_map()
   end
   if mapscurrentidx != initmapidx then
    break
+  end
+ end
+ -- check for talk w/ npcs
+ if #text_to_display.dialogue == 0 then
+  for npc in all(party) do
+   for i=-1,1 do
+    for j=-1,1 do
+     if i!=j and npc.x+i==active.x and npc.y+j==active.y then
+      if selection_is_on_location({x=npc.x,y=npc.y}) then
+       local idles=get_char_idle_dialogue(npc.charidx)
+       text_to_display.dialogue[#text_to_display.dialogue+1]=idles[get_rand_idx(idles)]
+      end
+     end
+    end
+   end
   end
  end
  -- check for dialogue triggers
