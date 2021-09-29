@@ -70,7 +70,7 @@ function _init()
 -- init game state
  local genrandcnt=4
  repeat
-  local choice=flr(rnd(#get_chars_w_dialog()))+1
+  local choice=get_rand_idx(get_chars_w_dialog)
   if not is_element_in(menuchars,choice) then
    menuchars[#menuchars+1]=choice
   end
@@ -386,7 +386,7 @@ function transition_to_map(dest)
    local tilspr=mget(i+maps[mapscurrentidx].cellx, j+maps[mapscurrentidx].celly)
    if (is_element_in(srctiles,tilspr)) then
     local dsts=get_by_source(tilspr).dsts
-    local randsel=flr(rnd(#dsts))+1
+    local randsel=get_rand_idx(dsts)
     mset(i+maps[mapscurrentidx].cellx, j+maps[mapscurrentidx].celly, dsts[randsel])
    end
   end
