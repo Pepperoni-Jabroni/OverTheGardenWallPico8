@@ -49,7 +49,7 @@ local dialogues={
    {speakeridx=1,text="haha, yeah!"}
   },repeatable=false,progress=nil,triggertype="walk"
  },
- {mapidx=1,trig_locs={{x=2,y=1}},dialogue={
+ {mapidx=1,trig_locs={{x=5,y=7}},dialogue={
    {speakeridx=2,text="i dont like this at all"},
    {speakeridx=1,text="its a tree face!"}
   },repeatable=false,progress=nil,triggertype="select"
@@ -289,6 +289,12 @@ function draw_play_map()
    printsp(curprogressdlg.text, 28, 110, 0)
    draw_fancy_box(9,103,17,17,0,6,5)
    spr(characters[curprogressdlg.speakeridx].chrsprdailogueidx, 10, 104, 2, 2)
+   print("\142",105,118,0)
+   palt(5,true)
+   pal(12,0)
+   spr(234, 112, 116)
+   palt(5,false)
+   pal(12,12)
   end
  end
  -- draw selection direction
