@@ -16,11 +16,13 @@ local characters={
  {name='the woodsman', mapidx=33, chrsprdailogueidx=36}, 
  {name={'the beast?','dog'}, mapidx=48, chrsprdailogueidx=38},
  {name='dog', mapidx=49, chrsprdailogueidx=40},
- {name='black turtle', mapidx=64, chrsprdailogueidx=-1},
- {name='turkey', mapidx=65, chrsprdailogueidx=-1},
- {name='pottsfield citizen', mapidx=80, chrsprdailogueidx=-1},
- {name='pottsfield harvest', mapidx=81, chrsprdailogueidx=-1},
- {name='pottsfield partier', mapidx=96, chrsprdailogueidx=-1}  
+ {name='black turtle', mapidx=64, chrsprdailogueidx=66},
+ {name='turkey', mapidx=65, chrsprdailogueidx=68},
+ {name='pottsfield citizen #1', mapidx=80, chrsprdailogueidx=98},
+ {name='pottsfield citizen #2', mapidx=80, chrsprdailogueidx=102},
+ {name='pottsfield harvest', mapidx=81, chrsprdailogueidx=70},
+ {name='pottsfield partier', mapidx=96, chrsprdailogueidx=100},
+ {name='enoch', mapidx=97, chrsprdailogueidx=72}  
 }
 local mapscurrentidx
 local maps={
@@ -53,17 +55,13 @@ local menuchars={}
 -- base functions
 function _init()
 -- init game state
- first=nil
- second=nil
+ local genrandcnt=4
  repeat
   local choice=flr(rnd(#get_chars_w_dialog()))+1
-  if first == nil then
-   first = choice
-  elseif choice != first then
-   second = choice
+  if not is_element_in(menuchars,choice) then
+   menuchars[#menuchars+1]=choice
   end
- until first != nil and second != nil
- menuchars = {first, second}
+ until #menuchars==genrandcnt
 
  -- init object member fns
  for char in all(characters) do
@@ -123,18 +121,21 @@ function draw_main_menu()
   pal(12,9)
   spr(234,24,sel_y,1,1)
   spr(234,96,sel_y,1,1,true,false)
-  -- draw 2 random chars
+  -- draw 4 random chars
   drawchoices = get_chars_w_dialog()
-  first = menuchars[1]
-  second = menuchars[2]
+  local icon_locs={{x=4,y=4},{x=108,y=4},{x=4,y=108},{x=108,y=108}}
   pal(12,12)
   palt(5,false)
   palt(13,true)
   palt(0,false)
-  draw_fancy_box(1,69,17,17,2,10,9)
-  draw_fancy_box(107,69,17,17,2,10,9)
-  spr(drawchoices[first].chrsprdailogueidx, 2, 70, 2, 2)
-  spr(drawchoices[second].chrsprdailogueidx, 108, 70, 2, 2)
+  for i=1,#icon_locs do
+   draw_fancy_box(icon_locs[i].x,icon_locs[i].y,17,17,2,10,9)
+   spr(drawchoices[menuchars[i]].chrsprdailogueidx, icon_locs[i].x+1, icon_locs[i].y+1, 2, 2)
+  end
+  -- draw_fancy_box(1,69,17,17,2,10,9)
+  -- draw_fancy_box(107,69,17,17,2,10,9)
+  -- spr(drawchoices[first].chrsprdailogueidx, 2, 70, 2, 2)
+  -- spr(drawchoices[second].chrsprdailogueidx, 108, 70, 2, 2)
   palt(13,false)
   palt(0,true)
   palt(5,true)
