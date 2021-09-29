@@ -112,13 +112,6 @@ function draw_main_menu()
   -- draw logo
   spr(128,24,8,10,6)
   -- draw buttons
-  local startcol=0
-  local quitcol=0
-  if active.y==0 then
-   startcol=9
-  elseif active.y==1 then
-   quitcol=9
-  end
   draw_fancy_text_box("start",48,65,active.y==0)
   draw_fancy_text_box("quit",50,85,active.y==1)
   -- draw selection chevrons
