@@ -317,11 +317,15 @@ function draw_play_map()
   palt(5,true)
   spr(selection.i,8*(active.x+selection.x),8*(active.y+selection.y),1,1,selection.flipv,selection.fliph)
  end
- -- draw active char, spr and name
+ -- draw active char hud
+ local xanchor=1
+ if active.x<=3 and active.y<=2 then
+  xanchor=90
+ end
  local charname = tostr(characters[active.charidx].get_name_at_idx(characters[active.charidx],1))
- draw_fancy_box(1,1,#charname*4+12, 12, 4,10, 9)
- printsp(charname, 11, 5, 0)
- spr(characters[active.charidx].mapidx, 3, 3)
+ draw_fancy_box(xanchor,1,#charname*4+12, 12, 4,10, 9)
+ printsp(charname, xanchor+10, 5, 0)
+ spr(characters[active.charidx].mapidx, xanchor+2, 3)
  end
  -- draw map title
  txtobj=text_to_display.maptitle
