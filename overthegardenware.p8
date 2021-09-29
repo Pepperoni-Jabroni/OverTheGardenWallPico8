@@ -15,7 +15,7 @@ local alttiles={
 local altsset={}
 local text_to_display={maptitle=nil,dialogue={}}
 local active={x=0,y=0,charidx=nil,lookingdir=nil}
-local party={{charidx=1,x=nil,y=nil},{charidx=4,x=nil,y=nil}}
+local party={}
 local characters={
  {name='greg', mapidx=0, chrsprdailogueidx=2, idle={'oh frog o mine!','oh potatoes and...'}}, 
  {name='wirt', mapidx=1, chrsprdailogueidx=4, idle={'uh, hi...','oh sorry, just thinking'}}, 
@@ -40,8 +40,18 @@ local characters={
 }
 local mapscurrentidx
 local maps={
- {title='somewhere in the unknown',cellx=0,celly=0,trans={{dest={mp=2,loc={x=1, y=14}},locs={{x=13,y=0},{x=14,y=0},{x=15,y=0}}}}},
- {title='the old grist mill',cellx=16,celly=0,trans={{dest={mp=1,loc={x=14, y=1}},locs={{x=0,y=13},{x=0,y=14},{x=0,y=15}}}}}
+ {
+  title='somewhere in the unknown',
+  cellx=0,
+  celly=0,
+  trans={{dest={mp=2,loc={x=1, y=14}},locs={{x=13,y=0},{x=14,y=0},{x=15,y=0}}}}
+ },
+ {
+  title='the old grist mill',
+  cellx=16,
+  celly=0,
+  trans={{dest={mp=1,loc={x=14, y=1}},locs={{x=0,y=13},{x=0,y=14},{x=0,y=15}}}}
+ }
 }
 local dialogues={
  {mapidx=1,trig_locs={{x=10,y=4},{x=11,y=4}},dialogue={
@@ -99,6 +109,7 @@ function _update()
   if btn(4) or btn(5) then
    if active.y==0 then
     stagetype = "playmap"
+    party={{charidx=1,x=nil,y=nil},{charidx=4,x=nil,y=nil}}
     transition_to_map({mp=1,loc={x=1, y=14}})
     active={x=3,y=13,charidx=2,lookingdir=nil}
    else
@@ -319,10 +330,10 @@ function draw_play_map()
   curprogressdlg=dlg.dialogue[dlg.progress]
   if curprogressdlg != nil then
    draw_fancy_box(8,100,112,24,4,10,9)
-   printsp(characters[curprogressdlg.speakeridx].get_name_at_idx(characters[curprogressdlg.speakeridx],1), 28, 104, 1)
-   printsp(curprogressdlg.text, 28, 110, 0)
-   draw_fancy_box(9,103,17,17,0,6,5)
-   spr(characters[curprogressdlg.speakeridx].chrsprdailogueidx, 10, 104, 2, 2)
+   printsp(characters[curprogressdlg.speakeridx].get_name_at_idx(characters[curprogressdlg.speakeridx],1), 29, 104, 1)
+   printsp(curprogressdlg.text, 29, 110, 0)
+   draw_fancy_box(10,103,17,17,0,6,5)
+   spr(characters[curprogressdlg.speakeridx].chrsprdailogueidx, 11, 104, 2, 2)
    print("\142",105,118,0)
    palt(5,true)
    pal(12,0)
