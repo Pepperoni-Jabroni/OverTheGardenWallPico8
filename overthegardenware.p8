@@ -31,7 +31,7 @@ local objdescripts={
  {spridxs={232,233,248,249},descr="pottsfield old\nchurch"},
 }
 local text_to_display={maptitle=nil,dialogue={}}
-local active={x=0,y=0,charidx=nil,lookingdir=nil}
+local active={x=0,y=0,charidx=nil,lookingdir=nil,flipv=false}
 local party={}
 local characters={
  {name='greg', mapidx=0, chrsprdailogueidx=2, idle={'oh frog o mine!','oh potatoes and...'}}, 
@@ -310,10 +310,12 @@ function update_play_map()
    active.y = active.y - 1
   elseif btnp(1) and active.x < 15 and is_element_in(walkable, mget(active.x + 1+maps[mapscurrentidx].cellx, active.y+maps[mapscurrentidx].celly)) then
    active.x = active.x + 1
+   active.flipv=false
   elseif btnp(3) and active.y < 15 and is_element_in(walkable, mget(active.x+maps[mapscurrentidx].cellx, active.y + 1+maps[mapscurrentidx].celly)) then
    active.y = active.y + 1
   elseif btnp(0) and active.x > 0 and is_element_in(walkable, mget(active.x - 1+maps[mapscurrentidx].cellx, active.y+maps[mapscurrentidx].celly)) then
    active.x = active.x - 1
+   active.flipv=true
   end
  end
  -- check for player switch
@@ -438,7 +440,7 @@ function draw_play_map()
  palt(139,false)
  palt(13,true)
  -- draw player
- spr(characters[active.charidx].mapidx, active.x*8, active.y*8)
+ spr(characters[active.charidx].mapidx,active.x*8,active.y*8,1,1,active.flipv,false)
  -- draw npcs
  draw_chars_from_array(get_all_npcs())
  -- draw selection direction
