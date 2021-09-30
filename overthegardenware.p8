@@ -13,6 +13,23 @@ local alttiles={
  {srcidx=236,dsts={204,236}}
 }
 local altsset={}
+local objdescripts={
+ {spridxs={122,123,138,139},descr="what a nice old wagon"},
+ {spridxs={124,125,140,141},descr="the poor old mill..."},
+ {spridxs={158},descr="look at these pumpkins!"},
+ {spridxs={159},descr="it says pottsfield \^"},
+ {spridxs={174},descr="looks like its harvest \ntime!"},
+ {spridxs={190},descr="this pumpkin is missing"},
+ {spridxs={204,236},descr="its just a bush..."},
+ {spridxs={218,235,251},descr="this tree sure is tall"},
+ {spridxs={220},descr="a stump of some weird\ntree?"},
+ {spridxs={219},descr="a creepy tree with a \nface on it"},
+ {spridxs={224,225,240,241},descr="pottsfield old barn"},
+ {spridxs={226,227,242,243},descr="the old grist mill"},
+ {spridxs={228,229,244,245},descr="the animal schoolhouse"},
+ {spridxs={230,231,246,247},descr="the inn"},
+ {spridxs={232,233,248,249},descr="pottsfield old\nchurch"},
+}
 local text_to_display={maptitle=nil,dialogue={}}
 local active={x=0,y=0,charidx=nil,lookingdir=nil}
 local party={}
@@ -361,6 +378,24 @@ function update_play_map()
      trig.progress = 1
      text_to_display.dialogue[#text_to_display.dialogue+1] = trig
      break
+    end
+   end
+  end
+ end
+ -- check for obj selection
+ for i=-1,1 do
+  for j=-1,1 do
+   local x=active.x+i
+   local y=active.y+j
+   if selection_is_on_location({x=x,y=y}) then
+    for descpt in all(objdescripts) do
+     if is_element_in(descpt.spridxs,mget(x+maps[mapscurrentidx].cellx,y+maps[mapscurrentidx].celly)) and #text_to_display.dialogue==0 then
+      text_to_display.dialogue[#text_to_display.dialogue+1] = {
+       dialogue={{speakeridx=active.charidx,text=descpt.descr}},
+       progress=1
+      }
+      break
+     end
     end
    end
   end
