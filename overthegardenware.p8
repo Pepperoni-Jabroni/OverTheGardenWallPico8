@@ -64,6 +64,20 @@ local maps={
   trans={{dest={mp=2,loc={x=1, y=1}},locs={{x=13,y=15},{x=14,y=15},{x=15,y=15}}}}
  }
 }
+local intro_dialogue={
+ progress=1,
+ dialogue={
+  {speakeridx=4,text="led through the mist"},
+  {speakeridx=4,text="by the milk-light of \nmoon"},
+  {speakeridx=4,text="all that was lost is \nrevealed"},
+  {speakeridx=4,text="our long bygone burdens"},
+  {speakeridx=4,text="mere echoes of the \nspring"},
+  {speakeridx=4,text="but where have we come?"},
+  {speakeridx=4,text="and where shall we end?"},
+  {speakeridx=4,text="if dreams can't come \ntrue"},
+  {speakeridx=4,text="then why not pretend?"}
+ } 
+}
 local dialogues={
  {mapidx=1,trig_locs={{x=10,y=4},{x=11,y=4}},dialogue={
    {speakeridx=1,text="i sure do love my frog!"},
@@ -119,13 +133,17 @@ function _update()
   end
   if btn(4) or btn(5) then
    if active.y==0 then
-    stagetype = "playmap"
-    party={{charidx=1,x=nil,y=nil},{charidx=4,x=nil,y=nil}}
-    transition_to_map({mp=1,loc={x=1, y=14}})
-    active={x=3,y=13,charidx=2,lookingdir=nil}
+    stagetype="intro"
    else
     stop()
    end
+  end
+ elseif stagetype == "intro" then
+  if btnp(4) then
+   intro_dialogue.progress+=1
+  end
+  if intro_dialogue.progress>#intro_dialogue.dialogue then
+   transition_to_playmap()
   end
  elseif stagetype == "playmap" then
   update_play_map()
@@ -135,12 +153,46 @@ end
 function _draw()
  if stagetype == "mainmenu" then
   draw_main_menu()
+ elseif stagetype == "intro" then
+  draw_introduction()
  elseif stagetype == "playmap" then
   draw_play_map()
  end
 end
 
 -->8
+function draw_introduction()
+ cls(0)
+ -- draw bg
+ draw_fancy_box(32,5,64,52,0,4,5)
+ -- draw frog
+ pal(14,128,1)
+ pal(5,133,1)
+ pal(12,130,1)
+ pal(1,132,1)
+ pal(13,139,1)
+ sspr(80,72,32,24,32,8,64,48)
+ pal(14,14)
+ pal(5,5)
+ pal(12,12)
+ pal(1,1)
+ pal(13,13)
+ -- draw frog dialogue box
+ draw_character_dialogue_box(4,intro_dialogue.dialogue[intro_dialogue.progress].text)
+end
+
+function transition_to_playmap()
+ stagetype = "playmap"
+ party={{charidx=1,x=nil,y=nil},{charidx=4,x=nil,y=nil}}
+ transition_to_map({mp=1,loc={x=1, y=14}})
+ active={x=3,y=13,charidx=2,lookingdir=nil}
+ pal(14,14,1)
+ pal(5,5,1)
+ pal(12,12,1)
+ pal(1,1,1)
+ pal(13,13,1)
+end
+
 function get_rand_idx(arr)
  return flr(rnd(#arr))+1
 end
@@ -187,7 +239,6 @@ function draw_main_menu()
   end
   palt(13,false)
   palt(0,true)
-  palt(5,true)
  end
 
 function get_chars_w_dialog()
@@ -225,7 +276,7 @@ function update_play_map()
   active.lookingdir=nil
  end
 -- check active movement
- if active.lookingdir == nil then
+ if active.lookingdir == nil and #text_to_display.dialogue == 0 then
   if btnp(2) and active.y > 0 and is_element_in(walkable, mget(active.x+maps[mapscurrentidx].cellx, active.y - 1+maps[mapscurrentidx].celly)) then
    active.y = active.y - 1
   elseif btnp(1) and active.x < 15 and is_element_in(walkable, mget(active.x + 1+maps[mapscurrentidx].cellx, active.y+maps[mapscurrentidx].celly)) then
@@ -370,19 +421,23 @@ function draw_play_map()
   dlg=text_to_display.dialogue[1]
   curprogressdlg=dlg.dialogue[dlg.progress]
   if curprogressdlg != nil then
-   draw_fancy_box(8,100,112,24,4,10,9)
-   printsp(characters[curprogressdlg.speakeridx].get_name_at_idx(characters[curprogressdlg.speakeridx],1), 29, 104, 1)
-   printsp(curprogressdlg.text, 29, 110, 0)
-   draw_fancy_box(10,103,17,17,0,6,5)
-   spr(characters[curprogressdlg.speakeridx].chrsprdailogueidx, 11, 104, 2, 2)
-   print("\142",105,118,0)
-   palt(5,true)
-   pal(12,0)
-   spr(234, 112, 116)
-   palt(5,false)
-   pal(12,12)
+   draw_character_dialogue_box(curprogressdlg.speakeridx,curprogressdlg.text)
   end
  end
+end
+
+function draw_character_dialogue_box(charidx,text)
+ draw_fancy_box(8,100,112,24,4,10,9)
+ printsp(characters[charidx].get_name_at_idx(characters[charidx],1), 29, 104, 1)
+ printsp(text, 29, 110, 0)
+ draw_fancy_box(10,103,17,17,0,6,5)
+ spr(characters[charidx].chrsprdailogueidx, 11, 104, 2, 2)
+ print("\142",105,118,0)
+ palt(5,true)
+ pal(12,0)
+ spr(234, 112, 116)
+ palt(5,false)
+ pal(12,12)
 end
 
 function selection_is_on_location(location)
