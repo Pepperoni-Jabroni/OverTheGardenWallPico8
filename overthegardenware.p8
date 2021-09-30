@@ -262,7 +262,7 @@ end
 
 function update_play_map()
  -- check selection direction
- if btn(5) then
+ if btn(4) then
   pressed=nil
   for i=0,3 do
    if btn(i) then
@@ -288,7 +288,7 @@ function update_play_map()
   end
  end
  -- check for player switch
- if btnp(4) and #text_to_display.dialogue == 0 then
+ if btnp(5) and #text_to_display.dialogue == 0 then
   party[#party+1] = active
   active = party[1]
   party=drop_first_elem(party)
