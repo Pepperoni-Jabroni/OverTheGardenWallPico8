@@ -137,6 +137,20 @@ local lookingdirselmap={
 }
 local stagetype="mainmenu"
 local menuchars={}
+local stagetypes={
+ {
+  title="mainmenu",
+  update=function(self)update_main_menu()end,
+  draw=function(self)draw_main_menu()end},
+ {
+  title="intro",
+  update=function(self)update_intro()end,
+  draw=function(self)draw_introduction()end},
+ {
+  title="playmap",
+  update=function(self)update_play_map()end,
+  draw=function(self)draw_play_map()end}
+}
 
 -- base functions
 function _init()
@@ -162,45 +176,50 @@ function _init()
 end
 
 function _update()
- if stagetype == "mainmenu" then
-  if btn(2) and active.y == 1 then
-   active.y = 0
-   sfx(0)
-  elseif btn(3) and active.y == 0 then
-   active.y = 1
-   sfx(0)
-  end
-  if btn(4) or btn(5) then
-   if active.y==0 then
-    stagetype="intro"
-    sfx(1)
-   else
-    stop()
-   end
-  end
- elseif stagetype == "intro" then
-  if btnp(4) then
-   intro_dialogue.progress+=1
-  end
-  if intro_dialogue.progress>#intro_dialogue.dialogue then
-   transition_to_playmap()
-  end
- elseif stagetype == "playmap" then
-  update_play_map()
- end
+ get_stage_type(stagetype).update()
 end
 
 function _draw()
- if stagetype == "mainmenu" then
-  draw_main_menu()
- elseif stagetype == "intro" then
-  draw_introduction()
- elseif stagetype == "playmap" then
-  draw_play_map()
- end
+ get_stage_type(stagetype).draw()
 end
 
 -->8
+function get_stage_type(stagetype)
+ for i=1,#stagetypes do
+  if stagetypes[i].title==stagetype then
+   return stagetypes[i]
+  end
+ end
+ return nil
+end
+
+function update_intro()
+ if btnp(4) then
+  intro_dialogue.progress+=1
+ end
+ if intro_dialogue.progress>#intro_dialogue.dialogue then
+  transition_to_playmap()
+ end
+end
+
+function update_main_menu()
+ if btn(2) and active.y == 1 then
+  active.y = 0
+  sfx(0)
+ elseif btn(3) and active.y == 0 then
+  active.y = 1
+  sfx(0)
+ end
+ if btn(4) or btn(5) then
+  if active.y==0 then
+   stagetype="intro"
+   sfx(1)
+  else
+   stop()
+  end
+ end
+end
+
 function draw_introduction()
  cls(0)
  -- draw bg
