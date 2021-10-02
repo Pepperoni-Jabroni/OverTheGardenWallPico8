@@ -141,15 +141,18 @@ local stagetypes={
  {
   title="mainmenu",
   update=function(self)update_main_menu()end,
-  draw=function(self)draw_main_menu()end},
+  draw=function(self)draw_main_menu()end
+ },
  {
   title="intro",
   update=function(self)update_intro()end,
-  draw=function(self)draw_introduction()end},
+  draw=function(self)draw_introduction()end
+ },
  {
   title="playmap",
   update=function(self)update_play_map()end,
-  draw=function(self)draw_play_map()end}
+  draw=function(self)draw_play_map()end
+ }
 }
 
 -- base functions
@@ -176,15 +179,15 @@ function _init()
 end
 
 function _update()
- get_stage_type(stagetype).update()
+ get_stage_by_type(stagetype).update()
 end
 
 function _draw()
- get_stage_type(stagetype).draw()
+ get_stage_by_type(stagetype).draw()
 end
 
 -->8
-function get_stage_type(stagetype)
+function get_stage_by_type(stagetype)
  for i=1,#stagetypes do
   if stagetypes[i].title==stagetype then
    return stagetypes[i]
