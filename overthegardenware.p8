@@ -302,7 +302,7 @@ end
 
 function update_play_map()
  -- check selection direction
- if btn(4) then
+ if btn(4) and #text_to_display.dialogue==0 then
   pressed=nil
   for i=0,3 do
    if btn(i) then
@@ -455,7 +455,7 @@ function draw_play_map()
  -- draw npcs
  draw_chars_from_array(get_all_npcs())
  -- draw selection direction
- if active.lookingdir != nil and #text_to_display.dialogue==0 then
+ if active.lookingdir != nil then
   local selection=lookingdirselmap[active.lookingdir+1]
   palt(5,true)
   spr(selection.i,8*(active.x+selection.x),8*(active.y+selection.y),1,1,selection.flipv,selection.fliph)
