@@ -74,7 +74,7 @@ local maps={
   cellx=0,
   celly=0,
   trans={{dest={mp=2,loc={x=1, y=14}},locs={{x=13,y=0},{x=14,y=0},{x=15,y=0}}}},
-  npcs={{charidx=3,x=4,y=5}},
+  npcs={{charidx=6,x=6,y=7},{charidx=3,x=9,y=4}},
   discvrdtiles={}
  },
  {
@@ -85,7 +85,6 @@ local maps={
    {dest={mp=1,loc={x=14, y=1}},locs={{x=0,y=13},{x=0,y=14},{x=0,y=15}}},
    {dest={mp=3,loc={x=14, y=14}},locs={{x=0,y=0},{x=1,y=0},{x=2,y=0},{x=0,y=1}}}
   },
-  npcs={{charidx=6,x=8,y=6}},
   discvrdtiles={}
  },
  {
