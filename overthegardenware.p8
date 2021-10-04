@@ -2,7 +2,7 @@ pico-8 cartridge // http://www.pico-8.com
 version 33
 __lua__
 
--- configs, accessors & core fns
+-- configs, state vars & core fns
 local walkable={202,203,205,207,222,223,238,239}
 local alttiles={
  {srcidx=206,dsts={206,221,237}},
@@ -73,7 +73,8 @@ local maps={
   cellx=0,
   celly=0,
   trans={{dest={mp=2,loc={x=1, y=14}},locs={{x=13,y=0},{x=14,y=0},{x=15,y=0}}}},
-  npcs={{charidx=3,x=4,y=5}}
+  npcs={{charidx=3,x=4,y=5}},
+  discvrdtiles={}
  },
  {
   title='the old grist mill',
@@ -83,7 +84,8 @@ local maps={
    {dest={mp=1,loc={x=14, y=1}},locs={{x=0,y=13},{x=0,y=14},{x=0,y=15}}},
    {dest={mp=3,loc={x=14, y=14}},locs={{x=0,y=0},{x=1,y=0},{x=2,y=0},{x=0,y=1}}}
   },
-  npcs={{charidx=6,x=8,y=6}}
+  npcs={{charidx=6,x=8,y=6}},
+  discvrdtiles={}
  },
  {
   title='deeper into the unknown',
@@ -92,13 +94,15 @@ local maps={
   trans={
    {dest={mp=2,loc={x=1, y=1}},locs={{x=13,y=15},{x=14,y=15},{x=15,y=15}}},
    {dest={mp=4,loc={x=8, y=14}},locs={{x=7,y=0},{x=8,y=0}}}
-  }
+  },
+  discvrdtiles={}
  },
  {
   title='pottsfield',
   cellx=48,
   celly=0,
-  trans={{dest={mp=3,loc={x=7, y=1}},locs={{x=8,y=15},{x=14,y=15},{x=15,y=15}}}}
+  trans={{dest={mp=3,loc={x=7, y=1}},locs={{x=8,y=15},{x=14,y=15},{x=15,y=15}}}},
+  discvrdtiles={}
  }
 }
 local intro_dialogue={
@@ -439,6 +443,25 @@ function draw_play_map()
   palt(5,true)
   spr(selection.i,8*(active.x+selection.x),8*(active.y+selection.y),1,1,selection.flipv,selection.fliph)
  end
+ -- draw fog of war
+ for i=0,15 do
+  for j=0,15 do
+   local nearforone=false
+   for member in all(party) do
+    if distance(i, j, member.x, member.y) < 2.7 then
+     nearforone=true
+    end
+   end
+   if distance(i, j, active.x, active.y) < 2.7 then
+    nearforone=true
+   end
+   if not nearforone and not is_element_in(activemap.discvrdtiles, tostr(i)..'|'..tostr(j)) then
+    rectfill(8*i, 8*j,(8*i)+8, (8*j)+8,0)
+   elseif not is_element_in(activemap.discvrdtiles, tostr(i)..'|'..tostr(j)) then
+    activemap.discvrdtiles[#activemap.discvrdtiles+1]= tostr(i)..'|'..tostr(j)
+   end
+  end
+ end
  -- draw active char hud
  local xanchor=1
  if active.x<=3 and active.y<=2 then
@@ -467,6 +490,10 @@ end
 
 -->8
 -- utilities
+function distance(x1, y1, x2, y2)
+ return sqrt((x2 - x1)^2 + (y2 - y1)^2)
+end
+
 function get_stage_by_type(stagetype)
  for i=1,#stagetypes do
   if stagetypes[i].title==stagetype then
