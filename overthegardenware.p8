@@ -104,15 +104,15 @@ local maps={
 local intro_dialogue={
  progress=1,
  dialogue={
-  {speakeridx=4,text="led through the mist"},
-  {speakeridx=4,text="by the milk-light of \nmoon"},
-  {speakeridx=4,text="all that was lost is \nrevealed"},
-  {speakeridx=4,text="our long bygone burdens"},
-  {speakeridx=4,text="mere echoes of the \nspring"},
-  {speakeridx=4,text="but where have we come?"},
-  {speakeridx=4,text="and where shall we end?"},
-  {speakeridx=4,text="if dreams can't come \ntrue"},
-  {speakeridx=4,text="then why not pretend?"}
+  {speakeridx=4,nameidx=nil,text="led through the mist"},
+  {speakeridx=4,nameidx=nil,text="by the milk-light of \nmoon"},
+  {speakeridx=4,nameidx=nil,text="all that was lost is \nrevealed"},
+  {speakeridx=4,nameidx=nil,text="our long bygone burdens"},
+  {speakeridx=4,nameidx=nil,text="mere echoes of the \nspring"},
+  {speakeridx=4,nameidx=nil,text="but where have we come?"},
+  {speakeridx=4,nameidx=nil,text="and where shall we end?"},
+  {speakeridx=4,nameidx=nil,text="if dreams can't come \ntrue"},
+  {speakeridx=4,nameidx=nil,text="then why not pretend?"}
  } 
 }
 local dialogues={
@@ -157,7 +157,7 @@ local stagetypes={
 
 -- base functions
 function _init()
--- init game state
+-- init main menu chars
  local genrandcnt=4
  repeat
   local choice=get_rand_idx(get_chars_w_dialog())
@@ -166,8 +166,21 @@ function _init()
   end
  until #menuchars==genrandcnt
 
+ -- init frog intro name
+ local randomname=get_rand_idx(characters[4].name)
+ for i=1,#intro_dialogue.dialogue do
+  intro_dialogue.dialogue[i].nameidx=randomname
+ end
+
  -- init object member fns
  for char in all(characters) do
+  char.get_random_name = function(this)
+   if type(this.name) == 'string' then
+    return this.name
+   elseif type(this.name) == 'table' then
+    return this.name[get_rand_idx(this.name)]
+   end
+  end 
   char.get_name_at_idx = function(this, idx)
    if type(this.name) == 'string' then
     return this.name
@@ -240,7 +253,8 @@ function draw_introduction()
  pal(1,1)
  pal(13,13)
  -- draw frog dialogue box
- draw_character_dialogue_box(4,intro_dialogue.dialogue[intro_dialogue.progress].text)
+ local currentprog=intro_dialogue.dialogue[intro_dialogue.progress]
+ draw_character_dialogue_box(currentprog)
 end
 
 function transition_to_playmap()
@@ -505,17 +519,25 @@ function draw_play_map()
   dlg=text_to_display.dialogue[1]
   curprogressdlg=dlg.dialogue[dlg.progress]
   if curprogressdlg != nil then
-   draw_character_dialogue_box(curprogressdlg.speakeridx,curprogressdlg.text)
+   local nameidx=1
+   if curprogressdlg.nameidx!=nil then
+    nameidx=curprogressdlg.nameidx
+   end
+   draw_character_dialogue_box(curprogressdlg)
   end
  end
 end
 
-function draw_character_dialogue_box(charidx,text)
+function draw_character_dialogue_box(dialogueobj)
+ local nameidx=1
+ if dialogueobj.nameidx != nil then
+  nameidx=dialogueobj.nameidx
+ end
  draw_fancy_box(8,100,112,24,4,10,9)
- printsp(characters[charidx].get_name_at_idx(characters[charidx],1), 29, 104, 1)
- printsp(text, 29, 110, 0)
+ printsp(characters[dialogueobj.speakeridx].get_name_at_idx(characters[dialogueobj.speakeridx],nameidx), 29, 104, 1)
+ printsp(dialogueobj.text, 29, 110, 0)
  draw_fancy_box(10,103,17,17,0,6,5)
- spr(characters[charidx].chrsprdailogueidx, 11, 104, 2, 2)
+ spr(characters[dialogueobj.speakeridx].chrsprdailogueidx, 11, 104, 2, 2)
  print("\142",105,118,0)
  palt(5,true)
  pal(12,0)
@@ -764,7 +786,7 @@ d54dd45ddd0dd0ddaaffffffffffffaa7dd77dd77dd77dd7aaffffffffffffaa7777776676677777
 000000940000000000000a00009000a99a00a000a00a009a0a00000a9a0a00000000000049000000000000433333bbb4444444444455e0009a999a9920202020
 000009040000000000000a00000000a00a00aaaa900a000a0aaaaa0a0a0a000000000000409000000000004e3333b22eeeeeeee5e455e0004a944a9420002000
 000009040000000000000a00aaaa00a00a00aa99000a000a0a99990a0a0a000000000000409000000000004e12ccccc2eeeeeee1e455e0004244444444444444
-000000940000000000000a0000a000aaaa00a9aa000a000a0a00000a0a0a00000000000049000000000004ee5e22222eeeeeeee1e45e00004343424444442244
+000000940000000000000a0099a900aaaa00a9aa000a000a0a00000a0a0a00000000000049000000000004ee5e22222eeeeeeee1e45e00004343424444442244
 004400940000000000000a0000a00a9999a0a099a00a00a90a000a0a09aa000000000000490044000000004444411dadeeeeeee5e4e000004234424444444444
 0444409400000000000009aaaa900a0000a0a000a0aaaa900aaaaa0a00aa000000000000490444400000000000011dda44444444400000004244424411111111
 0244209400000000000000999900090000909000909999000999990900990000000000004902442000000000001111a000000000000000004243434444444444
