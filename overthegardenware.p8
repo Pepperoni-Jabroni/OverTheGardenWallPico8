@@ -426,15 +426,11 @@ end
 function draw_play_map()
  local activemap=maps[mapscurrentidx]
  -- color handling
- pal(13,139)
  palt(0,false)
- palt(5,false) 
+ palt(13,true)
  cls(139)
  -- draw map
  map(activemap.cellx, activemap.celly)
- -- draw sprites and characters
- palt(139,false)
- palt(13,true)
  -- draw player
  spr(characters[active.charidx].mapidx,active.x*8,active.y*8,1,1,active.flipv,false)
  -- draw npcs
@@ -444,6 +440,7 @@ function draw_play_map()
   local selection=lookingdirselmap[active.lookingdir+1]
   palt(5,true)
   spr(selection.i,8*(active.x+selection.x),8*(active.y+selection.y),1,1,selection.flipv,selection.fliph)
+  palt(5,false)
  end
  -- draw fog of war
  for i=0,15 do
@@ -478,6 +475,7 @@ function draw_play_map()
   txtobj.frmcnt = txtobj.frmcnt-1
  end
  -- draw dialogue if necessary
+ palt(13,false)
  if text_to_display != nil and text_to_display.dialogue != nil and #text_to_display.dialogue > 0 then
   dlg=text_to_display.dialogue[1]
   curprogressdlg=dlg.dialogue[dlg.progress]
