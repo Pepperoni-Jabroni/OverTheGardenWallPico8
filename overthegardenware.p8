@@ -2,7 +2,7 @@ pico-8 cartridge // http://www.pico-8.com
 version 33
 __lua__
 
--- accessors
+-- configs, accessors & core fns
 local walkable={202,203,205,207,222,223,238,239}
 local alttiles={
  {srcidx=206,dsts={206,221,237}},
@@ -191,26 +191,8 @@ end
 function _draw()
  get_stage_by_type(stagetype).draw()
 end
-
 -->8
-function get_stage_by_type(stagetype)
- for i=1,#stagetypes do
-  if stagetypes[i].title==stagetype then
-   return stagetypes[i]
-  end
- end
- return nil
-end
-
-function update_intro()
- if btnp(4) then
-  intro_dialogue.progress+=1
- end
- if intro_dialogue.progress>#intro_dialogue.dialogue then
-  transition_to_playmap()
- end
-end
-
+-- update & draw fns
 function update_main_menu()
  if btn(2) and active.y == 1 then
   active.y = 0
@@ -229,104 +211,13 @@ function update_main_menu()
  end
 end
 
-function draw_introduction()
- cls(0)
- -- draw bg
- draw_fancy_box(32,5,64,52,0,4,5)
- -- draw frog
- pal(14,128,1)
- pal(5,133,1)
- pal(12,130,1)
- pal(1,132,1)
- pal(13,139,1)
- sspr(80,72,32,24,32,8,64,48)
- pal(14,14)
- pal(5,5)
- pal(12,12)
- pal(1,1)
- pal(13,13)
- -- draw frog dialogue box
- local currentprog=intro_dialogue.dialogue[intro_dialogue.progress]
- draw_character_dialogue_box(currentprog)
-end
-
-function transition_to_playmap()
- stagetype = "playmap"
- party={{charidx=1,x=nil,y=nil},{charidx=4,x=nil,y=nil}}
- transition_to_map({mp=1,loc={x=1, y=14}})
- active={x=3,y=13,charidx=2,lookingdir=nil}
- pal(14,14,1)
- pal(5,5,1)
- pal(12,12,1)
- pal(1,1,1)
- pal(13,13,1)
-end
-
-function get_rand_idx(arr)
- return flr(rnd(#arr))+1
-end
-
-function get_char_idle_dialogue(charidx)
- local idle_dialogues={}
- local idles=characters[charidx].idle
- for idle in all(idles) do
-  idle_dialogues[#idle_dialogues+1]={
-   dialogue={{speakeridx=charidx,text=idle}},
-   progress=1,
-   repeatable=true
-  }
+function update_intro()
+ if btnp(4) then
+  intro_dialogue.progress+=1
  end
- return idle_dialogues
-end
-
-function draw_main_menu()
-  cls(0)
-  -- draw logo
-  spr(128,24,8,10,6)
-  -- draw buttons
-  draw_fancy_text_box("start",48,65,active.y==0)
-  draw_fancy_text_box("quit",50,85,active.y==1)
-  -- draw selection chevrons
-  local sel_y=65
-  if active.y==1 then
-   sel_y=85
-  end
-  palt(5,true)
-  pal(12,9)
-  spr(234,24,sel_y,1,1)
-  spr(234,96,sel_y,1,1,true,false)
-  -- draw 4 random chars
-  drawchoices = get_chars_w_dialog()
-  local icon_locs={{x=4,y=4},{x=108,y=4},{x=4,y=108},{x=108,y=108}}
-  pal(12,12)
-  palt(5,false)
-  palt(13,true)
-  palt(0,false)
-  for i=1,#icon_locs do
-   draw_fancy_box(icon_locs[i].x,icon_locs[i].y,17,17,2,10,9)
-   spr(drawchoices[menuchars[i]].chrsprdailogueidx, icon_locs[i].x+1, icon_locs[i].y+1, 2, 2)
-  end
-  palt(13,false)
-  palt(0,true)
+ if intro_dialogue.progress>#intro_dialogue.dialogue then
+  transition_to_playmap()
  end
-
-function get_chars_w_dialog()
- chars={}
- for char in all(characters) do
-  if char.chrsprdailogueidx != -1 then
-   chars[#chars+1] = char
-  end
- end
- return chars
-end
-
-function draw_fancy_text_box(text,x,y,active)
- draw_fancy_box(x,y,#text*4+8, 12, 4, 10, 9)
- local txtclr=0
- if active then
-  txtclr=10
- end
- printsp(text, x+4, y+4, txtclr)
 end
 
 function update_play_map()
@@ -345,7 +236,7 @@ function update_play_map()
  else
   active.lookingdir=nil
  end
--- check active movement
+ -- check active movement
  if active.lookingdir == nil and #text_to_display.dialogue == 0 then
   if btnp(2) and active.y > 0 and is_element_in(walkable, mget(active.x+maps[mapscurrentidx].cellx, active.y - 1+maps[mapscurrentidx].celly)) then
    active.y = active.y - 1
@@ -446,27 +337,56 @@ function update_play_map()
  end
 end
 
-function get_all_npcs()
- return union_arrs(party, maps[mapscurrentidx].npcs)
+function draw_main_menu()
+ cls(0)
+ -- draw logo
+ spr(128,24,8,10,6)
+ -- draw buttons
+ draw_fancy_text_box("start",48,65,active.y==0)
+ draw_fancy_text_box("quit",50,85,active.y==1)
+ -- draw selection chevrons
+ local sel_y=65
+ if active.y==1 then
+  sel_y=85
+ end
+ palt(5,true)
+ pal(12,9)
+ spr(234,24,sel_y,1,1)
+ spr(234,96,sel_y,1,1,true,false)
+ -- draw 4 random chars
+ drawchoices = get_chars_w_dialog()
+ local icon_locs={{x=4,y=4},{x=108,y=4},{x=4,y=108},{x=108,y=108}}
+ pal(12,12)
+ palt(5,false)
+ palt(13,true)
+ palt(0,false)
+ for i=1,#icon_locs do
+  draw_fancy_box(icon_locs[i].x,icon_locs[i].y,17,17,2,10,9)
+  spr(drawchoices[menuchars[i]].chrsprdailogueidx, icon_locs[i].x+1, icon_locs[i].y+1, 2, 2)
+ end
+ palt(13,false)
+ palt(0,true)
 end
 
-function union_arrs(arr1, arr2)
- local newarr={}
- for i in all(arr1) do
-  newarr[#newarr+1]=i
- end
- for i in all(arr2) do
-  newarr[#newarr+1]=i
- end
- return newarr
-end
-
-function draw_chars_from_array(npcs)
- for npc in all(npcs) do
-  if npc.x != nil and npc.y != nil then
-   spr(characters[npc.charidx].mapidx, npc.x*8, npc.y*8)
-  end
- end
+function draw_introduction()
+ cls(0)
+ -- draw bg
+ draw_fancy_box(32,5,64,52,0,4,5)
+ -- draw frog
+ pal(14,128,1)
+ pal(5,133,1)
+ pal(12,130,1)
+ pal(1,132,1)
+ pal(13,139,1)
+ sspr(80,72,32,24,32,8,64,48)
+ pal(14,14)
+ pal(5,5)
+ pal(12,12)
+ pal(1,1)
+ pal(13,13)
+ -- draw frog dialogue box
+ local currentprog=intro_dialogue.dialogue[intro_dialogue.progress]
+ draw_character_dialogue_box(currentprog)
 end
 
 function draw_play_map()
@@ -513,6 +433,88 @@ function draw_play_map()
   curprogressdlg=dlg.dialogue[dlg.progress]
   if curprogressdlg != nil then
    draw_character_dialogue_box(curprogressdlg)
+  end
+ end
+end
+
+-->8
+-- utilities
+function get_stage_by_type(stagetype)
+ for i=1,#stagetypes do
+  if stagetypes[i].title==stagetype then
+   return stagetypes[i]
+  end
+ end
+ return nil
+end
+
+function transition_to_playmap()
+ stagetype = "playmap"
+ party={{charidx=1,x=nil,y=nil},{charidx=4,x=nil,y=nil}}
+ transition_to_map({mp=1,loc={x=1, y=14}})
+ active={x=3,y=13,charidx=2,lookingdir=nil}
+ pal(14,14,1)
+ pal(5,5,1)
+ pal(12,12,1)
+ pal(1,1,1)
+ pal(13,13,1)
+end
+
+function get_rand_idx(arr)
+ return flr(rnd(#arr))+1
+end
+
+function get_char_idle_dialogue(charidx)
+ local idle_dialogues={}
+ local idles=characters[charidx].idle
+ for idle in all(idles) do
+  idle_dialogues[#idle_dialogues+1]={
+   dialogue={{speakeridx=charidx,text=idle}},
+   progress=1,
+   repeatable=true
+  }
+ end
+ return idle_dialogues
+end
+
+function get_chars_w_dialog()
+ chars={}
+ for char in all(characters) do
+  if char.chrsprdailogueidx != -1 then
+   chars[#chars+1] = char
+  end
+ end
+ return chars
+end
+
+function draw_fancy_text_box(text,x,y,active)
+ draw_fancy_box(x,y,#text*4+8, 12, 4, 10, 9)
+ local txtclr=0
+ if active then
+  txtclr=10
+ end
+ printsp(text, x+4, y+4, txtclr)
+end
+
+function get_all_npcs()
+ return union_arrs(party, maps[mapscurrentidx].npcs)
+end
+
+function union_arrs(arr1, arr2)
+ local newarr={}
+ for i in all(arr1) do
+  newarr[#newarr+1]=i
+ end
+ for i in all(arr2) do
+  newarr[#newarr+1]=i
+ end
+ return newarr
+end
+
+function draw_chars_from_array(npcs)
+ for npc in all(npcs) do
+  if npc.x != nil and npc.y != nil then
+   spr(characters[npc.charidx].mapidx, npc.x*8, npc.y*8)
   end
  end
 end
