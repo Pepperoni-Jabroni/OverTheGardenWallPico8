@@ -447,13 +447,10 @@ function draw_play_map()
  for i=0,15 do
   for j=0,15 do
    local nearforone=false
-   for member in all(party) do
+   for member in all(union_arrs(party,{active})) do
     if distance(i, j, member.x, member.y) < 2.7 then
      nearforone=true
     end
-   end
-   if distance(i, j, active.x, active.y) < 2.7 then
-    nearforone=true
    end
    if not nearforone and not is_element_in(activemap.discvrdtiles, tostr(i)..'|'..tostr(j)) then
     rectfill(8*i, 8*j,(8*i)+8, (8*j)+8,0)
