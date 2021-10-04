@@ -402,16 +402,17 @@ function draw_main_menu()
 end
 
 function draw_introduction()
+ local anchrx,anchry=32,16
  cls(0)
  -- draw bg
- draw_fancy_box(32,5,64,52,0,4,5)
+ draw_fancy_box(anchrx,anchry,64,52,0,4,5)
  -- draw frog
  pal(14,128,1)
  pal(5,133,1)
  pal(12,130,1)
  pal(1,132,1)
  pal(13,139,1)
- sspr(80,72,32,24,32,8,64,48)
+ sspr(80,72,32,24,anchrx,anchry+4,64,48)
  pal(14,14)
  pal(5,5)
  pal(12,12)
