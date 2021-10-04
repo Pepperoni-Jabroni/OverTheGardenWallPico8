@@ -174,13 +174,6 @@ function _init()
 
  -- init object member fns
  for char in all(characters) do
-  char.get_random_name = function(this)
-   if type(this.name) == 'string' then
-    return this.name
-   elseif type(this.name) == 'table' then
-    return this.name[get_rand_idx(this.name)]
-   end
-  end 
   char.get_name_at_idx = function(this, idx)
    if type(this.name) == 'string' then
     return this.name
@@ -519,10 +512,6 @@ function draw_play_map()
   dlg=text_to_display.dialogue[1]
   curprogressdlg=dlg.dialogue[dlg.progress]
   if curprogressdlg != nil then
-   local nameidx=1
-   if curprogressdlg.nameidx!=nil then
-    nameidx=curprogressdlg.nameidx
-   end
    draw_character_dialogue_box(curprogressdlg)
   end
  end
