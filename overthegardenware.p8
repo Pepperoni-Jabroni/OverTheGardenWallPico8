@@ -237,7 +237,7 @@ end
 function update_play_map()
  local initialdialoguelen=#text_to_display.dialogue
  -- check selection direction
- if btn(4) and #text_to_display.dialogue==0 then
+ if btn(4) then
   pressed=nil
   for i=0,3 do
    if btn(i) then
@@ -386,18 +386,16 @@ function draw_main_menu()
  pal(12,9)
  spr(234,24,sel_y,1,1)
  spr(234,96,sel_y,1,1,true,false)
+ pal(12,12)
+ palt(5,false)
  -- draw 4 random chars
  drawchoices = get_chars_w_dialog()
  local icon_locs={{x=4,y=4},{x=108,y=4},{x=4,y=108},{x=108,y=108}}
- pal(12,12)
- palt(5,false)
- palt(13,true)
  palt(0,false)
  for i=1,#icon_locs do
   draw_fancy_box(icon_locs[i].x,icon_locs[i].y,17,17,2,10,9)
   spr(drawchoices[menuchars[i]].chrsprdailogueidx, icon_locs[i].x+1, icon_locs[i].y+1, 2, 2)
  end
- palt(13,false)
  palt(0,true)
 end
 
@@ -451,10 +449,11 @@ function draw_play_map()
      nearforone=true
     end
    end
-   if not nearforone and not is_element_in(activemap.discvrdtiles, tostr(i)..'|'..tostr(j)) then
+   local idtfr=tostr(i)..'|'..tostr(j)
+   if not nearforone and not is_element_in(activemap.discvrdtiles, idtfr) then
     rectfill(8*i, 8*j,(8*i)+8, (8*j)+8,0)
-   elseif not is_element_in(activemap.discvrdtiles, tostr(i)..'|'..tostr(j)) then
-    activemap.discvrdtiles[#activemap.discvrdtiles+1]= tostr(i)..'|'..tostr(j)
+   elseif not is_element_in(activemap.discvrdtiles, idtfr) then
+    activemap.discvrdtiles[#activemap.discvrdtiles+1]=idtfr
    end
   end
  end
