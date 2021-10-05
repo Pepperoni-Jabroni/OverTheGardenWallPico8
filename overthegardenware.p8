@@ -105,8 +105,8 @@ local maps={
   discvrdtiles={}
  }
 }
+local dialogue_idx=1
 local intro_dialogue={
- progress=1,
  dialogue={
   {speakeridx=4,nameidx=nil,text="led through the mist"},
   {speakeridx=4,nameidx=nil,text="by the milk-light of \nmoon"},
@@ -125,13 +125,13 @@ local dialogues={
    {speakeridx=2,text="greg, please stop..."},
    {speakeridx=4,text="ribbit."},
    {speakeridx=1,text="haha, yeah!"}
-  },repeatable=false,progress=nil,triggertype="walk"
+  },repeatable=false,triggertype="walk"
  },
  {mapidx=1,trig_locs={{x=5,y=7}},dialogue={
    {speakeridx=2,text="i dont like this at all"},
    {speakeridx=1,text="its a tree face!"},
    {speakeridx=23,text="*howls in the wind*"}
-  },repeatable=false,progress=nil,triggertype="select"
+  },repeatable=false,triggertype="select"
  }
 }
 local lookingdirselmap={
@@ -226,10 +226,10 @@ end
 
 function update_intro()
  if btnp(4) then
-  intro_dialogue.progress+=1
+  dialogue_idx+=1
   sfx(0)
  end
- if intro_dialogue.progress>#intro_dialogue.dialogue then
+ if dialogue_idx>#intro_dialogue.dialogue then
   transition_to_playmap()
  end
 end
@@ -273,9 +273,10 @@ function update_play_map()
  -- check for dialogue progress
  if btnp(4) and #text_to_display.dialogue > 0 then
   sfx(0)
-  text_to_display.dialogue[1].progress+=1
-  if text_to_display.dialogue[1].progress > #text_to_display.dialogue[1].dialogue then
+  dialogue_idx+=1
+  if dialogue_idx > #text_to_display.dialogue[1].dialogue then
    text_to_display.dialogue=drop_first_elem(text_to_display.dialogue)
+   dialogue_idx=1
   end
  end
  -- check for map switch
@@ -321,10 +322,6 @@ function update_play_map()
      if alreadyactive then
       break
      end
-     if trig.repeatable == false and trig.progress != nil then
-      break
-     end
-     trig.progress = 1
      text_to_display.dialogue[#text_to_display.dialogue+1] = trig
      break
     end
@@ -340,8 +337,7 @@ function update_play_map()
     for descpt in all(objdescripts) do
      if is_element_in(descpt.spridxs,mget(x+maps[mapscurrentidx].cellx,y+maps[mapscurrentidx].celly)) and #text_to_display.dialogue==0 then
       text_to_display.dialogue[#text_to_display.dialogue+1] = {
-       dialogue={{speakeridx=active.charidx,text=descpt.descr}},
-       progress=1
+       dialogue={{speakeridx=active.charidx,text=descpt.descr}}
       }
       break
      end
@@ -417,7 +413,7 @@ function draw_introduction()
  pal(1,1)
  pal(13,13)
  -- draw frog dialogue box
- local currentprog=intro_dialogue.dialogue[intro_dialogue.progress]
+ local currentprog=intro_dialogue.dialogue[dialogue_idx]
  draw_character_dialogue_box(currentprog)
 end
 
@@ -477,7 +473,7 @@ function draw_play_map()
  palt(13,false)
  if text_to_display != nil and text_to_display.dialogue != nil and #text_to_display.dialogue > 0 then
   dlg=text_to_display.dialogue[1]
-  curprogressdlg=dlg.dialogue[dlg.progress]
+  curprogressdlg=dlg.dialogue[dialogue_idx]
   if curprogressdlg != nil then
    draw_character_dialogue_box(curprogressdlg)
   end
@@ -521,7 +517,6 @@ function get_char_idle_dialogue(charidx)
  for idle in all(idles) do
   idle_dialogues[#idle_dialogues+1]={
    dialogue={{speakeridx=charidx,text=idle}},
-   progress=1,
    repeatable=true
   }
  end
@@ -616,6 +611,7 @@ function transition_to_map(dest)
  mapscurrentidx = dest.mp
  active.x = dest.loc.x
  active.y = dest.loc.y
+ dialogue_idx=1
  for i=1,#party do
   didadd=false
   repeat
