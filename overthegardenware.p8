@@ -34,7 +34,7 @@ local objdescripts={
  {spridxs={110},descr="the ground is higher\nhere"},
  {spridxs={127},descr="a deep hole in the \nground"},
 }
-local text_to_display={maptitle=nil,dialogue={}}
+local text_to_display={maptitle=nil,dialog={}}
 local active={x=0,y=0,charidx=nil,lookingdir=nil,flipv=false}
 local party={}
 local characters={
@@ -105,9 +105,9 @@ local maps={
   discvrdtiles={}
  }
 }
-local dialogue_idx=1
-local intro_dialogue={
- dialogue={
+local dialog_idx=1
+local intro_dialog={
+ dialog={
   {speakeridx=4,nameidx=nil,text="led through the mist"},
   {speakeridx=4,nameidx=nil,text="by the milk-light of \nmoon"},
   {speakeridx=4,nameidx=nil,text="all that was lost is \nrevealed"},
@@ -119,15 +119,15 @@ local intro_dialogue={
   {speakeridx=4,nameidx=nil,text="then why not pretend?"}
  } 
 }
-local dialogues={
- {mapidx=1,trig_locs={{x=10,y=4},{x=11,y=4}},dialogue={
+local dialogs={
+ {mapidx=1,trig_locs={{x=10,y=4},{x=11,y=4}},dialog={
    {speakeridx=1,text="i sure do love my frog!"},
    {speakeridx=2,text="greg, please stop..."},
    {speakeridx=4,text="ribbit."},
    {speakeridx=1,text="haha, yeah!"}
   },repeatable=false,triggertype="walk"
  },
- {mapidx=1,trig_locs={{x=5,y=7}},dialogue={
+ {mapidx=1,trig_locs={{x=5,y=7}},dialog={
    {speakeridx=2,text="i dont like this at all"},
    {speakeridx=1,text="its a tree face!"},
    {speakeridx=23,text="*howls in the wind*"}
@@ -181,8 +181,8 @@ function _init()
 
  -- init frog intro name
  local randomname=get_rand_idx(characters[4].name)
- for i=1,#intro_dialogue.dialogue do
-  intro_dialogue.dialogue[i].nameidx=randomname
+ for i=1,#intro_dialog.dialog do
+  intro_dialog.dialog[i].nameidx=randomname
  end
 
  -- init object member fns
@@ -226,16 +226,16 @@ end
 
 function update_intro()
  if btnp(4) then
-  dialogue_idx+=1
+  dialog_idx+=1
   sfx(0)
  end
- if dialogue_idx>#intro_dialogue.dialogue then
+ if dialog_idx>#intro_dialog.dialog then
   transition_to_playmap()
  end
 end
 
 function update_play_map()
- local initialdialoguelen=#text_to_display.dialogue
+ local initialdialoglen=#text_to_display.dialog
  -- check selection direction
  if btn(4) then
   pressed=nil
@@ -251,7 +251,7 @@ function update_play_map()
   active.lookingdir=nil
  end
  -- check active movement
- if active.lookingdir == nil and #text_to_display.dialogue == 0 then
+ if active.lookingdir == nil and #text_to_display.dialog == 0 then
   if btnp(2) and active.y > 0 and is_element_in(walkable, mget(active.x+maps[mapscurrentidx].cellx, active.y - 1+maps[mapscurrentidx].celly)) then
    active.y = active.y - 1
   elseif btnp(1) and active.x < 15 and is_element_in(walkable, mget(active.x + 1+maps[mapscurrentidx].cellx, active.y+maps[mapscurrentidx].celly)) then
@@ -265,18 +265,18 @@ function update_play_map()
   end
  end
  -- check for player switch
- if btnp(5) and #text_to_display.dialogue == 0 then
+ if btnp(5) and #text_to_display.dialog == 0 then
   party[#party+1] = active
   active = party[1]
   party=drop_first_elem(party)
  end
- -- check for dialogue progress
- if btnp(4) and #text_to_display.dialogue > 0 then
+ -- check for dialog progress
+ if btnp(4) and #text_to_display.dialog > 0 then
   sfx(0)
-  dialogue_idx+=1
-  if dialogue_idx > #text_to_display.dialogue[1].dialogue then
-   text_to_display.dialogue=drop_first_elem(text_to_display.dialogue)
-   dialogue_idx=1
+  dialog_idx+=1
+  if dialog_idx > #text_to_display.dialog[1].dialog then
+   text_to_display.dialog=drop_first_elem(text_to_display.dialog)
+   dialog_idx=1
   end
  end
  -- check for map switch
@@ -294,35 +294,35 @@ function update_play_map()
   end
  end
  -- check for talk w/ npcs
- if #text_to_display.dialogue == 0 then
+ if #text_to_display.dialog == 0 then
   for npc in all(get_all_npcs()) do
    for i=-1,1 do
     for j=-1,1 do
      if i!=j and npc.x+i==active.x and npc.y+j==active.y then
       if selection_is_on_location({x=npc.x,y=npc.y}) then
-       local idles=get_char_idle_dialogue(npc.charidx)
-       text_to_display.dialogue[#text_to_display.dialogue+1]=idles[get_rand_idx(idles)]
+       local idles=get_char_idle_dialog(npc.charidx)
+       text_to_display.dialog[#text_to_display.dialog+1]=idles[get_rand_idx(idles)]
       end
      end
     end
    end
   end
  end
- -- check for dialogue triggers
- for trig in all(dialogues) do
+ -- check for dialog triggers
+ for trig in all(dialogs) do
   if trig.mapidx == mapscurrentidx then
    for location in all(trig.trig_locs) do
     if (trig.triggertype == "walk" and active.x == location.x and active.y == location.y) or selection_is_on_location(location) then
      alreadyactive=false
-     for i=1,#text_to_display.dialogue do
-      if text_to_display.dialogue[i].dialogue[1].text==trig.dialogue[1].text then
+     for i=1,#text_to_display.dialog do
+      if text_to_display.dialog[i].dialog[1].text==trig.dialog[1].text then
        alreadyactive=true
       end
      end
      if alreadyactive then
       break
      end
-     text_to_display.dialogue[#text_to_display.dialogue+1] = trig
+     text_to_display.dialog[#text_to_display.dialog+1] = trig
      break
     end
    end
@@ -335,9 +335,9 @@ function update_play_map()
    local y=active.y+j
    if selection_is_on_location({x=x,y=y}) then
     for descpt in all(objdescripts) do
-     if is_element_in(descpt.spridxs,mget(x+maps[mapscurrentidx].cellx,y+maps[mapscurrentidx].celly)) and #text_to_display.dialogue==0 then
-      text_to_display.dialogue[#text_to_display.dialogue+1] = {
-       dialogue={{speakeridx=active.charidx,text=descpt.descr}}
+     if is_element_in(descpt.spridxs,mget(x+maps[mapscurrentidx].cellx,y+maps[mapscurrentidx].celly)) and #text_to_display.dialog==0 then
+      text_to_display.dialog[#text_to_display.dialog+1] = {
+       dialog={{speakeridx=active.charidx,text=descpt.descr}}
       }
       break
      end
@@ -345,8 +345,8 @@ function update_play_map()
    end
   end
  end
- -- play sound if new dialogue triggered
- if #text_to_display.dialogue>initialdialoguelen or active.lookingdir!= nil then
+ -- play sound if new dialog triggered
+ if #text_to_display.dialog>initialdialoglen or active.lookingdir!= nil then
   sfx(2)
  end
 end
@@ -412,9 +412,9 @@ function draw_introduction()
  pal(12,12)
  pal(1,1)
  pal(13,13)
- -- draw frog dialogue box
- local currentprog=intro_dialogue.dialogue[dialogue_idx]
- draw_character_dialogue_box(currentprog)
+ -- draw frog dialog box
+ local currentprog=intro_dialog.dialog[dialog_idx]
+ draw_character_dialog_box(currentprog)
 end
 
 function draw_play_map()
@@ -469,13 +469,13 @@ function draw_play_map()
   printsp(txtobj.txt, txtobj.x+2, txtobj.y+2, 0)
   txtobj.frmcnt = txtobj.frmcnt-1
  end
- -- draw dialogue if necessary
+ -- draw dialog if necessary
  palt(13,false)
- if text_to_display != nil and text_to_display.dialogue != nil and #text_to_display.dialogue > 0 then
-  dlg=text_to_display.dialogue[1]
-  curprogressdlg=dlg.dialogue[dialogue_idx]
+ if text_to_display != nil and text_to_display.dialog != nil and #text_to_display.dialog > 0 then
+  dlg=text_to_display.dialog[1]
+  curprogressdlg=dlg.dialog[dialog_idx]
   if curprogressdlg != nil then
-   draw_character_dialogue_box(curprogressdlg)
+   draw_character_dialog_box(curprogressdlg)
   end
  end
 end
@@ -511,16 +511,16 @@ function get_rand_idx(arr)
  return flr(rnd(#arr))+1
 end
 
-function get_char_idle_dialogue(charidx)
- local idle_dialogues={}
+function get_char_idle_dialog(charidx)
+ local idle_dialogs={}
  local idles=characters[charidx].idle
  for idle in all(idles) do
-  idle_dialogues[#idle_dialogues+1]={
-   dialogue={{speakeridx=charidx,text=idle}},
+  idle_dialogs[#idle_dialogs+1]={
+   dialog={{speakeridx=charidx,text=idle}},
    repeatable=true
   }
  end
- return idle_dialogues
+ return idle_dialogs
 end
 
 function get_chars_w_dialog()
@@ -565,16 +565,16 @@ function draw_chars_from_array(npcs)
  end
 end
 
-function draw_character_dialogue_box(dialogueobj)
+function draw_character_dialog_box(dialogobj)
  local nameidx=1
- if dialogueobj.nameidx != nil then
-  nameidx=dialogueobj.nameidx
+ if dialogobj.nameidx != nil then
+  nameidx=dialogobj.nameidx
  end
  draw_fancy_box(8,100,112,24,4,10,9)
- printsp(characters[dialogueobj.speakeridx].get_name_at_idx(characters[dialogueobj.speakeridx],nameidx), 29, 104, 1)
- printsp(dialogueobj.text, 29, 110, 0)
+ printsp(characters[dialogobj.speakeridx].get_name_at_idx(characters[dialogobj.speakeridx],nameidx), 29, 104, 1)
+ printsp(dialogobj.text, 29, 110, 0)
  draw_fancy_box(10,103,17,17,0,6,5)
- spr(characters[dialogueobj.speakeridx].chrsprdailogueidx, 11, 104, 2, 2)
+ spr(characters[dialogobj.speakeridx].chrsprdailogueidx, 11, 104, 2, 2)
  print("\142",105,118,0)
  palt(5,true)
  pal(12,0)
@@ -611,7 +611,7 @@ function transition_to_map(dest)
  mapscurrentidx = dest.mp
  active.x = dest.loc.x
  active.y = dest.loc.y
- dialogue_idx=1
+ dialog_idx=1
  for i=1,#party do
   didadd=false
   repeat
