@@ -34,8 +34,17 @@ local objdescripts={
  {spridxs={110},descr="the ground is higher\nhere"},
  {spridxs={127},descr="a deep hole in the \nground"},
 }
-local text_to_display={maptitle=nil,dialog={}}
-local active={x=0,y=0,charidx=nil,lookingdir=nil,flipv=false}
+local active={
+ x=0,
+ y=0,
+ charidx=nil,
+ lookingdir=nil,
+ flipv=false,
+ text={maptitle=nil,dialog={}},
+ stagetype="mainmenu",
+ dialog_idx=1,
+ mapsidx=nil
+}
 local party={}
 local characters={
  {name='greg', mapidx=0, chrsprdailogueidx=2, idle={'oh frog o mine!','oh potatoes and...'}}, 
@@ -67,7 +76,6 @@ local characters={
  {name='rock fact', mapidx=nil, chrsprdailogueidx=78, idle={}},
  {name='edelwood', mapidx=nil, chrsprdailogueidx=192, idle={}},
 }
-local mapscurrentidx
 local maps={
  {
   title='somewhere in the unknown',
@@ -105,7 +113,6 @@ local maps={
   discvrdtiles={}
  }
 }
-local dialog_idx=1
 local intro_dialog={
  dialog={
   {speakeridx=4,nameidx=nil,text="led through the mist"},
@@ -120,27 +127,31 @@ local intro_dialog={
  } 
 }
 local dialogs={
- {mapidx=1,trig_locs={{x=10,y=4},{x=11,y=4}},dialog={
+ {dialog={
    {speakeridx=1,text="i sure do love my frog!"},
    {speakeridx=2,text="greg, please stop..."},
    {speakeridx=4,text="ribbit."},
    {speakeridx=1,text="haha, yeah!"}
-  },repeatable=false,triggertype="walk"
+  }
  },
- {mapidx=1,trig_locs={{x=5,y=7}},dialog={
+ {dialog={
    {speakeridx=2,text="i dont like this at all"},
    {speakeridx=1,text="its a tree face!"},
    {speakeridx=23,text="*howls in the wind*"}
-  },repeatable=false,triggertype="select"
+  }
  }
 }
-local lookingdirselmap={
- {i=234,x=-1,y=0,fliph=false,flipv=true},--left
- {i=234,x=1,y=0,fliph=false,flipv=false},--right
- {i=250,x=0,y=-1,fliph=false,flipv=false},--up
- {i=250,x=0,y=1,fliph=true,flipv=false}--down
+local completed_triggers={}
+local triggers={
+ {trig={type="walk",data={m=1,locs={{x=10,y=4},{x=11,y=4}}}},action=function(self)start_dialog(1)end},
+ {trig={type="select",data={m=1,locs={{x=5,y=7}}}},action=function(self)start_dialog(2)end},
 }
-local stagetype="mainmenu"
+local lookingdirselmap={
+ {i=234,x=-1,y=0},--left
+ {i=234,x=1,y=0},--right
+ {i=250,x=0,y=-1},--up
+ {i=250,x=0,y=1}--down
+}
 local menuchars={}
 local stagetypes={
  {
@@ -198,11 +209,11 @@ function _init()
 end
 
 function _update()
- get_stage_by_type(stagetype).update()
+ get_stage_by_type(active.stagetype).update()
 end
 
 function _draw()
- get_stage_by_type(stagetype).draw()
+ get_stage_by_type(active.stagetype).draw()
 end
 -->8
 -- update & draw fns
@@ -216,7 +227,7 @@ function update_main_menu()
  end
  if btn(4) or btn(5) then
   if active.y==0 then
-   stagetype="intro"
+   active.stagetype="intro"
    sfx(1)
   else
    stop()
@@ -226,16 +237,16 @@ end
 
 function update_intro()
  if btnp(4) then
-  dialog_idx+=1
+  active.dialog_idx+=1
   sfx(0)
  end
- if dialog_idx>#intro_dialog.dialog then
+ if active.dialog_idx>#intro_dialog.dialog then
   transition_to_playmap()
  end
 end
 
 function update_play_map()
- local initialdialoglen=#text_to_display.dialog
+ local initialdialoglen=#active.text.dialog
  -- check selection direction
  if btn(4) then
   pressed=nil
@@ -251,37 +262,40 @@ function update_play_map()
   active.lookingdir=nil
  end
  -- check active movement
- if active.lookingdir == nil and #text_to_display.dialog == 0 then
-  if btnp(2) and active.y > 0 and is_element_in(walkable, mget(active.x+maps[mapscurrentidx].cellx, active.y - 1+maps[mapscurrentidx].celly)) then
-   active.y = active.y - 1
-  elseif btnp(1) and active.x < 15 and is_element_in(walkable, mget(active.x + 1+maps[mapscurrentidx].cellx, active.y+maps[mapscurrentidx].celly)) then
-   active.x = active.x + 1
+ if active.lookingdir == nil and #active.text.dialog == 0 then
+  local ax,ay,mdx=active.x,active.y,active.mapsidx
+  if btnp(2) and ay > 0 and is_element_in(walkable, mget(ax+maps[mdx].cellx, ay - 1+maps[mdx].celly)) then
+   active.y = ay - 1
+  elseif btnp(1) and ax < 15 and is_element_in(walkable, mget(ax + 1+maps[mdx].cellx, ay+maps[mdx].celly)) then
+   active.x = ax + 1
    active.flipv=false
-  elseif btnp(3) and active.y < 15 and is_element_in(walkable, mget(active.x+maps[mapscurrentidx].cellx, active.y + 1+maps[mapscurrentidx].celly)) then
-   active.y = active.y + 1
-  elseif btnp(0) and active.x > 0 and is_element_in(walkable, mget(active.x - 1+maps[mapscurrentidx].cellx, active.y+maps[mapscurrentidx].celly)) then
-   active.x = active.x - 1
+  elseif btnp(3) and ay < 15 and is_element_in(walkable, mget(ax+maps[mdx].cellx, ay + 1+maps[mdx].celly)) then
+   active.y = ay + 1
+  elseif btnp(0) and ax > 0 and is_element_in(walkable, mget(ax - 1+maps[mdx].cellx, ay+maps[mdx].celly)) then
+   active.x = ax - 1
    active.flipv=true
   end
  end
  -- check for player switch
- if btnp(5) and #text_to_display.dialog == 0 then
-  party[#party+1] = active
-  active = party[1]
+ if btnp(5) and #active.text.dialog == 0 then
+  party[#party+1] = {charidx=active.charidx,x=active.x,y=active.y}
+  active.charidx = party[1].charidx
+  active.x = party[1].x
+  active.y = party[1].y
   party=drop_first_elem(party)
  end
  -- check for dialog progress
- if btnp(4) and #text_to_display.dialog > 0 then
+ if btnp(4) and #active.text.dialog > 0 then
   sfx(0)
-  dialog_idx+=1
-  if dialog_idx > #text_to_display.dialog[1].dialog then
-   text_to_display.dialog=drop_first_elem(text_to_display.dialog)
-   dialog_idx=1
+  active.dialog_idx+=1
+  if active.dialog_idx > #active.text.dialog[1].dialog then
+   active.text.dialog=drop_first_elem(active.text.dialog)
+   active.dialog_idx=1
   end
  end
  -- check for map switch
- local activemap = maps[mapscurrentidx]
- local initmapidx = mapscurrentidx
+ local activemap = maps[active.mapsidx]
+ local initmapidx = active.mapsidx
  for transition in all(activemap.trans) do
   for location in all(transition.locs) do
    if active.x == location.x and active.y == location.y then
@@ -289,19 +303,19 @@ function update_play_map()
     break
    end
   end
-  if mapscurrentidx != initmapidx then
+  if active.mapsidx != initmapidx then
    break
   end
  end
  -- check for talk w/ npcs
- if #text_to_display.dialog == 0 then
+ if #active.text.dialog == 0 then
   for npc in all(get_all_npcs()) do
    for i=-1,1 do
     for j=-1,1 do
      if i!=j and npc.x+i==active.x and npc.y+j==active.y then
       if selection_is_on_location({x=npc.x,y=npc.y}) then
        local idles=get_char_idle_dialog(npc.charidx)
-       text_to_display.dialog[#text_to_display.dialog+1]=idles[get_rand_idx(idles)]
+       active.text.dialog[#active.text.dialog+1]=idles[get_rand_idx(idles)]
       end
      end
     end
@@ -310,19 +324,19 @@ function update_play_map()
  end
  -- check for dialog triggers
  for trig in all(dialogs) do
-  if trig.mapidx == mapscurrentidx then
+  if trig.mapidx == active.mapsidx then
    for location in all(trig.trig_locs) do
     if (trig.triggertype == "walk" and active.x == location.x and active.y == location.y) or selection_is_on_location(location) then
      alreadyactive=false
-     for i=1,#text_to_display.dialog do
-      if text_to_display.dialog[i].dialog[1].text==trig.dialog[1].text then
+     for i=1,#active.text.dialog do
+      if active.text.dialog[i].dialog[1].text==trig.dialog[1].text then
        alreadyactive=true
       end
      end
      if alreadyactive then
       break
      end
-     text_to_display.dialog[#text_to_display.dialog+1] = trig
+     active.text.dialog[#active.text.dialog+1] = trig
      break
     end
    end
@@ -335,8 +349,8 @@ function update_play_map()
    local y=active.y+j
    if selection_is_on_location({x=x,y=y}) then
     for descpt in all(objdescripts) do
-     if is_element_in(descpt.spridxs,mget(x+maps[mapscurrentidx].cellx,y+maps[mapscurrentidx].celly)) and #text_to_display.dialog==0 then
-      text_to_display.dialog[#text_to_display.dialog+1] = {
+     if is_element_in(descpt.spridxs,mget(x+maps[active.mapsidx].cellx,y+maps[active.mapsidx].celly)) and #active.text.dialog==0 then
+      active.text.dialog[#active.text.dialog+1] = {
        dialog={{speakeridx=active.charidx,text=descpt.descr}}
       }
       break
@@ -346,7 +360,7 @@ function update_play_map()
   end
  end
  -- play sound if new dialog triggered
- if #text_to_display.dialog>initialdialoglen or active.lookingdir!= nil then
+ if #active.text.dialog>initialdialoglen or active.lookingdir!= nil then
   sfx(2)
  end
 end
@@ -413,12 +427,12 @@ function draw_introduction()
  pal(1,1)
  pal(13,13)
  -- draw frog dialog box
- local currentprog=intro_dialog.dialog[dialog_idx]
+ local currentprog=intro_dialog.dialog[active.dialog_idx]
  draw_character_dialog_box(currentprog)
 end
 
 function draw_play_map()
- local activemap=maps[mapscurrentidx]
+ local activemap=maps[active.mapsidx]
  -- color handling
  palt(0,false)
  palt(13,true)
@@ -433,7 +447,7 @@ function draw_play_map()
  if active.lookingdir != nil then
   local selection=lookingdirselmap[active.lookingdir+1]
   palt(5,true)
-  spr(selection.i,8*(active.x+selection.x),8*(active.y+selection.y),1,1,selection.flipv,selection.fliph)
+  spr(selection.i,8*(active.x+selection.x),8*(active.y+selection.y),1,1,selection.x==-1,selection.y==1)
   palt(5,false)
  end
  -- draw fog of war
@@ -463,7 +477,7 @@ function draw_play_map()
  printsp(charname, xanchor+10, 5, 0)
  spr(characters[active.charidx].mapidx, xanchor+2, 3)
  -- draw map title
- txtobj=text_to_display.maptitle
+ txtobj=active.text.maptitle
  if txtobj != nil and txtobj.frmcnt > 0 then
   draw_fancy_box(txtobj.x, txtobj.y, #txtobj.txt*4+4, 8, 4,10, 9)
   printsp(txtobj.txt, txtobj.x+2, txtobj.y+2, 0)
@@ -471,9 +485,9 @@ function draw_play_map()
  end
  -- draw dialog if necessary
  palt(13,false)
- if text_to_display != nil and text_to_display.dialog != nil and #text_to_display.dialog > 0 then
-  dlg=text_to_display.dialog[1]
-  curprogressdlg=dlg.dialog[dialog_idx]
+ if #active.text.dialog > 0 then
+  dlg=active.text.dialog[1]
+  curprogressdlg=dlg.dialog[active.dialog_idx]
   if curprogressdlg != nil then
    draw_character_dialog_box(curprogressdlg)
   end
@@ -482,6 +496,53 @@ end
 
 -->8
 -- utilities
+function transition_to_playmap()
+ active.stagetype = "playmap"
+ active.charidx=2
+ active.dialog_idx=1
+ party={{charidx=1,x=nil,y=nil},{charidx=4,x=nil,y=nil}}
+ transition_to_map({mp=1,loc={x=1, y=14}})
+ pal(14,14,1)
+ pal(5,5,1)
+ pal(12,12,1)
+ pal(1,1,1)
+ pal(13,13,1)
+end
+
+function transition_to_map(dest)
+ active.mapsidx = dest.mp
+ active.x = dest.loc.x
+ active.y = dest.loc.y
+ for i=1,#party do
+  didadd=false
+  repeat
+   x=flr(rnd(3))+active.x-1
+   y=flr(rnd(3))+active.y-1
+   if is_element_in(walkable, mget(x+maps[active.mapsidx].cellx, y+maps[active.mapsidx].celly)) then
+    didadd = true
+    party[i].x=x
+    party[i].y=y
+   end
+  until didadd
+ end
+ active.text.maptitle={x=16,y=64,txt=maps[active.mapsidx].title,frmcnt=60}
+ -- check alt tiles
+ if not is_element_in(altsset, active.mapsidx) then
+  local srctiles=get_sourceidxs()
+  for i=0,15 do
+   for j=0,15 do
+    local tilspr=mget(i+maps[active.mapsidx].cellx, j+maps[active.mapsidx].celly)
+    if (is_element_in(srctiles,tilspr)) then
+     local dsts=get_by_source(tilspr).dsts
+     local randsel=get_rand_idx(dsts)
+     mset(i+maps[active.mapsidx].cellx, j+maps[active.mapsidx].celly, dsts[randsel])
+    end
+   end
+  end
+  altsset[#altsset+1]=active.mapsidx
+ end
+end
+
 function distance(x1, y1, x2, y2)
  return sqrt((x2 - x1)^2 + (y2 - y1)^2)
 end
@@ -495,18 +556,6 @@ function get_stage_by_type(stagetype)
  return nil
 end
 
-function transition_to_playmap()
- stagetype = "playmap"
- party={{charidx=1,x=nil,y=nil},{charidx=4,x=nil,y=nil}}
- transition_to_map({mp=1,loc={x=1, y=14}})
- active={x=3,y=13,charidx=2,lookingdir=nil}
- pal(14,14,1)
- pal(5,5,1)
- pal(12,12,1)
- pal(1,1,1)
- pal(13,13,1)
-end
-
 function get_rand_idx(arr)
  return flr(rnd(#arr))+1
 end
@@ -516,8 +565,7 @@ function get_char_idle_dialog(charidx)
  local idles=characters[charidx].idle
  for idle in all(idles) do
   idle_dialogs[#idle_dialogs+1]={
-   dialog={{speakeridx=charidx,text=idle}},
-   repeatable=true
+   dialog={{speakeridx=charidx,text=idle}}
   }
  end
  return idle_dialogs
@@ -543,7 +591,7 @@ function draw_fancy_text_box(text,x,y,active)
 end
 
 function get_all_npcs()
- return union_arrs(party, maps[mapscurrentidx].npcs)
+ return union_arrs(party, maps[active.mapsidx].npcs)
 end
 
 function union_arrs(arr1, arr2)
@@ -607,41 +655,6 @@ function draw_fancy_box(x,y,w,h,fg,otlntl,otlnbr)
  line(x+w,y+1,x+w,y+h-1,otlnbr) -- right line
 end
 
-function transition_to_map(dest)
- mapscurrentidx = dest.mp
- active.x = dest.loc.x
- active.y = dest.loc.y
- dialog_idx=1
- for i=1,#party do
-  didadd=false
-  repeat
-   x=flr(rnd(3))+active.x-1
-   y=flr(rnd(3))+active.y-1
-   if is_element_in(walkable, mget(x+maps[mapscurrentidx].cellx, y+maps[mapscurrentidx].celly)) then
-    didadd = true
-    party[i].x=x
-    party[i].y=y
-   end
-  until didadd
- end
- text_to_display.maptitle={x=16,y=64,txt=maps[mapscurrentidx].title,frmcnt=60}
- -- check alt tiles
- if not is_element_in(altsset, mapscurrentidx) then
-  local srctiles=get_sourceidxs()
-  for i=0,15 do
-   for j=0,15 do
-    local tilspr=mget(i+maps[mapscurrentidx].cellx, j+maps[mapscurrentidx].celly)
-    if (is_element_in(srctiles,tilspr)) then
-     local dsts=get_by_source(tilspr).dsts
-     local randsel=get_rand_idx(dsts)
-     mset(i+maps[mapscurrentidx].cellx, j+maps[mapscurrentidx].celly, dsts[randsel])
-    end
-   end
-  end
-  altsset[#altsset+1]=mapscurrentidx
- end
-end
-
 function get_by_source(source)
  for altobj in all(alttiles) do
   if altobj.srcidx==source then
@@ -685,6 +698,7 @@ function string_n_inst(hs, n, inst)
  return match
 end
 
+-->8 from our friends
 -- print small and pretty
 function printsp(s,...)
  print(smallcaps('^'..s),...)
