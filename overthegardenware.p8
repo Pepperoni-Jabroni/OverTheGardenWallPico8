@@ -113,6 +113,10 @@ local maps={
   discvrdtiles={}
  }
 }
+local darkspr={
+ idxs={204,218,219,235,236,251},
+ clrmp={{s=2,d=0},{s=3,d=0},{s=4,d=1},{s=8,d=1},{s=9,d=0},{s=10,d=1},{s=11,d=1}}
+}
 local intro_dialog={
  dialog={
   {speakeridx=4,nameidx=nil,text="led through the mist"},
@@ -461,7 +465,19 @@ function draw_play_map()
    end
    local idtfr=tostr(i)..'|'..tostr(j)
    if not nearforone and not is_element_in(activemap.discvrdtiles, idtfr) then
-    rectfill(8*i, 8*j,(8*i)+8, (8*j)+8,0)
+    local mspr=mget(i+maps[active.mapsidx].cellx, j+maps[active.mapsidx].celly)
+    if (is_element_in(darkspr.idxs,mspr)) then
+     -- draw "dark" sprite
+     for e in all(darkspr.clrmp) do
+      pal(e.s,e.d)
+     end
+     spr(mspr,8*i, 8*j)
+     for e in all(darkspr.clrmp) do
+      pal(e.s,e.s)
+     end
+    else
+     rectfill(8*i, 8*j,(8*i)+8, (8*j)+8,0)
+    end
    elseif not is_element_in(activemap.discvrdtiles, idtfr) then
     activemap.discvrdtiles[#activemap.discvrdtiles+1]=idtfr
    end
