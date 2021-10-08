@@ -1,6 +1,11 @@
 # OverTheGardenWallPico8
 A Pico-8 Zelda-style game about Over the Garden Wall
 
+# Alpha 4
+![overthegardenware_0](https://user-images.githubusercontent.com/17690401/136503380-62030508-c56b-493d-ade6-e485e849bfdb.gif)
+
+![overthegardenware_1](https://user-images.githubusercontent.com/17690401/136503384-38a82637-f463-44d7-8dbc-4b19023e11c4.gif)
+
 # Alpha 3
 ![overthegardenware_0](https://user-images.githubusercontent.com/17690401/135386587-72ad17e3-8a40-4b33-a030-c20a0a2b46f2.gif)
 
