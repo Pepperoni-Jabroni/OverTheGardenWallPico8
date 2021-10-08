@@ -651,13 +651,12 @@ function selection_is_on_location(location)
  return active.x+sel.x == location.x and active.y+sel.y == location.y
 end
 
-function get_sel_info_btn(btnp)
- local lkdr=active.lookingdir
- local spri,selx,sely=234,0,2*lkdr-5
- if lkdr==2 or lkdr==3 then
+function get_sel_info_btn(lkdrbtn)
+ local spri,selx,sely=234,0,2*lkdrbtn-5
+ if lkdrbtn==2 or lkdrbtn==3 then
   spri=250
  else
-  selx=2*lkdr-1
+  selx=2*lkdrbtn-1
   sely=0
  end
  return {i=spri,x=selx,y=sely}
