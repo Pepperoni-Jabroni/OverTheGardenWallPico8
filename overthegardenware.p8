@@ -150,12 +150,6 @@ local triggers={
  {trig={type="walk",data={m=1,locs={{x=10,y=4},{x=11,y=4}}}},action=function(self)start_dialog(1)end},
  {trig={type="select",data={m=1,locs={{x=5,y=7}}}},action=function(self)start_dialog(2)end},
 }
-local lookingdirselmap={
- {i=234,x=-1,y=0},--left
- {i=234,x=1,y=0},--right
- {i=250,x=0,y=-1},--up
- {i=250,x=0,y=1}--down
-}
 local menuchars={}
 local stagetypes={
  {
@@ -449,9 +443,10 @@ function draw_play_map()
  draw_chars_from_array(get_all_npcs())
  -- draw selection direction
  if active.lookingdir != nil then
-  local selection=lookingdirselmap[active.lookingdir+1]
+  local lkdr=active.lookingdir
+  local sel=get_sel_info_btn(lkdr)
   palt(5,true)
-  spr(selection.i,8*(active.x+selection.x),8*(active.y+selection.y),1,1,selection.x==-1,selection.y==1)
+  spr(sel.i,8*(active.x+sel.x),8*(active.y+sel.y),1,1,sel.x==-1,sel.y==1)
   palt(5,false)
  end
  -- draw fog of war
@@ -648,11 +643,24 @@ function draw_character_dialog_box(dialogobj)
 end
 
 function selection_is_on_location(location)
- if active.lookingdir == nil then
+ local lkdr=active.lookingdir
+ if lkdr == nil then
   return false
  end
- local selection=lookingdirselmap[active.lookingdir+1]
- return active.x+selection.x == location.x and active.y+selection.y == location.y
+ local sel=get_sel_info_btn(lkdr)
+ return active.x+sel.x == location.x and active.y+sel.y == location.y
+end
+
+function get_sel_info_btn(btnp)
+ local lkdr=active.lookingdir
+ local spri,selx,sely=234,0,2*lkdr-5
+ if lkdr==2 or lkdr==3 then
+  spri=250
+ else
+  selx=2*lkdr-1
+  sely=0
+ end
+ return {i=spri,x=selx,y=sely}
 end
 
 function drop_first_elem(arr)
