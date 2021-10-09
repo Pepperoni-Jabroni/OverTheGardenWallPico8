@@ -1,9 +1,10 @@
 todo:
 - support name idxs more broadly (eg frog name is always Kitty)
-- draw blinking ellipse under character when recently swapped
-- only draw name when recently swapped
 - make linkage between maps singly declarative
-- robust cause/effect trigger system
+- npc & party movement
+- rotate door & corner interior sprites
+- complete queue_move_npc
+- fix mapspr in playmap_spr_visible
 - finish sprites
 - finish maps
 
