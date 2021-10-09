@@ -3,7 +3,7 @@ version 33
 __lua__
 
 -- configs, state vars & core fns
-local walkable={202,203,205,207,222,223,238,239}
+local walkable={43,185,191,202,203,205,207,222,223,238,239,240,241,242}
 local alttiles={
  {srcidx=206,dsts={206,221,237}},
  {srcidx=238,dsts={222,238}},
@@ -79,6 +79,7 @@ local characters={
 }
 local maps={
  {
+  type='exterior',
   title='somewhere in the unknown',
   cellx=0,
   celly=0,
@@ -87,16 +88,19 @@ local maps={
   discvrdtiles={}
  },
  {
-  title='the old grist mill',
+  type='exterior',
+  title='the mill and the river',
   cellx=16,
   celly=0,
   trans={
    {dest={mp=1,loc={x=14, y=1}},locs={{x=0,y=13},{x=0,y=14},{x=0,y=15}}},
-   {dest={mp=3,loc={x=14, y=14}},locs={{x=0,y=0},{x=1,y=0},{x=2,y=0},{x=0,y=1}}}
+   {dest={mp=3,loc={x=14, y=14}},locs={{x=0,y=0},{x=1,y=0},{x=2,y=0},{x=0,y=1}}},
+   {dest={mp=5,loc={x=1, y=5}},locs={{x=7,y=3}}}
   },
   discvrdtiles={}
  },
  {
+  type='exterior',
   title='deeper into the unknown',
   cellx=32,
   celly=0,
@@ -107,11 +111,39 @@ local maps={
   discvrdtiles={}
  },
  {
+  type='exterior',
   title='pottsfield',
   cellx=48,
   celly=0,
-  trans={{dest={mp=3,loc={x=7, y=1}},locs={{x=8,y=15},{x=14,y=15},{x=15,y=15}}}},
+  trans={
+   {dest={mp=3,loc={x=7, y=1}},locs={{x=8,y=15},{x=14,y=15},{x=15,y=15}}},
+   {dest={mp=6,loc={x=7, y=14}},locs={{x=4,y=2},{x=5,y=2}}}
+  },
   discvrdtiles={}
+ },
+ {
+  type='interior',
+  title='the old grist mill',
+  cellx=64,
+  celly=0,
+  trans={
+   {dest={mp=2,loc={x=7, y=4}},locs={{x=0,y=5}}}
+  },
+  playmapidx=2,
+  playmapspr=226,
+  playmaploc={x=7,y=2}
+ },
+ {
+  type='interior',
+  title='harvest party',
+  cellx=80,
+  celly=0,
+  trans={
+   {dest={mp=4,loc={x=4, y=3}},locs={{x=7,y=15},{x=8,y=15}}}
+  },
+  playmapidx=4,
+  playmapspr=224,
+  playmaploc={x=4,y=1}
  }
 }
 local darkspr={
@@ -451,31 +483,33 @@ function draw_play_map()
   palt(5,false)
  end
  -- draw fog of war
- for i=0,15 do
-  for j=0,15 do
-   local nearforone=false
-   for member in all(union_arrs(party,{active})) do
-    if distance(i, j, member.x, member.y) < 2.7 then
-     nearforone=true
-    end
-   end
-   local idtfr=tostr(i)..'|'..tostr(j)
-   if not nearforone and not is_element_in(activemap.discvrdtiles, idtfr) then
-    local mspr=mget(i+maps[active.mapsidx].cellx, j+maps[active.mapsidx].celly)
-    if (is_element_in(darkspr.idxs,mspr)) then
-     -- draw "dark" sprite
-     for e in all(darkspr.clrmp) do
-      pal(e.s,e.d)
+ if activemap.type=='exterior' then
+  for i=0,15 do
+   for j=0,15 do
+    local nearforone=false
+    for member in all(union_arrs(party,{active})) do
+     if distance(i, j, member.x, member.y) < 2.7 then
+      nearforone=true
      end
-     spr(mspr,8*i, 8*j)
-     for e in all(darkspr.clrmp) do
-      pal(e.s,e.s)
-     end
-    else
-     rectfill(8*i, 8*j,(8*i)+7, (8*j)+7,0)
     end
-   elseif not is_element_in(activemap.discvrdtiles, idtfr) then
-    activemap.discvrdtiles[#activemap.discvrdtiles+1]=idtfr
+    local idtfr=tostr(i)..'|'..tostr(j)
+    if not nearforone and not is_element_in(activemap.discvrdtiles, idtfr) then
+     local mspr=mget(i+maps[active.mapsidx].cellx, j+maps[active.mapsidx].celly)
+     if (is_element_in(darkspr.idxs,mspr)) then
+      -- draw "dark" sprite
+      for e in all(darkspr.clrmp) do
+       pal(e.s,e.d)
+      end
+      spr(mspr,8*i, 8*j)
+      for e in all(darkspr.clrmp) do
+       pal(e.s,e.s)
+      end
+     else
+      rectfill(8*i, 8*j,(8*i)+7, (8*j)+7,0)
+     end
+    elseif not is_element_in(activemap.discvrdtiles, idtfr) then
+     activemap.discvrdtiles[#activemap.discvrdtiles+1]=idtfr
+    end
    end
   end
  end
@@ -539,19 +573,29 @@ function transition_to_map(dest)
  end
  active.text.maptitle={x=16,y=64,txt=maps[active.mapsidx].title,frmcnt=60}
  -- check alt tiles
+ local amcx,amcy=maps[active.mapsidx].cellx,maps[active.mapsidx].celly
  if not is_element_in(altsset, active.mapsidx) then
   local srctiles=get_sourceidxs()
   for i=0,15 do
    for j=0,15 do
-    local tilspr=mget(i+maps[active.mapsidx].cellx, j+maps[active.mapsidx].celly)
+    local tilspr=mget(i+amcx, j+amcy)
     if (is_element_in(srctiles,tilspr)) then
      local dsts=get_by_source(tilspr).dsts
      local randsel=get_rand_idx(dsts)
-     mset(i+maps[active.mapsidx].cellx, j+maps[active.mapsidx].celly, dsts[randsel])
+     mset(i+amcx, j+amcy, dsts[randsel])
     end
    end
   end
   altsset[#altsset+1]=active.mapsidx
+ end
+ -- add buildings
+ for m in all(maps) do
+  if m.type=='interior' and m.playmapidx==active.mapsidx then
+   mset(m.playmaploc.x+amcx,m.playmaploc.y+amcy,m.playmapspr)
+   mset(m.playmaploc.x+amcx+1,m.playmaploc.y+amcy,m.playmapspr+1)
+   mset(m.playmaploc.x+amcx,m.playmaploc.y+1+amcy,m.playmapspr+16)
+   mset(m.playmaploc.x+amcx+1,m.playmaploc.y+1+amcy,m.playmapspr+17)
+  end
  end
 end
 
@@ -902,22 +946,22 @@ d4004440444042dddddc1c55055555dd888888888888888888888888888888884222222440504444
 334424424424442255744476677777733337444444447233888888888888888833377755557776635c5555c533242233a99a999a5444dddd224ddddd22d8dddd
 334424424424442344744474477667733332222222222333888888888888888833377666666776335555555594444229da9999add55dddddd22dddddd2dddddd
 __map__
-ebebebebebebebebebebebebebcfcfcfcfcfcfebcececeebebebebebebebebebcdecececcdcdcfcfecececcdcdcdcdebebebebebebebebebebcfcfcfebebebeb7e8e8e8e8e8e8e8e8e8e8e8e8e7e8e7e000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdebcdebdccdeccdcdcdebcdcfcfcfcfcfcfecebcececdcdecebebebebebebcdcdcdcdcdcdcfcfececcdcdcdcdceceebebebcde0e1cdcdcdcfcfcdcdcdcdebafbfbfd9d9d9bfbfbfd85bbfbfafbfaf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdeccdcdeccdcdcdcdececcfcfcfcfebcfcfcfcececee2e3cdcdebdbebebebcdcdebcdcdcdcfcfeccdcdcdebcececeebebcd6cf0f1cdcdcdcfcfcdbe9ecddc2abfbfbfbfbfbf5abfbfbf3bbfafbf2a000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdcdebcdcdcdebcdeccfcfcfcfcfebebebcfcfeececef2f3cdcdcdcdebebebcdebebcdebcdcfcfcdcdcdcdcecececdebcd6ccfcfcfcf6ccfcfcfcd9e9ecdebafbfbfbfbfbfbfbfbf3bbfbfbfafbfaf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdcdcdecececececcfcfcfcfcfcdebebebceceeeeecfcfcfebeccdcddcebebcdcdcdcdebcdcfcfcdcdececcececdebeb6ccfcfcfcfcfcfcfcfcd6d9e9ecdebafbfbfbfbfbfbfbfbfbfbfbfbfafbfaf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebebcdeccfcfcfcfcfcfcfcfeccdcdebcecececeeecfcfcfcfcfcfeccdcdebebcdebebcdebcdcfcf9fcdcdecceceebcdebcdcdcdcdcfcfcfcfcfcd9ebe9ecdeb2bbfbfbfbfbfbfbfbfbfbfbfbf2bbf2a000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdcdcfcfcfcfcfcfcfcfcfeccdebebcececeebcfcfcfcfcfcfcfcdcdcdebebcdcdcdcdcdcdcfcfcfcdcdcdcecececdebebececcdcfcfcfcfcfcdcdbe9ecdebafbfbfbf4abfbfbfbf3abfbfbfafbfaf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdcdcfcddbcdcfcfcfececcdcdecebceceebebebcfcfcfcfcfebebcdcdebebebcdcdcdcdeccfcfcfcfcdcdcdcececeebcdcdcdcd6dcfcfcfcfe8e9ececcdcd7e8e8e8e8e8e8e8e8e8e8e8e8e7ebfaf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebebcdcfcdcdcfcfcfeccdcdcdcdcdebebebebebeb6ccfcfcfcfecebebcdebebcdcdebebcdcdeccfcfcfcdcdcdcdceceebcd9ebe9ecdcdcfcfcff8f9cdcdcdaeafd9d96bbfbf4ab2bfbf3abfbfbfbfaf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcddccfcfcfcfcfeccdebcdcdebcdebebebebeb6ccfcfcfececebebeccdebebcdebcdcdcdcdeccfcfcfcfcdcdcdcdcdebcd9e9e9ebecdcdcfcfcfcdcdaeaeaeafbfbf6bbfbfbfbfbfbfbfbfbfbfbfaf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdcdcfcfcfcfeccdcdcdcdeccdebebebebeb6ccfcfcfecebebebebcdcdebebcdcdcdcdebcdcdeccfcfcfcfcdcdebebebcdbe9ebe9e6e6ecfcfeccdaeaeaeae2abfbf6bbfbfbfbfbfbfbfbfbfbfbfaf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdcfcfcfcfeccdcdcdcdcdcdcdebebebeb6ccfcfcfcdebcdcdebebcdcdebebebcdcdcdebebcdcdeccfcfcfcfcdcdebebcd9e9ebecdcd6ccfcfeccdaeaeaeaeafbfbf6bbfbfbfbfbfbfbfbfbfbfbfaf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcfcfcfcfcdcdcdcdeccdebcdcdebebeb6ccfcfcfcdcdcdcdcddceccdcdebebebcdcddccdebcdcdcdcdcfcfcfcfcdebebcdcdcdcdcdcfcfcfcfeccdaeaeaeae2abfbf6bbfbfbfbfbfbfbfbfbfbfbfaf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-cfcfcfcfcdcdebcdebcdcdcdcdeccdebebcfcfcfcdcdcdcdcdcdcdcdcdcdebebebcdcdcdcdcdcdcdcdcdcdcfcfcfcfcfebcdaeaeaecdcfcfcfcf7a7baeaeaeaeafbfbf6abfbfbfbfbfbfbfbfbfbfbfaf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-cfcfcfcdcdcdeccdcdcdcdebcdcdcdebcfcfcfcfcdcdcdecdccdcdcdcdcdebebebdbcdcdcdcdcdcdcdcdcdcdcdcfcfcfebcdaeaeaecdcdcfcfcf8a8baeaeaeaeafbfbf6bbfbfbfb1bfb2bfb25b5bbfaf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-cfcfebebebebebebebebebebebebebebcfcfcfebebebebebebebebebebebebebebebebebebebebebebebebebebcfcfcfdbcdaeaeaeaecdcfcfcdcdcdcdaeaeae7eafafafafafafafafafafafafafaf7e000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ebebebebebebebebebebebebebcfcfcfcfcfcfebcececeebebebebebebebebebcdecececcdcdcfcfecececcdcdcdcdebebebebebebebebebebcfcfcfebebebeb7e8e8e8e8e8e8e8e8e8e8e8e8e7e8e7e7e8e8e8e8e8e8e8e8e8e8e8e8e8e8e7e0000000000000000000000000000000000000000000000000000000000000000
+ebcdebcdebdccdeccdcdcdebcdcfcfcfcfcfcfecebcececdcdecebebebebebebcdcdcdcdcdcdcfcfececcdcdcdcdceceebebebcde0e1cdcdcdcfcfcdcdcdcdebafbfbfd9d9d9bfbfbfd85bbfbfafbfafafbfbfbfbf4abfbfbfbfbfbfbfbfbfaf0000000000000000000000000000000000000000000000000000000000000000
+ebcdeccdcdeccdcdcdcdececcfcfcfcfebcfcfcfcecececdcdcdcdebdbebebebcdcdebcdcdcdcfcfeccdcdcdebcececeebebcd6cf0f1cdcdcdcfcfcdbe9ecddc2abfbfbfbfbfbf5abfbfbf3bbfafbf2aafbfbfbfbfbfbfbfbfbfbfbfb9b9bfaf0000000000000000000000000000000000000000000000000000000000000000
+ebcdcdebcdcdcdebcdeccfcfcfcfcfebebebcfcfeecececdcdcdcdcdcdebebebcdebebcdebcdcfcfcdcdcdcdcecececdebcd6ccfcfcfcf6ccfcfcfcd9e9ecdebafbfbfbfbfbfbfbfbf3bbfbfbfafbfaf2abfbfbfbfbfbfbfbfbfbfbfbfbfbf2a0000000000000000000000000000000000000000000000000000000000000000
+ebcdcdcdecececececcfcfcfcfcfcdebebebceceeeeecfcfcfebeccdcddcebebcdcdcdcdebcdcfcfcdcdececcececdebeb6ccfcfcfcfcfcfcfcfcd6d9e9ecdebafbfbfbfbfbfbfbfbfbfbfbfbfafbfafafbfb9b9bfbfbfbfbfbfbfbfbfbfbfaf0000000000000000000000000000000000000000000000000000000000000000
+ebebcdeccfcfcfcfcfcfcfcfeccdcdebcecececeeecfcfcfcfcfcfeccdcdebebcdebebcdebcdcfcf9fcdcdecceceebcdebcdcdcdcdcfcfcfcfcfcd9ebe9ecdeb2bbfbfbfbfbfbfbfbfbfbfbfbf2bbf2aafbfbfbfbfbfbfbfbfbfbfbfbfbf5baf0000000000000000000000000000000000000000000000000000000000000000
+ebcdcdcfcfcfcfcfcfcfcfcfeccdebebcececeebcfcfcfcfcfcfcfcdcdcdebebcdcdcdcdcdcdcfcfcfcdcdcdcecececdebebececcdcfcfcfcfcfcdcdbe9ecdebafbfbfbf4abfbfbfbf3abfbfbfafbfafafbfbfbfbfbfbfbfbfbfbfbfbfbf5baf0000000000000000000000000000000000000000000000000000000000000000
+ebcdcdcfcddbcdcfcfcfececcdcdecebceceebebebcfcfcfcfcfebebcdcdebebebcdcdcdcdeccfcfcfcfcdcdcdcececeebcdcdcdcd6dcfcfcfcfe8e9ececcdcd7e8e8e8e8e8e8e8e8e8e8e8e8e7ebfafafbfbfbfbfbfbfbfbfbfbfbfbfbf5baf0000000000000000000000000000000000000000000000000000000000000000
+ebebcdcfcdcdcfcfcfeccdcdcdcdcdebebebebebeb6ccfcfcfcfecebebcdebebcdcdebebcdcdeccfcfcfcdcdcdcdceceebcd9ebe9ecdcdcfcfcff8f9cdcdcdaeafd9d96bbfbf4ab2bfbf3abfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfb9b9bfaf0000000000000000000000000000000000000000000000000000000000000000
+ebcddccfcfcfcfcfeccdebcdcdebcdebebebebeb6ccfcfcfececebebeccdebebcdebcdcdcdcdeccfcfcfcfcdcdcdcdcdebcd9e9e9ebecdcdcfcfcfcdcdaeaeaeafbfbf6bbfbfbfbfbfbfbfbfbfbfbfafaf5bbfbfbfbfbfbfbfbfbfbfbfbfbfaf0000000000000000000000000000000000000000000000000000000000000000
+ebcdcdcfcfcfcfeccdcdcdcdeccdebebebebeb6ccfcfcfecebebebebcdcdebebcdcdcdcdebcdcdeccfcfcfcfcdcdebebebcdbe9ebe9e6e6ecfcfeccdaeaeaeae2abfbf6bbfbfbfbfbfbfbfbfbfbfbfafaf5bbfbfbfbfbfbfbfbfbfbfbfbfbfaf0000000000000000000000000000000000000000000000000000000000000000
+ebcdcfcfcfcfeccdcdcdcdcdcdcdebebebeb6ccfcfcfcdebcdcdebebcdcdebebebcdcdcdebebcdcdeccfcfcfcfcdcdebebcd9e9ebecdcd6ccfcfeccdaeaeaeaeafbfbf6bbfbfbfbfbfbfbfbfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfbfbfbfaf0000000000000000000000000000000000000000000000000000000000000000
+ebcfcfcfcfcdcdcdcdeccdebcdcdebebeb6ccfcfcfcdcdcdcdcddceccdcdebebebcdcddccdebcdcdcdcdcfcfcfcfcdebebcdcdcdcdcdcfcfcfcfeccdaeaeaeae2abfbf6bbfbfbfbfbfbfbfbfbfbfbfaf2abfbfbfbfbfbfbfbfbfbfbfbfbfbf2a0000000000000000000000000000000000000000000000000000000000000000
+cfcfcfcfcdcdebcdebcdcdcdcdeccdebebcfcfcfcdcdcdcdcdcdcdcdcdcdebebebcdcdcdcdcdcdcdcdcdcdcfcfcfcfcfebcdaeaeaecdcfcfcfcf7a7baeaeaeaeafbfbf6abfbfbfbfbfbfbfbfbfbfbfafafb9b9bfbfbfbfbfbfbfbfbfbfbfbfaf0000000000000000000000000000000000000000000000000000000000000000
+cfcfcfcdcdcdeccdcdcdcdebcdcdcdebcfcfcfcfcdcdcdecdccdcdcdcdcdebebebdbcdcdcdcdcdcdcdcdcdcdcdcfcfcfebcdaeaeaecdcdcfcfcf8a8baeaeaeaeafbfbf6bbfbfbfb1bfb2bfb25b5bbfafafbfbfbfbfbfbfbfbfbfbfbfbfbf4aaf0000000000000000000000000000000000000000000000000000000000000000
+cfcfebebebebebebebebebebebebebebcfcfcfebebebebebebebebebebebebebebebebebebebebebebebebebebcfcfcfdbcdaeaeaeaecdcfcfcdcdcdcdaeaeae7eafafafafafafafafafafafafafaf7e7e8e8e8e8e8e8e2b2b8e8e8e8e8e8e7e0000000000000000000000000000000000000000000000000000000000000000
 __sfx__
 000200001a7201b7201d7201f72000700007000070000700007000070000700007000070000700007000070000700007000070000700007000070000700007000070000700007000070000700007000070000700
 9114000020552205522355221552205521e552205522c552245522a5522d5522c5522a5522c5522c5522a5522a5521c5521c5521c55230552305522a5001c5000050200502005020050200002000020000000000
