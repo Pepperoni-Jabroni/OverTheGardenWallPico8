@@ -3,7 +3,7 @@ version 33
 __lua__
 
 -- configs, state vars & core fns
-local walkable={202,203,205,207,222,223,238,239}
+local walkable={43,185,191,202,203,205,207,222,223,238,239,240,241,242}
 local alttiles={
  {srcidx=206,dsts={206,221,237}},
  {srcidx=238,dsts={222,238}},
@@ -34,11 +34,20 @@ local objdescripts={
  {spridxs={110},descr="the ground is higher\nhere"},
  {spridxs={127},descr="a deep hole in the \nground"},
 }
-local text_to_display={maptitle=nil,dialog={}}
-local active={x=0,y=0,charidx=nil,lookingdir=nil,flipv=false}
+local active={
+ x=0,
+ y=0,
+ charidx=nil,
+ lookingdir=nil,
+ flipv=false,
+ text={maptitle=nil,dialog={},charsel=nil},
+ stagetype="mainmenu",
+ dialog_idx=1,
+ mapsidx=nil
+}
 local party={}
 local characters={
- {name='greg', mapidx=0, chrsprdailogueidx=2, idle={'oh frog o mine!','oh potatoes and...'}}, 
+ {name='greg', mapidx=0, chrsprdailogueidx=2, idle={'where is that frog\no\' mine!','wanna hear a rock\nfact?'}}, 
  {name='wirt', mapidx=1, chrsprdailogueidx=4, idle={'uh, hi...','oh sorry, just thinking'}}, 
  {name='beatrice', mapidx=16, chrsprdailogueidx=6, idle={'yes, i can talk...','lets get out of here!'}}, 
  {
@@ -53,11 +62,11 @@ local characters={
  {name='dog', mapidx=49, chrsprdailogueidx=40, idle={}},
  {name='black turtle', mapidx=64, chrsprdailogueidx=66, idle={}},
  {name='turkey', mapidx=65, chrsprdailogueidx=68, idle={}},
- {name='pottsfield citizen #1', mapidx=80, chrsprdailogueidx=98, idle={}},
- {name='pottsfield citizen #2', mapidx=80, chrsprdailogueidx=102, idle={}},
+ {name='pottsfield citizen', mapidx=80, chrsprdailogueidx=98, idle={'you\'re too early'}},
+ {name='pottsfield citizen', mapidx=80, chrsprdailogueidx=102, idle={'are you new here?'}},
  {name='pottsfield harvest', mapidx=81, chrsprdailogueidx=70, idle={}},
  {name='pottsfield partier', mapidx=96, chrsprdailogueidx=100, idle={}},
- {name='enoch', mapidx=97, chrsprdailogueidx=72, idle={}},
+ {name='enoch', mapidx=97, chrsprdailogueidx=72, idle={'what a wonderful\nharvest','you don\'t look like\nyou belong here'}},
  {name='dog student', mapidx=10, chrsprdailogueidx=44, idle={}},
  {name='gorilla', mapidx=113, chrsprdailogueidx=12, idle={}},
  {name='jimmy brown', mapidx=11, chrsprdailogueidx=14, idle={}},
@@ -66,10 +75,11 @@ local characters={
  {name='the lantern', mapidx=nil, chrsprdailogueidx=76, idle={}},
  {name='rock fact', mapidx=nil, chrsprdailogueidx=78, idle={}},
  {name='edelwood', mapidx=nil, chrsprdailogueidx=192, idle={}},
+ {name='racoon student', mapidx=27, chrsprdailogueidx=194, idle={}},
 }
-local mapscurrentidx
 local maps={
  {
+  type='exterior',
   title='somewhere in the unknown',
   cellx=0,
   celly=0,
@@ -78,16 +88,20 @@ local maps={
   discvrdtiles={}
  },
  {
-  title='the old grist mill',
+  type='exterior',
+  title='the mill and the river',
   cellx=16,
   celly=0,
   trans={
    {dest={mp=1,loc={x=14, y=1}},locs={{x=0,y=13},{x=0,y=14},{x=0,y=15}}},
-   {dest={mp=3,loc={x=14, y=14}},locs={{x=0,y=0},{x=1,y=0},{x=2,y=0},{x=0,y=1}}}
+   {dest={mp=3,loc={x=14, y=14}},locs={{x=0,y=0},{x=1,y=0},{x=2,y=0},{x=0,y=1}}},
+   {dest={mp=5,loc={x=1, y=5}},locs={{x=7,y=3}}}
   },
+  npcs={},
   discvrdtiles={}
  },
  {
+  type='exterior',
   title='deeper into the unknown',
   cellx=32,
   celly=0,
@@ -95,17 +109,54 @@ local maps={
    {dest={mp=2,loc={x=1, y=1}},locs={{x=13,y=15},{x=14,y=15},{x=15,y=15}}},
    {dest={mp=4,loc={x=8, y=14}},locs={{x=7,y=0},{x=8,y=0}}}
   },
+  npcs={},
   discvrdtiles={}
  },
  {
+  type='exterior',
   title='pottsfield',
   cellx=48,
   celly=0,
-  trans={{dest={mp=3,loc={x=7, y=1}},locs={{x=8,y=15},{x=14,y=15},{x=15,y=15}}}},
+  trans={
+   {dest={mp=3,loc={x=7, y=1}},locs={{x=8,y=15},{x=14,y=15},{x=15,y=15}}},
+   {dest={mp=6,loc={x=7, y=14}},locs={{x=4,y=2},{x=5,y=2}}}
+  },
+  npcs={},
   discvrdtiles={}
+ },
+ {
+  type='interior',
+  title='the old grist mill',
+  cellx=64,
+  celly=0,
+  trans={
+   {dest={mp=2,loc={x=7, y=4}},locs={{x=0,y=5}}}
+  },
+  npcs={},
+  playmapidx=2,
+  playmapspr=226,
+  playmaploc={x=7,y=2}
+ },
+ {
+  type='interior',
+  title='harvest party',
+  cellx=80,
+  celly=0,
+  trans={
+   {dest={mp=4,loc={x=4, y=3}},locs={{x=7,y=15},{x=8,y=15}}}
+  },
+  npcs={
+   {charidx=11,x=6,y=7},{charidx=11,x=9,y=4},{charidx=12,x=6,y=4},{charidx=12,x=9,y=8},{charidx=15,x=8,y=8}
+  },
+  playmapidx=4,
+  playmapspr=224,
+  playmaploc={x=4,y=1}
  }
 }
-local dialog_idx=1
+local darkspr={
+ idxs={174,204,218,219,235,236,251},
+ clrmp={{s=2,d=0},{s=3,d=0},{s=4,d=1},{s=8,d=1},{s=9,d=0},{s=10,d=1},{s=11,d=1}}
+}
 local intro_dialog={
  dialog={
   {speakeridx=4,nameidx=nil,text="led through the mist"},
@@ -120,27 +171,49 @@ local intro_dialog={
  } 
 }
 local dialogs={
- {mapidx=1,trig_locs={{x=10,y=4},{x=11,y=4}},dialog={
+ {dialog={
    {speakeridx=1,text="i sure do love my frog!"},
    {speakeridx=2,text="greg, please stop..."},
    {speakeridx=4,text="ribbit."},
    {speakeridx=1,text="haha, yeah!"}
-  },repeatable=false,triggertype="walk"
+  }
  },
- {mapidx=1,trig_locs={{x=5,y=7}},dialog={
+ {dialog={
    {speakeridx=2,text="i dont like this at all"},
    {speakeridx=1,text="its a tree face!"},
    {speakeridx=23,text="*howls in the wind*"}
-  },repeatable=false,triggertype="select"
+  }
+ },
+ {dialog={
+   {speakeridx=2,text="is that some sort of\nderanged lunatic?"},
+   {speakeridx=2,text="with an ax waiting\nfor victims?"},
+   {speakeridx=6,text="*swings axe and chops \ntree*"},
+   {speakeridx=1,text="we should ask him\nfor help!"}
+  }
  }
 }
-local lookingdirselmap={
- {i=234,x=-1,y=0,fliph=false,flipv=true},--left
- {i=234,x=1,y=0,fliph=false,flipv=false},--right
- {i=250,x=0,y=-1,fliph=false,flipv=false},--up
- {i=250,x=0,y=1,fliph=true,flipv=false}--down
+local triggers={
+ {
+  trig=function(self)return player_on_location({x=10,y=4}) or player_on_location({x=11,y=4})end,
+  action=function(self)queue_dialog(1)end,
+  complete=false,
+ },
+ {
+  trig=function(self)return player_sel_location({x=5,y=7})end,
+  action=function(self)queue_dialog(2)end,
+  complete=false,
+ },
+ {
+  trig=function(self)return playmap_spr_visible(33)end,
+  action=function(self)queue_dialog(3)end,
+  complete=false,
+ },
+ {
+  trig=function(self)return trigger_complete(3)end,
+  action=function(self)queue_move_npc(6,{x=16,y=-1},2,{x=7,y=7})end,
+  complete=false,
+ }
 }
-local stagetype="mainmenu"
 local menuchars={}
 local stagetypes={
  {
@@ -198,11 +271,11 @@ function _init()
 end
 
 function _update()
- get_stage_by_type(stagetype).update()
+ get_stage_by_type(active.stagetype).update()
 end
 
 function _draw()
- get_stage_by_type(stagetype).draw()
+ get_stage_by_type(active.stagetype).draw()
 end
 -->8
 -- update & draw fns
@@ -216,7 +289,7 @@ function update_main_menu()
  end
  if btn(4) or btn(5) then
   if active.y==0 then
-   stagetype="intro"
+   active.stagetype="intro"
    sfx(1)
   else
    stop()
@@ -226,16 +299,16 @@ end
 
 function update_intro()
  if btnp(4) then
-  dialog_idx+=1
+  active.dialog_idx+=1
   sfx(0)
  end
- if dialog_idx>#intro_dialog.dialog then
+ if active.dialog_idx>#intro_dialog.dialog then
   transition_to_playmap()
  end
 end
 
 function update_play_map()
- local initialdialoglen=#text_to_display.dialog
+ local initialdialoglen=#active.text.dialog
  -- check selection direction
  if btn(4) then
   pressed=nil
@@ -251,37 +324,42 @@ function update_play_map()
   active.lookingdir=nil
  end
  -- check active movement
- if active.lookingdir == nil and #text_to_display.dialog == 0 then
-  if btnp(2) and active.y > 0 and is_element_in(walkable, mget(active.x+maps[mapscurrentidx].cellx, active.y - 1+maps[mapscurrentidx].celly)) then
-   active.y = active.y - 1
-  elseif btnp(1) and active.x < 15 and is_element_in(walkable, mget(active.x + 1+maps[mapscurrentidx].cellx, active.y+maps[mapscurrentidx].celly)) then
-   active.x = active.x + 1
+ if active.lookingdir == nil and #active.text.dialog == 0 then
+  local ax,ay,mdx=active.x,active.y,active.mapsidx
+  if btnp(2) and ay > 0 and is_element_in(walkable, mget(ax+maps[mdx].cellx, ay - 1+maps[mdx].celly)) then
+   active.y = ay - 1
+  elseif btnp(1) and ax < 15 and is_element_in(walkable, mget(ax + 1+maps[mdx].cellx, ay+maps[mdx].celly)) then
+   active.x = ax + 1
    active.flipv=false
-  elseif btnp(3) and active.y < 15 and is_element_in(walkable, mget(active.x+maps[mapscurrentidx].cellx, active.y + 1+maps[mapscurrentidx].celly)) then
-   active.y = active.y + 1
-  elseif btnp(0) and active.x > 0 and is_element_in(walkable, mget(active.x - 1+maps[mapscurrentidx].cellx, active.y+maps[mapscurrentidx].celly)) then
-   active.x = active.x - 1
+  elseif btnp(3) and ay < 15 and is_element_in(walkable, mget(ax+maps[mdx].cellx, ay + 1+maps[mdx].celly)) then
+   active.y = ay + 1
+  elseif btnp(0) and ax > 0 and is_element_in(walkable, mget(ax - 1+maps[mdx].cellx, ay+maps[mdx].celly)) then
+   active.x = ax - 1
    active.flipv=true
   end
  end
  -- check for player switch
- if btnp(5) and #text_to_display.dialog == 0 then
-  party[#party+1] = active
-  active = party[1]
+ if btnp(5) and #active.text.dialog == 0 then
+  party[#party+1] = {charidx=active.charidx,x=active.x,y=active.y}
+  active.charidx = party[1].charidx
+  active.x = party[1].x
+  active.y = party[1].y
   party=drop_first_elem(party)
+  local charname = tostr(characters[active.charidx].get_name_at_idx(characters[active.charidx],1))
+  active.text.charsel={txt=charname,frmcnt=32}
  end
  -- check for dialog progress
- if btnp(4) and #text_to_display.dialog > 0 then
+ if btnp(4) and #active.text.dialog > 0 then
   sfx(0)
-  dialog_idx+=1
-  if dialog_idx > #text_to_display.dialog[1].dialog then
-   text_to_display.dialog=drop_first_elem(text_to_display.dialog)
-   dialog_idx=1
+  active.dialog_idx+=1
+  if active.dialog_idx > #active.text.dialog[1].dialog then
+   active.text.dialog=drop_first_elem(active.text.dialog)
+   active.dialog_idx=1
   end
  end
  -- check for map switch
- local activemap = maps[mapscurrentidx]
- local initmapidx = mapscurrentidx
+ local activemap = maps[active.mapsidx]
+ local initmapidx = active.mapsidx
  for transition in all(activemap.trans) do
   for location in all(transition.locs) do
    if active.x == location.x and active.y == location.y then
@@ -289,41 +367,28 @@ function update_play_map()
     break
    end
   end
-  if mapscurrentidx != initmapidx then
+  if active.mapsidx != initmapidx then
    break
   end
  end
+ -- check for triggers
+ for t in all(triggers) do
+  if not t.complete and t.trig() then
+   t.action()
+   t.complete=true
+  end
+ end
  -- check for talk w/ npcs
- if #text_to_display.dialog == 0 then
+ if #active.text.dialog == 0 then
   for npc in all(get_all_npcs()) do
    for i=-1,1 do
     for j=-1,1 do
      if i!=j and npc.x+i==active.x and npc.y+j==active.y then
-      if selection_is_on_location({x=npc.x,y=npc.y}) then
+      if player_sel_location({x=npc.x,y=npc.y}) then
        local idles=get_char_idle_dialog(npc.charidx)
-       text_to_display.dialog[#text_to_display.dialog+1]=idles[get_rand_idx(idles)]
+       active.text.dialog[#active.text.dialog+1]=idles[get_rand_idx(idles)]
       end
      end
-    end
-   end
-  end
- end
- -- check for dialog triggers
- for trig in all(dialogs) do
-  if trig.mapidx == mapscurrentidx then
-   for location in all(trig.trig_locs) do
-    if (trig.triggertype == "walk" and active.x == location.x and active.y == location.y) or selection_is_on_location(location) then
-     alreadyactive=false
-     for i=1,#text_to_display.dialog do
-      if text_to_display.dialog[i].dialog[1].text==trig.dialog[1].text then
-       alreadyactive=true
-      end
-     end
-     if alreadyactive then
-      break
-     end
-     text_to_display.dialog[#text_to_display.dialog+1] = trig
-     break
     end
    end
   end
@@ -333,10 +398,10 @@ function update_play_map()
   for j=-1,1 do
    local x=active.x+i
    local y=active.y+j
-   if selection_is_on_location({x=x,y=y}) then
+   if player_sel_location({x=x,y=y}) then
     for descpt in all(objdescripts) do
-     if is_element_in(descpt.spridxs,mget(x+maps[mapscurrentidx].cellx,y+maps[mapscurrentidx].celly)) and #text_to_display.dialog==0 then
-      text_to_display.dialog[#text_to_display.dialog+1] = {
+     if is_element_in(descpt.spridxs,mget(x+maps[active.mapsidx].cellx,y+maps[active.mapsidx].celly)) and #active.text.dialog==0 then
+      active.text.dialog[#active.text.dialog+1] = {
        dialog={{speakeridx=active.charidx,text=descpt.descr}}
       }
       break
@@ -346,7 +411,7 @@ function update_play_map()
   end
  end
  -- play sound if new dialog triggered
- if #text_to_display.dialog>initialdialoglen or active.lookingdir!= nil then
+ if #active.text.dialog>initialdialoglen or active.lookingdir!= nil then
   sfx(2)
  end
 end
@@ -413,57 +478,87 @@ function draw_introduction()
  pal(1,1)
  pal(13,13)
  -- draw frog dialog box
- local currentprog=intro_dialog.dialog[dialog_idx]
+ local currentprog=intro_dialog.dialog[active.dialog_idx]
  draw_character_dialog_box(currentprog)
 end
 
 function draw_play_map()
- local activemap=maps[mapscurrentidx]
+ local activemap=maps[active.mapsidx]
  -- color handling
  palt(0,false)
  palt(13,true)
  cls(139)
  -- draw map
  map(activemap.cellx, activemap.celly)
+  -- draw ring around new active char
+ if active.text.charsel != nil and active.text.charsel.frmcnt>0 and flr(active.text.charsel.frmcnt/5)%2==0 then
+  pset(active.x*8,active.y*8+7,12)
+  pset(active.x*8+7,active.y*8+7,12)
+  line(active.x*8+1,active.y*8+6,active.x*8+6,active.y*8+6,12)
+  line(active.x*8+1,active.y*8+8,active.x*8+6,active.y*8+8,12)
+ end
  -- draw player
  spr(characters[active.charidx].mapidx,active.x*8,active.y*8,1,1,active.flipv,false)
  -- draw npcs
  draw_chars_from_array(get_all_npcs())
  -- draw selection direction
  if active.lookingdir != nil then
-  local selection=lookingdirselmap[active.lookingdir+1]
+  local lkdr=active.lookingdir
+  local sel=get_sel_info_btn(lkdr)
   palt(5,true)
-  spr(selection.i,8*(active.x+selection.x),8*(active.y+selection.y),1,1,selection.flipv,selection.fliph)
+  spr(sel.i,8*(active.x+sel.x),8*(active.y+sel.y),1,1,sel.x==-1,sel.y==1)
   palt(5,false)
  end
  -- draw fog of war
- for i=0,15 do
-  for j=0,15 do
-   local nearforone=false
-   for member in all(union_arrs(party,{active})) do
-    if distance(i, j, member.x, member.y) < 2.7 then
-     nearforone=true
+ if activemap.type=='exterior' then
+  for i=0,15 do
+   for j=0,15 do
+    local nearforone=false
+    for member in all(union_arrs(party,{active})) do
+     if distance(i, j, member.x, member.y) < 2.7 then
+      nearforone=true
+     end
     end
-   end
-   local idtfr=tostr(i)..'|'..tostr(j)
-   if not nearforone and not is_element_in(activemap.discvrdtiles, idtfr) then
-    rectfill(8*i, 8*j,(8*i)+8, (8*j)+8,0)
-   elseif not is_element_in(activemap.discvrdtiles, idtfr) then
-    activemap.discvrdtiles[#activemap.discvrdtiles+1]=idtfr
+    local idtfr=tostr(i)..'|'..tostr(j)
+    if not nearforone and not is_element_in(activemap.discvrdtiles, idtfr) then
+     local mspr=mget(i+maps[active.mapsidx].cellx, j+maps[active.mapsidx].celly)
+     if (is_element_in(darkspr.idxs,mspr)) then
+      -- draw "dark" sprite
+      for e in all(darkspr.clrmp) do
+       pal(e.s,e.d)
+      end
+      spr(mspr,8*i, 8*j)
+      for e in all(darkspr.clrmp) do
+       pal(e.s,e.s)
+      end
+     else
+      rectfill(8*i, 8*j,(8*i)+7, (8*j)+7,0)
+     end
+    elseif not is_element_in(activemap.discvrdtiles, idtfr) then
+     activemap.discvrdtiles[#activemap.discvrdtiles+1]=idtfr
+    end
    end
   end
  end
  -- draw active char hud
  local xanchor=1
  if active.x<=3 and active.y<=2 then
-  xanchor=90
+  xanchor=114
  end
- local charname = tostr(characters[active.charidx].get_name_at_idx(characters[active.charidx],1))
- draw_fancy_box(xanchor,1,#charname*4+12, 12, 4,10, 9)
- printsp(charname, xanchor+10, 5, 0)
+ if active.text.charsel != nil and active.text.charsel.frmcnt>0 then
+  if active.x<=3 and active.y<=2 then
+   xanchor=90
+  end
+  local charname=active.text.charsel.txt
+  draw_fancy_box(xanchor,1,#charname*4+11, 11, 4,10, 9)
+  printsp(charname, xanchor+10, 5, 0)
+  active.text.charsel.frmcnt-=1
+ else
+  draw_fancy_box(xanchor,1,11,11,4,10,9)
+ end
  spr(characters[active.charidx].mapidx, xanchor+2, 3)
  -- draw map title
- txtobj=text_to_display.maptitle
+ txtobj=active.text.maptitle
  if txtobj != nil and txtobj.frmcnt > 0 then
   draw_fancy_box(txtobj.x, txtobj.y, #txtobj.txt*4+4, 8, 4,10, 9)
   printsp(txtobj.txt, txtobj.x+2, txtobj.y+2, 0)
@@ -471,9 +566,9 @@ function draw_play_map()
  end
  -- draw dialog if necessary
  palt(13,false)
- if text_to_display != nil and text_to_display.dialog != nil and #text_to_display.dialog > 0 then
-  dlg=text_to_display.dialog[1]
-  curprogressdlg=dlg.dialog[dialog_idx]
+ if #active.text.dialog > 0 then
+  dlg=active.text.dialog[1]
+  curprogressdlg=dlg.dialog[active.dialog_idx]
   if curprogressdlg != nil then
    draw_character_dialog_box(curprogressdlg)
   end
@@ -482,6 +577,102 @@ end
 
 -->8
 -- utilities
+function player_on_location(loc)
+ return active.x+maps[active.mapsidx].cellx==loc.x and active.y+maps[active.mapsidx].celly==loc.y
+end
+
+function player_sel_location(loc)
+ local lkdr=active.lookingdir
+ if lkdr == nil then
+  return false
+ end
+ local sel=get_sel_info_btn(lkdr)
+ return active.x+sel.x == loc.x and active.y+sel.y == loc.y
+end
+
+function playmap_spr_visible(spri)
+ local mapspr=sget(active.x+maps[active.mapsidx].cellx,active.y+maps[active.mapsidx].celly)==spri
+ local npcspr=false
+ for n in all(maps[active.mapsidx].npcs) do
+  local idtfr=tostr(n.x+maps[active.mapsidx].cellx)..'|'..tostr(n.y+maps[active.mapsidx].celly)
+  if is_element_in(maps[active.mapsidx].discvrdtiles,idtfr) and characters[n.charidx].mapidx==spri then
+   npcspr=true
+   break
+  end
+ end
+ return mapspr or npcspr
+end
+
+function trigger_complete(trigi)
+ return triggers[trigi].complete
+end
+
+function queue_dialog(dialogi)
+ active.text.dialog[#active.text.dialog+1]=dialogs[dialogi]
+end
+
+function queue_move_npc(chari,curmaploc,destmap,destmaploc)
+ 
+end
+
+function transition_to_playmap()
+ active.stagetype = "playmap"
+ active.charidx=2
+ active.dialog_idx=1
+ party={{charidx=1,x=nil,y=nil},{charidx=4,x=nil,y=nil}}
+ transition_to_map({mp=1,loc={x=1, y=14}})
+ pal(14,14,1)
+ pal(5,5,1)
+ pal(12,12,1)
+ pal(1,1,1)
+ pal(13,13,1)
+end
+
+function transition_to_map(dest)
+ active.mapsidx = dest.mp
+ active.x = dest.loc.x
+ active.y = dest.loc.y
+ for i=1,#party do
+  didadd=false
+  repeat
+   x=flr(rnd(3))+active.x-1
+   y=flr(rnd(3))+active.y-1
+   if is_element_in(walkable, mget(x+maps[active.mapsidx].cellx, y+maps[active.mapsidx].celly)) then
+    didadd = true
+    party[i].x=x
+    party[i].y=y
+   end
+  until didadd
+ end
+ local titlex=63-(2*#maps[active.mapsidx].title)
+ active.text.maptitle={x=titlex,y=56,txt=maps[active.mapsidx].title,frmcnt=60}
+ -- check alt tiles
+ local amcx,amcy=maps[active.mapsidx].cellx,maps[active.mapsidx].celly
+ if not is_element_in(altsset, active.mapsidx) then
+  local srctiles=get_sourceidxs()
+  for i=0,15 do
+   for j=0,15 do
+    local tilspr=mget(i+amcx, j+amcy)
+    if (is_element_in(srctiles,tilspr)) then
+     local dsts=get_by_source(tilspr).dsts
+     local randsel=get_rand_idx(dsts)
+     mset(i+amcx, j+amcy, dsts[randsel])
+    end
+   end
+  end
+  altsset[#altsset+1]=active.mapsidx
+ end
+ -- add buildings
+ for m in all(maps) do
+  if m.type=='interior' and m.playmapidx==active.mapsidx then
+   mset(m.playmaploc.x+amcx,m.playmaploc.y+amcy,m.playmapspr)
+   mset(m.playmaploc.x+amcx+1,m.playmaploc.y+amcy,m.playmapspr+1)
+   mset(m.playmaploc.x+amcx,m.playmaploc.y+1+amcy,m.playmapspr+16)
+   mset(m.playmaploc.x+amcx+1,m.playmaploc.y+1+amcy,m.playmapspr+17)
+  end
+ end
+end
+
 function distance(x1, y1, x2, y2)
  return sqrt((x2 - x1)^2 + (y2 - y1)^2)
 end
@@ -495,18 +686,6 @@ function get_stage_by_type(stagetype)
  return nil
 end
 
-function transition_to_playmap()
- stagetype = "playmap"
- party={{charidx=1,x=nil,y=nil},{charidx=4,x=nil,y=nil}}
- transition_to_map({mp=1,loc={x=1, y=14}})
- active={x=3,y=13,charidx=2,lookingdir=nil}
- pal(14,14,1)
- pal(5,5,1)
- pal(12,12,1)
- pal(1,1,1)
- pal(13,13,1)
-end
-
 function get_rand_idx(arr)
  return flr(rnd(#arr))+1
 end
@@ -516,8 +695,7 @@ function get_char_idle_dialog(charidx)
  local idles=characters[charidx].idle
  for idle in all(idles) do
   idle_dialogs[#idle_dialogs+1]={
-   dialog={{speakeridx=charidx,text=idle}},
-   repeatable=true
+   dialog={{speakeridx=charidx,text=idle}}
   }
  end
  return idle_dialogs
@@ -543,7 +721,7 @@ function draw_fancy_text_box(text,x,y,active)
 end
 
 function get_all_npcs()
- return union_arrs(party, maps[mapscurrentidx].npcs)
+ return union_arrs(party, maps[active.mapsidx].npcs)
 end
 
 function union_arrs(arr1, arr2)
@@ -583,12 +761,15 @@ function draw_character_dialog_box(dialogobj)
  pal(12,12)
 end
 
-function selection_is_on_location(location)
- if active.lookingdir == nil then
-  return false
+function get_sel_info_btn(lkdrbtn)
+ local spri,selx,sely=234,0,2*lkdrbtn-5
+ if lkdrbtn==2 or lkdrbtn==3 then
+  spri=250
+ else
+  selx=2*lkdrbtn-1
+  sely=0
  end
- local selection=lookingdirselmap[active.lookingdir+1]
- return active.x+selection.x == location.x and active.y+selection.y == location.y
+ return {i=spri,x=selx,y=sely}
 end
 
 function drop_first_elem(arr)
@@ -605,41 +786,9 @@ function draw_fancy_box(x,y,w,h,fg,otlntl,otlnbr)
  line(x+1,y+h,x+w-1,y+h,otlnbr) -- bottom line
  line(x,y+1,x,y+h-1,otlntl) -- left line
  line(x+w,y+1,x+w,y+h-1,otlnbr) -- right line
-end
-
-function transition_to_map(dest)
- mapscurrentidx = dest.mp
- active.x = dest.loc.x
- active.y = dest.loc.y
- dialog_idx=1
- for i=1,#party do
-  didadd=false
-  repeat
-   x=flr(rnd(3))+active.x-1
-   y=flr(rnd(3))+active.y-1
-   if is_element_in(walkable, mget(x+maps[mapscurrentidx].cellx, y+maps[mapscurrentidx].celly)) then
-    didadd = true
-    party[i].x=x
-    party[i].y=y
-   end
-  until didadd
- end
- text_to_display.maptitle={x=16,y=64,txt=maps[mapscurrentidx].title,frmcnt=60}
- -- check alt tiles
- if not is_element_in(altsset, mapscurrentidx) then
-  local srctiles=get_sourceidxs()
-  for i=0,15 do
-   for j=0,15 do
-    local tilspr=mget(i+maps[mapscurrentidx].cellx, j+maps[mapscurrentidx].celly)
-    if (is_element_in(srctiles,tilspr)) then
-     local dsts=get_by_source(tilspr).dsts
-     local randsel=get_rand_idx(dsts)
-     mset(i+maps[mapscurrentidx].cellx, j+maps[mapscurrentidx].celly, dsts[randsel])
-    end
-   end
-  end
-  altsset[#altsset+1]=mapscurrentidx
- end
+ pset(x,y+h,0) -- left black dot
+ pset(x+w,y+h,0) -- right black dot
+ line(x+1,y+h+1,x+w-1,y+h+1,0) -- bottom black line
 end
 
 function get_by_source(source)
@@ -685,6 +834,7 @@ function string_n_inst(hs, n, inst)
  return match
 end
 
+-->8 from our friends
 -- print small and pretty
 function printsp(s,...)
  print(smallcaps('^'..s),...)
@@ -743,54 +893,54 @@ ddffffddd1ffff1dddd4444444444ddddd888844444888ddddd6666666666ddddddbbbbddbbbbddd
 d737737dd697796ddd44774ff47744dddd8877ffff7748dddd667766667766ddddb3773bb3773bddd744447dd000000dddd0100111001ddddddff077f077fddd
 d733337dd677776dddf7607ff7607fdddd47607ff76074dddd676076676076ddddb7607bb7607bddd477774dd000000dddd10aa010aa0ddddddfffffeffffddd
 dd0dd0ddd202202dddf7007ff7007fddddf7007ff7007fdddd670076670076dddd370073370073ddddcddcdddd0dd0ddddd10a0111a00ddddddff9feefaffddd
-ddddddddddddddddddff77ffff77ffddddff77ffff77ffdddd667766667766dddd337733337733dddddddddd888888881dd0100111001dd1dddff09aaa0ffddd
-dddddddddddddddddddff0ffff0ffddddddff0ffff0ffdddddd6666556666ddddd3b03333330b3dddd4dd4dd8888888801d0008888000d10ddddff0000ffdddd
-ddddd60ddddddddddddff000000ffddddddfff0000fffdddddd6665555666ddddd3bb000000bb3ddddaaaedd8888888800d0887676880d00dddddffffffddddd
-dccce665ddd3d3ddddddff0000ffddddddddffffffffdddddddd66655666ddddddd3bbbbbbbb3ddddd47777d888888880dd8670000678dd0ddddd22222dddddd
-ddcceeddddd030ddddd733ffff337dddddddd1ffff1dddddddddee6666eedddddddd33333333dddddd4040dd888888880d008867678800d0dd51cfffffc150dd
-dd9c77dddd3333dddd773377773377ddd11111177111111dddd7eeeeeeee7dddddd3333333333ddddd4444dd888888880d000088880000d0d0001ccfcc10000d
-ddddddddd3333dddd77733777733777d1111197777911111ddc77eeeeee77cddddb3333333333bddd4aaaa4d8888888800110110100011000000011111000000
-ddddddddd3b3bdddd77333333333377d1197777777777911dcc7777777777ccddbb3333333333bbdddaaaadd8888888800001001011100000000000000000000
-51dddd15dd0000dd1d5d5ddddddd5d15dd655555555555ddd00ddd0000ddd00ddddddddddddddddd8888888800202020ddddddddddddddddddddd4ddddd4dddd
-15111151dd0000dd11d5ddddddd5511dd65555555555552dd00d00000000d00dddd4444444444ddd8888888800944490ddddddddddddddddddddd44dddd44ddd
-51161615d000000dd115dd1111d51155d66666666666622dd000c00000c0000dd44477444477444d8888888800045400dddd4dddddd4dddddddd444dde4e4ddd
-d511115dddf0f0dd5511d6611665155dd65555555555552ddd0cac000cac00dd44476074476074448888888800045400ddd44dddccd44ddddddd99999eee9ddd
-ddd11dddd54ff44add51677667761ddddd666666666662ddddcaeac0caeac0dd44470074470074448888888800045400ddd4411111144dddddd99977997999dd
-d111111d460000a9d5dd67766776d5ddddff760ff760ffdddcaeeea0aeeeacdd44447744447744448888888800044400ddd44ccc11144dddddd27744774774dd
-d111111dd6000060dddd16611661ddddddff700ff700ffddddcaeac0caeac0dd4d444440044444448888888800202020ddd441cccc144dddddd24aa444aa44dd
-1d1dd1d1dd5dd5dddddd11111111ddddddfff7799f77ffdddd0cac000cac00dd4d44f700007744d48888888800002000dddd4aa444aaddddddd24a0444a044dd
-ddddddddddddddddddddd111111ddddddddfff9999fffdddd050c00000c00ddddd47f770077774dd0020202044444444ddd4a0092a009dddddd26444444446dd
-dddcacacdddddddddddddd1111dddddddddffff99f0ffdddd050e00000e00dddddd77ff777777ddd0004740042222224ddd4a0092a009dddddd24644004464dd
-dddaeaeadddddddddddd11111111ddddddddff0000ffdddd00557eeeee70dddddd57777ffff74ddd0004440042333324ddd4299555994ddddddd446044064ddd
-dd0cacacdddddddddddd11111111ddddddd222ffff220ddd000567676765ddddd54577777444dddd0004740042377324ddd4455000554ddddddd464444446ddd
-d0070700ddddd474ddd1111111111ddddd040000000044dd000556565655ddddd54455777455dddd0004740042333324ddd44544ee454ddddddd62222222d6dd
-00007070dd474070ddd1111111111dddd55200000000255d00005555555ddddd544444555545dddd0004440042773324dd111111111111ddddd7777747777ddd
-0d000005d47744e4ddd1111111111ddd0005000000099000000000000ddddddd44477775775ddddd0004740042555524d77777777777777dddaaaaaaaaaaaadd
-dd0d50d54d7dd7ddddd1111111111ddd00050000009aa900000000000ddddddd77777775775ddddd00202020424444241111111111111111da99aaaaaaaa99ad
-dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd4444444442886824dddddddddddddddddddddddddddddddd
-ddddddddddd0c0dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd4444244442666824dddddd0000dddddddddddddddddddddd
-dddddddddd44ccdddddddddddd000ddddddddddddddddddddddddd7777dddddddddddddddddddddd4442552422886622ddddd0dddd0ddddddddddddd666ddddd
-ddddddddd444844ddddddd0dd05000ddddddddddddddddddddddd777777ddddddddd99999999dddd4465525442222224dddd0dd11dd0dddddddd66666666dddd
-dd0000ddd400804ddddddd00d00050dddddddddccccddddddddd77777777ddddddd9999999999ddd42562554442aa244ddddd011110dddddddd6666666666ddd
-d0000050dd0000dddddddd00d00000dddddddddccccddddddddd777a07a0dddddd99aaa999aaa9dd4052652244299244ddddd0d55d0dddddddd66777677766dd
-d0000000dd0000dddddd555555000ddddddddddc00ccdddddddd77700700dddddd9a000a9a000add4525264444298244ddd6dd0550dd6ddddd6661776771666d
-dd0dd0ddddd99dddddd5000000555dddddddddcc00ccdddddddd77777077dddddd9a000a9a000add4050444442222224dddd6d5aa5d6ddddd56667766677666d
-ddd999ddddd77dddddd5000000005dddddddddcc11cc1ddddddd5077000ddddddd99aaa949aaa9dd4444444444444444ddddd6a97a6ddddd556666666666666d
-dd90909ddd7070ddd00500000005000ddddddd1ccccc1fdddddd5607777ddddddd999994949999dd4455544444433444dd66dda79add66dd555666aaaaaa666d
-dd99999ddd7777dd00050000005000dddddd558111c1ffdddddd6670505dddddddd9976767699ddd45555544443bb344ddddd65aa56dddddd55666a0880a665d
-dd90009dddd700dddddd555555ddddddddd5558882110fdddd77566777dddddddddd96767679dddd4555554443bbbb34dddd6dd11dd6ddddd55566aa88aa55dd
-daf999addd767dddddddd00ddddddddddd555588822f0fdd77dd56ddd677ddddddddababbabadddd455555443b3bb3b3ddd6dd1111dd6ddddd55566688655ddd
-daafffaad7d6d7ddddddd00dddddddddd555558882220f5d776666666d677dddddddababbab9dddd4655564443333334ddddddddddddddddddd5555666555ddd
-dffffffddd767dddddddd0dddddddddd555544888225555577dd56ddd6d77ddddddabbab39339ddd4066644449a44a94dddddddddddddddddddd55555555dddd
-ddaddadddd6d6ddddddddddddddddddd5554448882445555d77776666ddd77dddddabab333939ddd405054444a4444a4ddddddddddddddddddddddd5555ddddd
-dd999ddddd9999dddddddddd44ddddddddddddd444dddddddddd22244422ddddd44444444422244d4444444444444444333332333333433333333333ddddd666
-d90909ddd944944ddddddd94444ddddddddddd99444ddddddd333333333333dd44444244444444444444444444444444333324333344944333bbbb33dddd6665
-d99999ddd999999ddddd99999999dddddddd99999999dddddddd99999999ddddd44224442222244d444444444444444433323233333993333bbbbbb3dddd4655
-d90009dddd9777ddddd9900999009dddddd9900999009dddddd9900999009dddd42444444444424d4446674446666674332323433339933333bbbb33dddd445d
-dd999dddd3a3a3adddd9000090000dddddd9000090000dddddd9000090000ddddd444774447744dd4665564466666666334233333333233333bbbb33ddd44ddd
-d7d6d7ddd3a3a3addd9a0000a0000adddd9a0000a0000adddd9a0000a0000addddd47607f7607ddd4666664446666664332333333444244333bbbb33dd44dddd
-dd767dddd3a3a3addd99a00a9a00a9dddd99a00a9a00a9dddd99a00a4a00a9dddddd7007f7007ddd445445444454454434343333334444333b3333b3444ddddd
-dd6d6dddd3a3a3addd999aa999aa99dddd999aa900aa99dddd999aa444aa99dddddde77fff77eddd2454454224544542333333333333333333333333d4dddddd
+ddddddddddddddddddff77ffff77ffddddff77ffff77ffdddd667766667766dddd337733337733dddddddddddddddddd1dd0100111001dd1dddff09aaa0ffddd
+dddddddddddddddddddff0ffff0ffddddddff0ffff0ffdddddd6666556666ddddd3b03333330b3dddd4dd4dddd5dd5dd01d0008888000d10ddddff0000ffdddd
+ddddd60ddddddddddddff000000ffddddddfff0000fffdddddd6665555666ddddd3bb000000bb3ddddaaaeddddccccdd00d0887676880d00dddddffffffddddd
+dccce665ddd3d3ddddddff0000ffddddddddffffffffdddddddd66655666ddddddd3bbbbbbbb3ddddd47777ddd55cccd0dd8670000678dd0ddddd22222dddddd
+ddcceeddddd030ddddd733ffff337dddddddd1ffff1dddddddddee6666eedddddddd33333333dddddd4040dddd0000dd0d008867678800d0dd51cfffffc150dd
+dd9c77dddd3333dddd773377773377ddd11111177111111dddd7eeeeeeee7dddddd3333333333ddddd4444ddd5c7775d0d000088880000d0d0001ccfcc10000d
+ddddddddd3333dddd77733777733777d1111197777911111ddc77eeeeee77cddddb3333333333bddd4aaaa4dd5cccc5d00110110100011000000011111000000
+ddddddddd3b3bdddd77333333333377d1197777777777911dcc7777777777ccddbb3333333333bbdddaaaadddd0dd0dd00001001011100000000000000000000
+51dddd15dd0000dd1d5d5ddddddd5d15dd655555555555ddd00ddd0000ddd00ddddddddddddddddd0020202000202020ddddddddddddddddddddd4ddddd4dddd
+15111151dd0000dd11d5ddddddd5511dd65555555555552dd00d00000000d00dddd4444444444ddd0004740000944490ddddddddddddddddddddd44dddd44ddd
+51161615d000000dd115dd1111d51155d66666666666622dd000c00000c0000dd44477444477444d0004440000045400dddd4dddddd4dddddddd444dde4e4ddd
+d511115dddf0f0dd5511d6611665155dd65555555555552ddd0cac000cac00dd44476074476074440004740000045400ddd44dddccd44ddddddd99999eee9ddd
+ddd11dddd54ff44add51677667761ddddd666666666662ddddcaeac0caeac0dd44470074470074440004740000045400ddd4411111144dddddd99977997999dd
+d111111d460000a9d5dd67766776d5ddddff760ff760ffdddcaeeea0aeeeacdd44447744447744440004440000044400ddd44ccc11144dddddd27744774774dd
+d111111dd6000060dddd16611661ddddddff700ff700ffddddcaeac0caeac0dd4d444440044444440004740000202020ddd441cccc144dddddd24aa444aa44dd
+1d1dd1d1dd5dd5dddddd11111111ddddddfff7799f77ffdddd0cac000cac00dd4d44f700007744d40020202000002000dddd4aa444aaddddddd24a0444a044dd
+ddddddddddddddddddddd111111ddddddddfff9999fffdddd050c00000c00ddddd47f770077774dd4444444444444444ddd4a0092a009dddddd26444444446dd
+dddcacacdddddddddddddd1111dddddddddffff99f0ffdddd050e00000e00dddddd77ff777777ddd4425244444333344ddd4a0092a009dddddd24644004464dd
+dddaeaeadddddddddddd11111111ddddddddff0000ffdddd00557eeeee70dddddd57777ffff74ddd4225224443bbbb34ddd4299555994ddddddd446044064ddd
+dd0cacacdddddddddddd11111111ddddddd222ffff220ddd000567676765ddddd54577777444dddd4255524443bbbb34ddd4455000554ddddddd464444446ddd
+d0070700ddddd474ddd1111111111ddddd040000000044dd000556565655ddddd54455777455dddd422522443b3bb3b3ddd44544ee454ddddddd62222222d6dd
+00007070dd474070ddd1111111111dddd55200000000255d00005555555ddddd544444555545dddd4625264443333334dd111111111111ddddd7777747777ddd
+0d000005d47744e4ddd1111111111ddd0005000000099000000000000ddddddd44477775775ddddd4066644449a44a94d77777777777777dddaaaaaaaaaaaadd
+dd0d50d54d7dd7ddddd1111111111ddd00050000009aa900000000000ddddddd77777775775ddddd205054422a4444a21111111111111111da99aaaaaaaa99ad
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd4444444444444444dddddddddddddddddddddddddddddddd
+ddddddddddd0c0dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd4444444444444444dddddd0000dddddddddddddddddddddd
+dddddddddd44ccdddddddddddd000ddddddddddddddddddddddddd7777dddddddddddddddddddddd4444444444444484ddddd0dddd0ddddddddddddd666ddddd
+ddddddddd444844ddddddd0dd05000ddddddddddddddddddddddd777777ddddddddd99999999dddd44522544499999a4dddd0dd11dd0dddddddd66666666dddd
+dd0000ddd400804ddddddd00d00050dddddddddccccddddddddd77777777ddddddd9999999999ddd4225524499999972ddddd011110dddddddd6666666666ddd
+d0000050dd0000dddddddd00d00000dddddddddccccddddddddd777a07a0dddddd99aaa999aaa9dd4222224445555224ddddd0d55d0dddddddd66777677766dd
+d0000000dd0000dddddd555555000ddddddddddc00ccdddddddd77700700dddddd9a000a9a000add4454454444544544ddd6dd0550dd6ddddd6661776771666d
+dd0dd0ddddd99dddddd5000000555dddddddddcc00ccdddddddd77777077dddddd9a000a9a000add2454454224544542dddd6d5aa5d6ddddd56667766677666d
+ddd999ddddd77dddddd5000000005dddddddddcc11cc1ddddddd5077000ddddddd99aaa949aaa9dda888888444222224ddddd6a97a6ddddd556666666666666d
+dd90909ddd7070ddd00500000005000ddddddd1ccccc1fdddddd5607777ddddddd999994949999dd8222284442452452dd66dda79add66dd555666aaaaaa666d
+dd99999ddd7777dd00050000005000dddddd558111c1ffdddddd6670505dddddddd9976767699ddd8888844442452452ddddd65aa56dddddd55666a0880a665d
+dd90009dddd700dddddd555555ddddddddd5558882110fdddd77566777dddddddddd96767679dddd8282884442452452dddd6dd11dd6ddddd55566aa88aa55dd
+daf999addd767dddddddd00ddddddddddd555588822f0fdd77dd56ddd677ddddddddababbabadddd8222284425502022ddd6dd1111dd6ddddd55566688655ddd
+daafffaad7d6d7ddddddd00dddddddddd555558882220f5d776666666d677dddddddababbab9dddd8282884454450445ddddddddddddddddddd5555666555ddd
+dffffffddd767dddddddd0dddddddddd555544888225555577dd56ddd6d77ddddddabbab39339ddd8222284454450445dddddddddddddddddddd55555555dddd
+ddaddadddd6d6ddddddddddddddddddd5554448882445555d77776666ddd77dddddabab333939ddda888844445544554ddddddddddddddddddddddd5555ddddd
+dd999ddddd9999dddddddddd44ddddddddddddd444dddddddddd22244422ddddd44444444422244d4424444244244244333332333333433333333333ddddd666
+d90909ddd944944ddddddd94444ddddddddddd99444ddddddd333333333333dd44444244444444444422244244422444333324333344944333bbbb33dddd6665
+d99999ddd999999ddddd99999999dddddddd99999999dddddddd99999999ddddd44224442222244d442442224442444433323233333993333bbbbbb3dddd4655
+d90009dddd9777ddddd9900999009dddddd9900999009dddddd9900999009dddd42444444444424d4222442444424444332323433339933333bbbb33dddd445d
+dd999dddd3a3a3adddd9000090000dddddd9000090000dddddd9000090000ddddd444774447744dd4244222444442444334233333333233333bbbb33ddd44ddd
+d7d6d7ddd3a3a3addd9a0000a0000adddd9a0000a0000adddd9a0000a0000addddd47607f7607ddd4224442444442444332333333444244333bbbb33dd44dddd
+dd767dddd3a3a3addd99a00a9a00a9dddd99a00a9a00a9dddd99a00a4a00a9dddddd7007f7007ddd224222444442244434343333334444333b3333b3444ddddd
+dd6d6dddd3a3a3addd999aa999aa99dddd999aa900aa99dddd999aa444aa99dddddde77fff77eddd2444424444244244333333333333333333333333d4dddddd
 dd4444ddddd00ddddd999888888999dddd99999a00a999dddd999899498999ddddddff8fff8ffddd333333333333333333333333333333330222202234444433
 d44444dddd0a0addddd9876676789dddddd99999aa999dddddd9878888789ddddddddff888ffdddd333333333333333333353333333333332020002044444443
 ddf0f0dddd0000ddddd9867767689dddddd9a0000000adddddd9867767689dddddddddfffffddddd333333333344333335553335333333332020202044222243
@@ -800,11 +950,11 @@ df7777fdd000000dddaaffffffffaaddddd7777777777dddddaaffffffffaadddd777656665677dd
 d555555dd000000daaaaffffffffaaaad77dd777777dd77daaaaffffffffaaaa7777765565567777334432329392333335600077333333332020202033444b3b
 d54dd45ddd0dd0ddaaffffffffffffaa7dd77dd77dd77dd7aaffffffffffffaa77777766766777773432323329443333377500763335533320002000333333b3
 00000000000000009090000000000000000000000000000000000000000000000000000000000000329233234434222337755077335555552202220222222244
-00099900000000990900009009000004444000000000000000000000000000000000000000000000329323442499233337777777366556630000000045555544
-00900090000000000900090000900040000402200aaaa00a0000a0aaaaa0aaaa000aaaaaaa0a000a323944242929933337777667755577730222022245555544
-0900200900000090900900999900000000000220a9999a0a0000a0a99990a999a00a99a99a0a000a32442422299b9b3334740077550700730000000045555544
-0902420900009009009000000000004444400000a0000a09a00a90a00000a000a00900a0090a000a343992233399b33335444077500600632202220220505044
-0900200900090009090900999900000990040020a0000a00a00a00aaaaa0aaaa900000a0000a000a339929333333333334544074400705730000000027777744
+00099900000000990900009009000004444000000000000000000000000000000000000000000000329323442499233337777777366556630000000046666644
+00900090000000000900090000900040000402200aaaa00a0000a0aaaaa0aaaa000aaaaaaa0a000a323944242929933337777667755577730222022246907944
+0900200900000090900900999900000000000220a9999a0a0000a0a99990a999a00a99a99a0a000a32442422299b9b3334740077550700730000000045970944
+0902420900009009009000000000004444400000a0000a09a00a90a00000a000a00900a0090a000a343992233399b33335444077500600632202220220202044
+0900200900090009090900999900000990040020a0000a00a00a00aaaaa0aaaa900000a0000a000a339929333333333334544074400705730000000027676744
 0090000090009990000009000090009009000002a0000a00a00a00a99990aa99000000a0000aaaaa3b9b99333333333355454476677557730222022242555244
 0000000944444444444444444444444444444444a0000a00a00a00a00000a9aa000000a0000a999a33b993333333333344544974475557730000000042444244
 0000090400000000a0000a009aa900a000a0a099a00000a0000a000a0a000a0000000a00aaaa00a0000004444444444400000000000000004244444433333333
@@ -823,30 +973,30 @@ aa00a9aa000a000a0a00000a0a0a0000000a00aa00a00a00a00a00000a0000000009040009000000
 000000000000000000000000000000000000aa00aa00a0000a0aaaaa0aaaaa0000900000000220090000443333333b4666666664c455e0009a999a9900200020
 00a000aa000a00000a00000000000000000099009900900009099999099999000009009090000900000000433333bbb4444444444455e0009a999a9920202020
 00a000aa000a00000a000000000000000000000000000000000000000000000000009900090000990000004e3333b22eeeeeeee5e455e0004a944a9420002000
-444444448888888888888888888888888888888888888888888888888888888888888888888888880000004e12ccccc2eeeeeee1e455e0004244444444444444
-00000000888888888888888888888888888888888888888888888888888888888888888888888888000004ee5e22222eeeeeeee1e45e00004343424444442244
-090440908888888888888888888888888888888888888888888888888888888888888888888888880000004444411dadeeeeeee5e4e000004234424444444444
-904444098888888888888888888888888888888888888888888888888888888888888888888888880000000000011dda44444444400000004244424411111111
-0024420088888888888888888888888888888888888888888888888888888888888888888888888800000000001111a000000000000000004243434444444444
-90022009888888888888888888888888888888888888888888888888888888888888888888888888000000000104001000000000000000004244324442244444
-00900900888888888888888888888888888888888888888888888888888888888888888888888888000000000104001000000000000000004244424444444444
-99000099888888888888888888888888888888888888888888888888888888888888888888888888000000000000000000000000000000004444424411111111
-d4444444444444d0888888888888888888888888888888888888888888888888888888888888888833333333333333333333333333333333cccccccc44444444
-d2444444444444d48888888888888888888888888888888888888888888888888888888888888888333333333b3b33333333333333333333cccccccc44444444
-dd4444494944444288888888888888888888888888888888888888888888888888888888888888883333333333b33333333bbb3333333333cccccccc44444444
-d44449904099444d8888888888888888888888888888888888888888888888888888888888888888333333333333333333bbbbb333333333cccccccc44444444
-024490004000944488888888888888888888888888888888888888888888888888888888888888883b3b33333333b3b33bbbbbb333333333cccccccc44444444
-dd24000292000944888888888888888888888888888888888888888888888888888888888888888833b3333333333b333bbbbbb333333333cccccccc44444444
-ddd4002904200042888888888888888888888888888888888888888888888888888888888888888833333333333333333bbbbbb333333333cccccccc44444444
-04d420400440204d888888888888888888888888888888888888888888888888888888888888888833333333333333333333333333333333cccccccc44444444
-d24404499444440d8888888888888888888888888888888888888888888888888888888888888888333333330343433033333333ccc7cc7ccccc7ccc44464446
-ddd044900994040d88888888888888888888888888888888888888888888888888888888888888884332483434334444333333337ccc7cc7c56667cc45646564
-dd4499000009444d8888888888888888888888888888888888888888888888888888888888888888343443430433442333333333c7cc7cc75666667c44544454
-dd4900022000944d8888888888888888888888888888888888888888888888888888888888888888243423433343040333333333c7cc7c7c5666667c44446464
-dd4000244000042d88888888888888888888888888888888888888888888888888888888888888883844443233344423333333337cc7cccc5666667c44644654
-dd420244042024dd8888888888888888888888888888888888888888888888888888888888888888332243333333002333333333ccccc7ccc566667c44644464
-d4404444044404dd8888888888888888888888888888888888888888888888888888888888888888334443333330420333344233cccccc7cc56667cc56545664
-d4004440444042dd8888888888888888888888888888888888888888888888888888888888888888344422333044222330442243ccccc7cccccc7ccc45444554
+444444444444404444444444444444444444444488888888888888888888888888888888124414440000004e12ccccc2eeeeeee1e455e0004244444444444444
+00000000444442404422222444444444444444448888888888888888888888888888888841112244000004ee5e22222eeeeeeee1e45e00004343424444442244
+090440904444424244455544424444444444444488888888888888888888888888888888444444440000004444411dadeeeeeee5e4e000004234424444444444
+904444094442242444547754452444444444444488888888888888888888888888888888114111410000000000011dda44444444400000004244424411111111
+0024420046722674445007544524444444444444888888888888888888888888888888884441241400000000001111a000000000000000004243434444444444
+90022009766226654450005445424444444444448888888888888888888888888888888842144114000000000104001000000000000000004244324442244444
+00900900465656544450005445000504444444448888888888888888888888888888888844441444000000000104001000000000000000004244424444444444
+99000099444224444445554444555000444444448888888888888888888888888888888811111111000000000000000000000000000000004444424411111111
+d4444444444444d0dddddddddddddddd88888888888888888888888888888888444444442020202033333333333333333333333333333333cccccccc44444444
+d2444444444444d4dddddddddddddddd888888888888888888888888888888884222222402002022333333333b3b33333333333333333333cccccccc44444444
+dd44444949444442dddddddddddddddd8888888888888888888888888888888842333324000000003333333333b33333333bbb3333333333cccccccc44444444
+d44449904099444ddddddddddddddddd888888888888888888888888888888884237732400000000333333333333333333bbbbb333333333cccccccc44444444
+0244900040009444d5dddddc1ddddd5d8888888888888888888888888888888842333324000002003b3b33333333b3b33bbbbbb333333333cccccccc44444444
+dd24000292000944d75dccc1ccccd57d88888888888888888888888888888888427733242020002033b3333333333b333bbbbbb333333333cccccccc44444444
+ddd4002904200042d75c11111111c57d88888888888888888888888888888888425555240220202033333333333333333bbbbbb333333333cccccccc44444444
+04d420400440204dd755c11ccccc557d88888888888888888888888888888888424444242000200033333333333333333333333333333333cccccccc44444444
+d24404499444440dd5555cc11115555d888888888888888888888888888888884288682444444444333333330343433033333333ccc7cc7ccccc7ccc44464446
+ddd044900994040ddd7007700077007d8888888888888888888888888888888842666824444424444332483434334444333333337ccc7cc7c56667cc45646564
+dd4499000009444ddd7076070760707d888888888888888888888888888888882288662244425524343443430433442333333333c7cc7cc75666667c44544454
+dd4900022000944ddd7070070700707d888888888888888888888888888888884222222444655254243423433343040333333333c7cc7c7c5666667c44446464
+dd4000244000042dd77007700577007788888888888888888888888888888888442aa244425625543844443233344423333333337cc7cccc5666667c44644654
+dd420244042024ddddd70000500507dd888888888888888888888888888888884429924440526522332243333333002333333333ccccc7ccc566667c44644464
+d4404444044404dddd7777775007777d888888888888888888888888888888884429824445252644334443333330420333344233cccccc7cc56667cc56545664
+d4004440444042dddddc1c55055555dd888888888888888888888888888888884222222440504444344422333044222330442243ccccc7cccccc7ccc45444554
 333333333333333333333333333333333333333663333333888888888888888833333332233333335555555533399933333333337ccccccccccccccc44444466
 333333355000333333355533333333333333336aa6553333888888888888888833333388883333335c55c55533999a9333333333c7ccc7cccccc7ccc46454454
 3333335445000333355555553333333333333379a75553338888888888888888333333377333333355c55c55399aa999333333337ccccc7cccc657cc45456644
@@ -864,22 +1014,22 @@ d4004440444042dd8888888888888888888888888888888888888888888888888888888888888888
 334424424424442255744476677777733337444444447233888888888888888833377755557776635c5555c533242233a99a999a5444dddd224ddddd22d8dddd
 334424424424442344744474477667733332222222222333888888888888888833377666666776335555555594444229da9999add55dddddd22dddddd2dddddd
 __map__
-ebebebebebebebebebebebebebcfcfcfcfcfcfebcececeebebebebebebebebebcdecececcdcdcfcfecececcdcdcdcdebebebebebebebebebebcfcfcfebebebeb7e8e8e8e8e8e8e8e8e8e8e8e8e7e8e7e000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdebcdebdccdeccdcdcdebcdcfcfcfcfcfcfecebcececdcdecebebebebebebcdcdcdcdcdcdcfcfececcdcdcdcdceceebebebcde0e1cdcdcdcfcfcdcdcdcdebafbfbf4a4a4abfbfbf4bbfbfbfafbfaf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdeccdcdeccdcdcdcdececcfcfcfcfebcfcfcfcececee2e3cdcdebdbebebebcdcdebcdcdcdcfcfeccdcdcdebcececeebebcd6cf0f1cdcdcdcfcfcdbe9ecddc3abfbfbfbfbfbf5bbfbfbf5bbfafbf3a000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdcdebcdcdcdebcdeccfcfcfcfcfebebebcfcfeececef2f3cdcdcdcdebebebcdebebcdebcdcfcfcdcdcdcdcecececdebcd6ccfcfcfcf6ccfcfcfcd9e9ecdebafbfbfbfbfbfbfbfbf5bbfbfbfafbfaf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdcdcdecececececcfcfcfcfcfcdebebebceceeeeecfcfcfebeccdcddcebebcdcdcdcdebcdcfcfcdcdececcececdebeb6ccfcfcfcfcfcfcfcfcd6d9e9ecdebafbfbfbfbfbfbfbfbfbfbfbfbfafbfaf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebebcdeccfcfcfcfcfcfcfcfeccdcdebcecececeeecfcfcfcfcfcfeccdcdebebcdebebcdebcdcfcf9fcdcdecceceebcdebcdcdcdcdcfcfcfcfcfcd9ebe9ecdeb2bbfbfbfbfbfbfbfbfbfbfbfbf2bbf3a000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdcdcfcfcfcfcfcfcfcfcfeccdebebcececeebcfcfcfcfcfcfcfcdcdcdebebcdcdcdcdcdcdcfcfcfcdcdcdcecececdebebececcdcfcfcfcfcfcdcdbe9ecdebafbfbfbf6abfbfbfbf6bbfbfbfafbfaf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdcdcfcddbcdcfcfcfececcdcdecebceceebebebcfcfcfcfcfebebcdcdebebebcdcdcdcdeccfcfcfcfcdcdcdcececeebcdcdcdcd6dcfcfcfcfe8e9ececcdcd7e8e8e8e8e8e8e8e8e8e8e8e8e7ebfaf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebebcdcfcdcdcfcfcfeccdcdcdcdcdebebebebebeb6ccfcfcfcfecebebcdebebcdcdebebcdcdeccfcfcfcdcdcdcdceceebcd9ebe9ecdcdcfcfcff8f9cdcdcdaeaf4abfbf6a6abfbfbfbfbf6bbfbfbfaf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcddccfcfcfcfcfeccdebcdcdebcdebebebebeb6ccfcfcfececebebeccdebebcdebcdcdcdcdeccfcfcfcfcdcdcdcdcdebcd9e9e9ebecdcdcfcfcfcdcdaeaeaeaf4abfbfbfbfbfbfbfbfbfbfbfbfbfaf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdcdcfcfcfcfeccdcdcdcdeccdebebebebeb6ccfcfcfecebebebebcdcdebebcdcdcdcdebcdcdeccfcfcfcfcdcdebebebcdbe9ebe9e6e6ecfcfeccdaeaeaeaeafbfbf4abfbfbfbfbfbf6bbfbfbfbfaf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdcfcfcfcfeccdcdcdcdcdcdcdebebebeb6ccfcfcfcdebcdcdebebcdcdebebebcdcdcdebebcdcdeccfcfcfcfcdcdebebcd9e9ebecdcd6ccfcfeccdaeaeaeaeafbf4a5abfbfbfbfbfbfbfbfbfbfbfaf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcfcfcfcfcdcdcdcdeccdebcdcdebebeb6ccfcfcfcdcdcdcdcddceccdcdebebebcdcddccdebcdcdcdcdcfcfcfcfcdebebcdcdcdcdcdcfcfcfcfeccdaeaeaeaeafbfbfbfbfbfbfbfbfbf6bbfbfbf4aaf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-cfcfcfcfcdcdebcdebcdcdcdcdeccdebebcfcfcfcdcdcdcdcdcdcdcdcdcdebebebcdcdcdcdcdcdcdcdcdcdcfcfcfcfcfebcdaeaeaecdcfcfcfcf7a7baeaeaeaeafbfbfbfbfbfbfbfbfbfbfbfbfbf4aaf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-cfcfcfcdcdcdeccdcdcdcdebcdcdcdebcfcfcfcfcdcdcdecdccdcdcdcdcdebebebdbcdcdcdcdcdcdcdcdcdcdcdcfcfcfebcdaeaeaecdcdcfcfcf8a8baeaeaeaeafbfbfbf6a6abfbfbfbfbf6bbfbf4aaf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-cfcfebebebebebebebebebebebebebebcfcfcfebebebebebebebebebebebebebebebebebebebebebebebebebebcfcfcfdbcdaeaeaeaecdcfcfcdcdcdcdaeaeae7eafafafafafafafafafafafafafaf7e000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ebebebebebebebebebebebebebcfcfcfcfcfcfebcececeebebebebebebebebebcdecececcdcdcfcfecececcdcdcdcdebebebebebebebebebebcfcfcfebebebeb7e8e8e8e8e8e8e8e8e8e8e8e8e7e8e7e7e8e8e8e8e8e8e8e8e8e8e8e8e8e8e7e0000000000000000000000000000000000000000000000000000000000000000
+ebcdebcdebdccdeccdcdcdebcdcfcfcfcfcfcfecebcececdcdecebebebebebebcdcdcdcdcdcdcfcfececcdcdcdcdceceebebebcde0e1cdcdcdcfcfcdcdcdcdebafbfbfd9d9d9bfbfbfd85bbfbfafbfafafbfbfbfbf4abfbfbfbfbfbfbfbfbfaf0000000000000000000000000000000000000000000000000000000000000000
+ebcdeccdcdeccdcdcdcdececcfcfcfcfebcfcfcfcecececdcdcdcdebdbebebebcdcdebcdcdcdcfcfeccdcdcdebcececeebebcd6cf0f1cdcdcdcfcfcdbe9ecddc2abfbfbfbfbfbf5abfbfbf3bbfafbf2aafbfbfbfbfbfbfbfbfbfbfbfb9b9bfaf0000000000000000000000000000000000000000000000000000000000000000
+ebcdcdebcdcdcdebcdeccfcfcfcfcfebebebcfcfeecececdcdcdcdcdcdebebebcdebebcdebcdcfcfcdcdcdcdcecececdebcd6ccfcfcfcf6ccfcfcfcd9e9ecdebafbfbfbfbfbfbfbfbf3bbfbfbfafbfaf2abfbfbfbfbfbfbfbfbfbfbfbfbfbf2a0000000000000000000000000000000000000000000000000000000000000000
+ebcdcdcdecececececcfcfcfcfcfcdebebebceceeeeecfcfcfebeccdcddcebebcdcdcdcdebcdcfcfcdcdececcececdebeb6ccfcfcfcfcfcfcfcfcd6d9e9ecdebafbfbfbfbfbfbfbfbfbfbfbfbfafbfafafbfb9b9bfbfbfbfbfbfbfbfbfbfbfaf0000000000000000000000000000000000000000000000000000000000000000
+ebebcdeccfcfcfcfcfcfcfcfeccdcdebcecececeeecfcfcfcfcfcfeccdcdebebcdebebcdebcdcfcf9fcdcdecceceebcdebcdcdcdcdcfcfcfcfcfcd9ebe9ecdeb2bbfbfbfbfbfbfbfbfbfbfbfbf2bbf2aafbfbfbfbfbfbfbfbfbfbfbfbfbf5baf0000000000000000000000000000000000000000000000000000000000000000
+ebcdcdcfcfcfcfcfcfcfcfcfeccdebebcececeebcfcfcfcfcfcfcfcdcdcdebebcdcdcdcdcdcdcfcfcfcdcdcdcecececdebebececcdcfcfcfcfcfcdcdbe9ecdebafbfbfbf4abfbfbfbf3abfbfbfafbfafafbfbfbfbfbfbfbfbfbfbfbfbfbf5baf0000000000000000000000000000000000000000000000000000000000000000
+ebcdcdcfcddbcdcfcfcfececcdcdecebceceebebebcfcfcfcfcfebebcdcdebebebcdcdcdcdeccfcfcfcfcdcdcdcececeebcdcdcdcd6dcfcfcfcfe8e9ececcdcd7e8e8e8e8e8e8e8e8e8e8e8e8e7ebfafafbfbfbfbfbfbfbfbfbfbfbfbfbf5baf0000000000000000000000000000000000000000000000000000000000000000
+ebebcdcfcdcdcfcfcfeccdcdcdcdcdebebebebebeb6ccfcfcfcfecebebcdebebcdcdebebcdcdeccfcfcfcdcdcdcdceceebcd9ebe9ecdcdcfcfcff8f9cdcdcdaeafd9d96bbfbf4ab2bfbf3abfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfb9b9bfaf0000000000000000000000000000000000000000000000000000000000000000
+ebcddccfcfcfcfcfeccdebcdcdebcdebebebebeb6ccfcfcfececebebeccdebebcdebcdcdcdcdeccfcfcfcfcdcdcdcdcdebcd9e9e9ebecdcdcfcfcfcdcdaeaeaeafbfbf6bbfbfbfbfbfbfbfbfbfbfbfafaf5bbfbfbfbfbfbfbfbfbfbfbfbfbfaf0000000000000000000000000000000000000000000000000000000000000000
+ebcdcdcfcfcfcfeccdcdcdcdeccdebebebebeb6ccfcfcfecebebebebcdcdebebcdcdcdcdebcdcdeccfcfcfcfcdcdebebebcdbe9ebe9e6e6ecfcfeccdaeaeaeae2abfbf6bbfbfbfbfbfbfbfbfbfbfbfafaf5bbfbfbfbfbfbfbfbfbfbfbfbfbfaf0000000000000000000000000000000000000000000000000000000000000000
+ebcdcfcfcfcfeccdcdcdcdcdcdcdebebebeb6ccfcfcfcdebcdcdebebcdcdebebebcdcdcdebebcdcdeccfcfcfcfcdcdebebcd9e9ebecdcd6ccfcfeccdaeaeaeaeafbfbf6bbfbfbfbfbfbfbfbfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfbfbfbfaf0000000000000000000000000000000000000000000000000000000000000000
+ebcfcfcfcfcdcdcdcdeccdebcdcdebebeb6ccfcfcfcdcdcdcdcddceccdcdebebebcdcddccdebcdcdcdcdcfcfcfcfcdebebcdcdcdcdcdcfcfcfcfeccdaeaeaeae2abfbf6bbfbfbfbfbfbfbfbfbfbfbfaf2abfbfbfbfbfbfbfbfbfbfbfbfbfbf2a0000000000000000000000000000000000000000000000000000000000000000
+cfcfcfcfcdcdebcdebcdcdcdcdeccdebebcfcfcfcdcdcdcdcdcdcdcdcdcdebebebcdcdcdcdcdcdcdcdcdcdcfcfcfcfcfebcdaeaeaecdcfcfcfcf7a7baeaeaeaeafbfbf6abfbfbfbfbfbfbfbfbfbfbfafafb9b9bfbfbfbfbfbfbfbfbfbfbfbfaf0000000000000000000000000000000000000000000000000000000000000000
+cfcfcfcdcdcdeccdcdcdcdebcdcdcdebcfcfcfcfcdcdcdecdccdcdcdcdcdebebebdbcdcdcdcdcdcdcdcdcdcdcdcfcfcfebcdaeaeaecdcdcfcfcf8a8baeaeaeaeafbfbf6bbfbfbfb1bfb2bfb25b5bbfafafbfbfbfbfbfbfbfbfbfbfbfbfbf4aaf0000000000000000000000000000000000000000000000000000000000000000
+cfcfebebebebebebebebebebebebebebcfcfcfebebebebebebebebebebebebebebebebebebebebebebebebebebcfcfcfdbcdaeaeaeaecdcfcfcdcdcdcdaeaeae7eafafafafafafafafafafafafafaf7e7e8e8e8e8e8e8e2b2b8e8e8e8e8e8e7e0000000000000000000000000000000000000000000000000000000000000000
 __sfx__
 000200001a7201b7201d7201f72000700007000070000700007000070000700007000070000700007000070000700007000070000700007000070000700007000070000700007000070000700007000070000700
 9114000020552205522355221552205521e552205522c552245522a5522d5522c5522a5522c5522c5522a5522a5521c5521c5521c55230552305522a5001c5000050200502005020050200002000020000000000
