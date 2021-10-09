@@ -571,7 +571,8 @@ function transition_to_map(dest)
    end
   until didadd
  end
- active.text.maptitle={x=16,y=64,txt=maps[active.mapsidx].title,frmcnt=60}
+ local titlex=63-(2*#maps[active.mapsidx].title)
+ active.text.maptitle={x=titlex,y=56,txt=maps[active.mapsidx].title,frmcnt=60}
  -- check alt tiles
  local amcx,amcy=maps[active.mapsidx].cellx,maps[active.mapsidx].celly
  if not is_element_in(altsset, active.mapsidx) then
@@ -721,6 +722,9 @@ function draw_fancy_box(x,y,w,h,fg,otlntl,otlnbr)
  line(x+1,y+h,x+w-1,y+h,otlnbr) -- bottom line
  line(x,y+1,x,y+h-1,otlntl) -- left line
  line(x+w,y+1,x+w,y+h-1,otlnbr) -- right line
+ pset(x,y+h,0) -- left black dot
+ pset(x+w,y+h,0) -- right black dot
+ line(x+1,y+h+1,x+w-1,y+h+1,0) -- bottom black line
 end
 
 function get_by_source(source)
