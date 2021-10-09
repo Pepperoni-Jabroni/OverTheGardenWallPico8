@@ -115,7 +115,7 @@ local maps={
  }
 }
 local darkspr={
- idxs={204,218,219,235,236,251},
+ idxs={174,204,218,219,235,236,251},
  clrmp={{s=2,d=0},{s=3,d=0},{s=4,d=1},{s=8,d=1},{s=9,d=0},{s=10,d=1},{s=11,d=1}}
 }
 local intro_dialog={
