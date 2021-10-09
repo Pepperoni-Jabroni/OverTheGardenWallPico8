@@ -40,7 +40,7 @@ local active={
  charidx=nil,
  lookingdir=nil,
  flipv=false,
- text={maptitle=nil,dialog={}},
+ text={maptitle=nil,dialog={},charsel=nil},
  stagetype="mainmenu",
  dialog_idx=1,
  mapsidx=nil
@@ -345,6 +345,8 @@ function update_play_map()
   active.x = party[1].x
   active.y = party[1].y
   party=drop_first_elem(party)
+  local charname = tostr(characters[active.charidx].get_name_at_idx(characters[active.charidx],1))
+  active.text.charsel={txt=charname,frmcnt=32}
  end
  -- check for dialog progress
  if btnp(4) and #active.text.dialog > 0 then
@@ -488,6 +490,13 @@ function draw_play_map()
  cls(139)
  -- draw map
  map(activemap.cellx, activemap.celly)
+  -- draw ring around new active char
+ if active.text.charsel != nil and active.text.charsel.frmcnt>0 and flr(active.text.charsel.frmcnt/5)%2==0 then
+  pset(active.x*8,active.y*8+7,12)
+  pset(active.x*8+7,active.y*8+7,12)
+  line(active.x*8+1,active.y*8+6,active.x*8+6,active.y*8+6,12)
+  line(active.x*8+1,active.y*8+8,active.x*8+6,active.y*8+8,12)
+ end
  -- draw player
  spr(characters[active.charidx].mapidx,active.x*8,active.y*8,1,1,active.flipv,false)
  -- draw npcs
@@ -534,11 +543,19 @@ function draw_play_map()
  -- draw active char hud
  local xanchor=1
  if active.x<=3 and active.y<=2 then
-  xanchor=90
+  xanchor=114
  end
- local charname = tostr(characters[active.charidx].get_name_at_idx(characters[active.charidx],1))
- draw_fancy_box(xanchor,1,#charname*4+12, 12, 4,10, 9)
- printsp(charname, xanchor+10, 5, 0)
+ if active.text.charsel != nil and active.text.charsel.frmcnt>0 then
+  if active.x<=3 and active.y<=2 then
+   xanchor=90
+  end
+  local charname=active.text.charsel.txt
+  draw_fancy_box(xanchor,1,#charname*4+11, 11, 4,10, 9)
+  printsp(charname, xanchor+10, 5, 0)
+  active.text.charsel.frmcnt-=1
+ else
+  draw_fancy_box(xanchor,1,11,11,4,10,9)
+ end
  spr(characters[active.charidx].mapidx, xanchor+2, 3)
  -- draw map title
  txtobj=active.text.maptitle
