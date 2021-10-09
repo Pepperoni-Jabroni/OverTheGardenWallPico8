@@ -97,6 +97,7 @@ local maps={
    {dest={mp=3,loc={x=14, y=14}},locs={{x=0,y=0},{x=1,y=0},{x=2,y=0},{x=0,y=1}}},
    {dest={mp=5,loc={x=1, y=5}},locs={{x=7,y=3}}}
   },
+  npcs={},
   discvrdtiles={}
  },
  {
@@ -108,6 +109,7 @@ local maps={
    {dest={mp=2,loc={x=1, y=1}},locs={{x=13,y=15},{x=14,y=15},{x=15,y=15}}},
    {dest={mp=4,loc={x=8, y=14}},locs={{x=7,y=0},{x=8,y=0}}}
   },
+  npcs={},
   discvrdtiles={}
  },
  {
@@ -119,6 +121,7 @@ local maps={
    {dest={mp=3,loc={x=7, y=1}},locs={{x=8,y=15},{x=14,y=15},{x=15,y=15}}},
    {dest={mp=6,loc={x=7, y=14}},locs={{x=4,y=2},{x=5,y=2}}}
   },
+  npcs={},
   discvrdtiles={}
  },
  {
@@ -129,6 +132,7 @@ local maps={
   trans={
    {dest={mp=2,loc={x=7, y=4}},locs={{x=0,y=5}}}
   },
+  npcs={},
   playmapidx=2,
   playmapspr=226,
   playmaploc={x=7,y=2}
@@ -179,12 +183,36 @@ local dialogs={
    {speakeridx=1,text="its a tree face!"},
    {speakeridx=23,text="*howls in the wind*"}
   }
+ },
+ {dialog={
+   {speakeridx=2,text="is that some sort of\nderanged lunatic?"},
+   {speakeridx=2,text="with an ax waiting\nfor victims?"},
+   {speakeridx=6,text="*swings axe and chops \ntree*"},
+   {speakeridx=1,text="we should ask him\nfor help!"}
+  }
  }
 }
-local completed_triggers={}
 local triggers={
- {trig={type="walk",data={m=1,locs={{x=10,y=4},{x=11,y=4}}}},action=function(self)start_dialog(1)end},
- {trig={type="select",data={m=1,locs={{x=5,y=7}}}},action=function(self)start_dialog(2)end},
+ {
+  trig=function(self)return player_on_location({x=10,y=4}) or player_on_location({x=11,y=4})end,
+  action=function(self)queue_dialog(1)end,
+  complete=false,
+ },
+ {
+  trig=function(self)return player_sel_location({x=5,y=7})end,
+  action=function(self)queue_dialog(2)end,
+  complete=false,
+ },
+ {
+  trig=function(self)return playmap_spr_visible(33)end,
+  action=function(self)queue_dialog(3)end,
+  complete=false,
+ },
+ {
+  trig=function(self)return trigger_complete(3)end,
+  action=function(self)queue_move_npc(6,{x=16,y=-1},2,{x=7,y=7})end,
+  complete=false,
+ }
 }
 local menuchars={}
 local stagetypes={
@@ -341,37 +369,24 @@ function update_play_map()
    break
   end
  end
+ -- check for triggers
+ for t in all(triggers) do
+  if not t.complete and t.trig() then
+   t.action()
+   t.complete=true
+  end
+ end
  -- check for talk w/ npcs
  if #active.text.dialog == 0 then
   for npc in all(get_all_npcs()) do
    for i=-1,1 do
     for j=-1,1 do
      if i!=j and npc.x+i==active.x and npc.y+j==active.y then
-      if selection_is_on_location({x=npc.x,y=npc.y}) then
+      if player_sel_location({x=npc.x,y=npc.y}) then
        local idles=get_char_idle_dialog(npc.charidx)
        active.text.dialog[#active.text.dialog+1]=idles[get_rand_idx(idles)]
       end
      end
-    end
-   end
-  end
- end
- -- check for dialog triggers
- for trig in all(dialogs) do
-  if trig.mapidx == active.mapsidx then
-   for location in all(trig.trig_locs) do
-    if (trig.triggertype == "walk" and active.x == location.x and active.y == location.y) or selection_is_on_location(location) then
-     alreadyactive=false
-     for i=1,#active.text.dialog do
-      if active.text.dialog[i].dialog[1].text==trig.dialog[1].text then
-       alreadyactive=true
-      end
-     end
-     if alreadyactive then
-      break
-     end
-     active.text.dialog[#active.text.dialog+1] = trig
-     break
     end
    end
   end
@@ -381,7 +396,7 @@ function update_play_map()
   for j=-1,1 do
    local x=active.x+i
    local y=active.y+j
-   if selection_is_on_location({x=x,y=y}) then
+   if player_sel_location({x=x,y=y}) then
     for descpt in all(objdescripts) do
      if is_element_in(descpt.spridxs,mget(x+maps[active.mapsidx].cellx,y+maps[active.mapsidx].celly)) and #active.text.dialog==0 then
       active.text.dialog[#active.text.dialog+1] = {
@@ -545,6 +560,44 @@ end
 
 -->8
 -- utilities
+function player_on_location(loc)
+ return active.x+maps[active.mapsidx].cellx==loc.x and active.y+maps[active.mapsidx].celly==loc.y
+end
+
+function player_sel_location(loc)
+ local lkdr=active.lookingdir
+ if lkdr == nil then
+  return false
+ end
+ local sel=get_sel_info_btn(lkdr)
+ return active.x+sel.x == loc.x and active.y+sel.y == loc.y
+end
+
+function playmap_spr_visible(spri)
+ local mapspr=sget(active.x+maps[active.mapsidx].cellx,active.y+maps[active.mapsidx].celly)==spri
+ local npcspr=false
+ for n in all(maps[active.mapsidx].npcs) do
+  local idtfr=tostr(n.x+maps[active.mapsidx].cellx)..'|'..tostr(n.y+maps[active.mapsidx].celly)
+  if is_element_in(maps[active.mapsidx].discvrdtiles,idtfr) and characters[n.charidx].mapidx==spri then
+   npcspr=true
+   break
+  end
+ end
+ return mapspr or npcspr
+end
+
+function trigger_complete(trigi)
+ return triggers[trigi].complete
+end
+
+function queue_dialog(dialogi)
+ active.text.dialog[#active.text.dialog+1]=dialogs[dialogi]
+end
+
+function queue_move_npc(chari,curmaploc,destmap,destmaploc)
+ 
+end
+
 function transition_to_playmap()
  active.stagetype = "playmap"
  active.charidx=2
@@ -689,15 +742,6 @@ function draw_character_dialog_box(dialogobj)
  spr(234, 112, 116)
  palt(5,false)
  pal(12,12)
-end
-
-function selection_is_on_location(location)
- local lkdr=active.lookingdir
- if lkdr == nil then
-  return false
- end
- local sel=get_sel_info_btn(lkdr)
- return active.x+sel.x == location.x and active.y+sel.y == location.y
 end
 
 function get_sel_info_btn(lkdrbtn)
