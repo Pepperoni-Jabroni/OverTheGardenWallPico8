@@ -1,0 +1,20 @@
+todo:
+- support name idxs more broadly (eg frog name is always Kitty)
+- draw blinking ellipse under character when recently swapped
+- only draw name when recently swapped
+- robust cause/effect trigger system
+- finish sprites
+- finish maps
+
+far off:
+- falling leaves on main menu
+- tutorial
+- achievements
+   - starting/finishing the game
+   - talking to all edlewoods
+   - completely exploring all outdoors
+   - playing as every playable character
+   - getting all idle dialogues
+- password-based save/load
+- credits
+- multiplayer co-op
