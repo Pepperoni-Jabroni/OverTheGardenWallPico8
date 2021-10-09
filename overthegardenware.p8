@@ -47,7 +47,7 @@ local active={
 }
 local party={}
 local characters={
- {name='greg', mapidx=0, chrsprdailogueidx=2, idle={'oh frog o mine!','oh potatoes and...'}}, 
+ {name='greg', mapidx=0, chrsprdailogueidx=2, idle={'where is that frog\no\' mine!','wanna hear a rock\nfact?'}}, 
  {name='wirt', mapidx=1, chrsprdailogueidx=4, idle={'uh, hi...','oh sorry, just thinking'}}, 
  {name='beatrice', mapidx=16, chrsprdailogueidx=6, idle={'yes, i can talk...','lets get out of here!'}}, 
  {
@@ -62,11 +62,11 @@ local characters={
  {name='dog', mapidx=49, chrsprdailogueidx=40, idle={}},
  {name='black turtle', mapidx=64, chrsprdailogueidx=66, idle={}},
  {name='turkey', mapidx=65, chrsprdailogueidx=68, idle={}},
- {name='pottsfield citizen #1', mapidx=80, chrsprdailogueidx=98, idle={}},
- {name='pottsfield citizen #2', mapidx=80, chrsprdailogueidx=102, idle={}},
+ {name='pottsfield citizen', mapidx=80, chrsprdailogueidx=98, idle={'you\'re too early'}},
+ {name='pottsfield citizen', mapidx=80, chrsprdailogueidx=102, idle={'are you new here?'}},
  {name='pottsfield harvest', mapidx=81, chrsprdailogueidx=70, idle={}},
  {name='pottsfield partier', mapidx=96, chrsprdailogueidx=100, idle={}},
- {name='enoch', mapidx=97, chrsprdailogueidx=72, idle={}},
+ {name='enoch', mapidx=97, chrsprdailogueidx=72, idle={'what a wonderful\nharvest','you don\'t look like\nyou belong here'}},
  {name='dog student', mapidx=10, chrsprdailogueidx=44, idle={}},
  {name='gorilla', mapidx=113, chrsprdailogueidx=12, idle={}},
  {name='jimmy brown', mapidx=11, chrsprdailogueidx=14, idle={}},
@@ -140,6 +140,9 @@ local maps={
   celly=0,
   trans={
    {dest={mp=4,loc={x=4, y=3}},locs={{x=7,y=15},{x=8,y=15}}}
+  },
+  npcs={
+   {charidx=11,x=6,y=7},{charidx=11,x=9,y=4},{charidx=12,x=6,y=4},{charidx=12,x=9,y=8},{charidx=15,x=8,y=8}
   },
   playmapidx=4,
   playmapspr=224,
