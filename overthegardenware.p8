@@ -471,7 +471,7 @@ function draw_play_map()
       pal(e.s,e.s)
      end
     else
-     rectfill(8*i, 8*j,(8*i)+8, (8*j)+8,0)
+     rectfill(8*i, 8*j,(8*i)+7, (8*j)+7,0)
     end
    elseif not is_element_in(activemap.discvrdtiles, idtfr) then
     activemap.discvrdtiles[#activemap.discvrdtiles+1]=idtfr
