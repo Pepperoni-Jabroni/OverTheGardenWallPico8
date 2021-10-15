@@ -157,8 +157,8 @@ local darkspr={
  idxs={174,204,218,219,235,236,251},
  clrmp={{s=2,d=0},{s=3,d=0},{s=4,d=1},{s=8,d=1},{s=9,d=0},{s=10,d=1},{s=11,d=1}}
 }
-local intro_dialog={
- dialog={
+local dialogs={
+ {
   {speakeridx=4,nameidx=nil,text="led through the mist"},
   {speakeridx=4,nameidx=nil,text="by the milk-light of \nmoon"},
   {speakeridx=4,nameidx=nil,text="all that was lost is \nrevealed"},
@@ -168,44 +168,39 @@ local intro_dialog={
   {speakeridx=4,nameidx=nil,text="and where shall we end?"},
   {speakeridx=4,nameidx=nil,text="if dreams can't come \ntrue"},
   {speakeridx=4,nameidx=nil,text="then why not pretend?"}
- } 
-}
-local dialogs={
- {dialog={
-   {speakeridx=1,text="i sure do love my frog!"},
-   {speakeridx=2,text="greg, please stop..."},
-   {speakeridx=4,text="ribbit."},
-   {speakeridx=1,text="haha, yeah!"}
-  }
  },
- {dialog={
-   {speakeridx=2,text="i dont like this at all"},
-   {speakeridx=1,text="its a tree face!"},
-   {speakeridx=23,text="*howls in the wind*"}
-  }
+ {
+  {speakeridx=1,text="i sure do love my frog!"},
+  {speakeridx=2,text="greg, please stop..."},
+  {speakeridx=4,text="ribbit."},
+  {speakeridx=1,text="haha, yeah!"}
  },
- {dialog={
-   {speakeridx=2,text="is that some sort of\nderanged lunatic?"},
-   {speakeridx=2,text="with an ax waiting\nfor victims?"},
-   {speakeridx=6,text="*swings axe and chops \ntree*"},
-   {speakeridx=1,text="we should ask him\nfor help!"}
-  }
+ {
+  {speakeridx=2,text="i dont like this at all"},
+  {speakeridx=1,text="its a tree face!"},
+  {speakeridx=23,text="*howls in the wind*"}
+ },
+ {
+  {speakeridx=2,text="is that some sort of\nderanged lunatic?"},
+  {speakeridx=2,text="with an ax waiting\nfor victims?"},
+  {speakeridx=6,text="*swings axe and chops \ntree*"},
+  {speakeridx=1,text="we should ask him\nfor help!"}
  }
 }
 local triggers={
  {
   trig=function(self)return player_on_location({x=10,y=4}) or player_on_location({x=11,y=4})end,
-  action=function(self)queue_dialog(1)end,
-  complete=false,
- },
- {
-  trig=function(self)return player_sel_location({x=5,y=7})end,
   action=function(self)queue_dialog(2)end,
   complete=false,
  },
  {
-  trig=function(self)return playmap_spr_visible(33)end,
+  trig=function(self)return player_sel_location({x=5,y=7})end,
   action=function(self)queue_dialog(3)end,
+  complete=false,
+ },
+ {
+  trig=function(self)return playmap_spr_visible(33)end,
+  action=function(self)queue_dialog(4)end,
   complete=false,
  },
  {
@@ -254,8 +249,8 @@ function _init()
 
  -- init frog intro name
  local randomname=get_rand_idx(characters[4].name)
- for i=1,#intro_dialog.dialog do
-  intro_dialog.dialog[i].nameidx=randomname
+ for i=1,#dialogs[1] do
+  dialogs[1][i].nameidx=randomname
  end
 
  -- init object member fns
@@ -302,7 +297,7 @@ function update_intro()
   active.dialog_idx+=1
   sfx(0)
  end
- if active.dialog_idx>#intro_dialog.dialog then
+ if active.dialog_idx>#dialogs[1] then
   transition_to_playmap()
  end
 end
@@ -352,7 +347,7 @@ function update_play_map()
  if btnp(4) and #active.text.dialog > 0 then
   sfx(0)
   active.dialog_idx+=1
-  if active.dialog_idx > #active.text.dialog[1].dialog then
+  if active.dialog_idx > #active.text.dialog[1] then
    active.text.dialog=drop_first_elem(active.text.dialog)
    active.dialog_idx=1
   end
@@ -401,9 +396,7 @@ function update_play_map()
    if player_sel_location({x=x,y=y}) then
     for descpt in all(objdescripts) do
      if is_element_in(descpt.spridxs,mget(x+maps[active.mapsidx].cellx,y+maps[active.mapsidx].celly)) and #active.text.dialog==0 then
-      active.text.dialog[#active.text.dialog+1] = {
-       dialog={{speakeridx=active.charidx,text=descpt.descr}}
-      }
+      active.text.dialog[#active.text.dialog+1] = {{speakeridx=active.charidx,text=descpt.descr}}
       break
      end
     end
@@ -478,7 +471,7 @@ function draw_introduction()
  pal(1,1)
  pal(13,13)
  -- draw frog dialog box
- local currentprog=intro_dialog.dialog[active.dialog_idx]
+ local currentprog=dialogs[1][active.dialog_idx]
  draw_character_dialog_box(currentprog)
 end
 
@@ -567,8 +560,7 @@ function draw_play_map()
  -- draw dialog if necessary
  palt(13,false)
  if #active.text.dialog > 0 then
-  dlg=active.text.dialog[1]
-  curprogressdlg=dlg.dialog[active.dialog_idx]
+  curprogressdlg=active.text.dialog[1][active.dialog_idx]
   if curprogressdlg != nil then
    draw_character_dialog_box(curprogressdlg)
   end
@@ -694,9 +686,7 @@ function get_char_idle_dialog(charidx)
  local idle_dialogs={}
  local idles=characters[charidx].idle
  for idle in all(idles) do
-  idle_dialogs[#idle_dialogs+1]={
-   dialog={{speakeridx=charidx,text=idle}}
-  }
+  idle_dialogs[#idle_dialogs+1]={{speakeridx=charidx,text=idle}}
  end
  return idle_dialogs
 end
