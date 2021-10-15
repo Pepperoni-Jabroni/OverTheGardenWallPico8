@@ -211,7 +211,7 @@ local triggers={
  },
  {
   trig=function(self)return dialog_is_complete(4)end,
-  action=function(self)queue_move_npc(1,{x=16,y=-1},2,{x=7,y=7})end,
+  action=function(self)queue_move_npc(6,{x=16,y=-1},2,{x=7,y=7})end,
   complete=false,
   maplocking=1,
  }
@@ -413,23 +413,39 @@ function update_play_map()
   end
  end
  -- do npc movement
+ local newnpcmvmt={}
  for i=1,#npcmovmt do
-  local npc=maps[active.mapsidx].npcs[npcmovmt[i].npci]
+  local curmvmt=npcmovmt[i]
+  local npc=get_npc_by_charidx(maps[active.mapsidx].npcs,curmvmt.charidx)
   -- do local mvmt
-  npcmovmt[i].mvmtcldwn-=1
-  if npcmovmt[i].mvmtcldwn==0 then
-   npcmovmt[i].mvmtcldwn=16
-   if abs(npcmovmt[i].destcurmaploc.x-npc.x) > abs(npcmovmt[i].destcurmaploc.y-npc.y) then
-    npc.x+=sgn(npcmovmt[i].destcurmaploc.x-npc.x)
+  curmvmt.mvmtcldwn-=1
+  if curmvmt.mvmtcldwn==0 then
+   curmvmt.mvmtcldwn=16
+   if abs(curmvmt.destcurmaploc.x-npc.x) > abs(curmvmt.destcurmaploc.y-npc.y) then
+    npc.x+=sgn(curmvmt.destcurmaploc.x-npc.x)
    else
-    npc.y+=sgn(npcmovmt[i].destcurmaploc.y-npc.y)
+    npc.y+=sgn(curmvmt.destcurmaploc.y-npc.y)
    end
-   maps[active.mapsidx].npcs[npcmovmt[i].npci]=npc
   end
   -- do map switch
-
-  --rmv from npc mvmt if done
+  if npc.x < 0 or npc.x > 15 or npc.y < 0 or npc.y > 15 then
+   local newnpcs={}
+   for i=1,#maps[active.mapsidx].npcs do
+    if maps[active.mapsidx].npcs[i].charidx!=curmvmt.charidx then
+     newnpcs[#newnpcs+1]=maps[active.mapsidx].npcs[i]
+    end
+   end
+   maps[active.mapsidx].npcs=newnpcs
+   maps[curmvmt.destnextmap].npcs[#maps[curmvmt.destnextmap].npcs+1]={
+    charidx=curmvmt.charidx,
+    x=curmvmt.destnextmaploc.x,
+    y=curmvmt.destnextmaploc.y
+   }
+  else
+   newnpcmvmt[#newnpcmvmt+1]=curmvmt
+  end
  end
+ npcmovmt=newnpcmvmt
  -- check for obj selection
  for i=-1,1 do
   for j=-1,1 do
@@ -611,6 +627,15 @@ end
 
 -->8
 -- utilities
+function get_npc_by_charidx(npcs,qcharidx)
+ for n in all(npcs) do
+  if n.charidx==qcharidx then
+   return n
+  end
+ end
+ return nil
+end
+
 function get_first_active_dlg()
  local curprogressdlg=active.text.dialog[1]
  if type(curprogressdlg)=='number' then
@@ -657,8 +682,8 @@ function queue_dialog(dialogi)
  active.text.dialog[#active.text.dialog+1]=dialogi
 end
 
-function queue_move_npc(npci,destcurmaploc,destnextmap,destnextmaploc)
- npcmovmt[#npcmovmt+1]={npci=npci,destcurmaploc=destcurmaploc,destnextmap=destnextmap,destnextmaploc=destnextmaploc,mvmtcldwn=1}
+function queue_move_npc(charidx,destcurmaploc,destnextmap,destnextmaploc)
+ npcmovmt[#npcmovmt+1]={charidx=charidx,destcurmaploc=destcurmaploc,destnextmap=destnextmap,destnextmaploc=destnextmaploc,mvmtcldwn=1}
 end
 
 function transition_to_playmap()
