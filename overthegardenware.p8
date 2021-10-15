@@ -42,7 +42,7 @@ local active={
  flipv=false,
  text={maptitle=nil,dialog={},charsel=nil},
  stagetype="mainmenu",
- dialog_idx=1,
+ dialogspeakidx=1,
  mapsidx=nil
 }
 local party={}
@@ -158,6 +158,7 @@ local darkspr={
  clrmp={{s=2,d=0},{s=3,d=0},{s=4,d=1},{s=8,d=1},{s=9,d=0},{s=10,d=1},{s=11,d=1}}
 }
 local nonrptdialog={x=nil,y=nil}
+local compltdlgs={}
 local dialogs={
  {
   {speakeridx=4,nameidx=nil,text="led through the mist"},
@@ -188,6 +189,7 @@ local dialogs={
   {speakeridx=1,text="we should ask him\nfor help!"}
  }
 }
+local npcmovmt={}
 local triggers={
  {
   trig=function(self)return player_on_location({x=10,y=4}) or player_on_location({x=11,y=4})end,
@@ -208,8 +210,8 @@ local triggers={
   maplocking=1,
  },
  {
-  trig=function(self)return trigger_complete(3)end,
-  action=function(self)queue_move_npc(6,{x=16,y=-1},2,{x=7,y=7})end,
+  trig=function(self)return dialog_is_complete(4)end,
+  action=function(self)queue_move_npc(1,{x=16,y=-1},2,{x=7,y=7})end,
   complete=false,
   maplocking=1,
  }
@@ -299,10 +301,10 @@ end
 
 function update_intro()
  if btnp(4) then
-  active.dialog_idx+=1
+  active.dialogspeakidx+=1
   sfx(0)
  end
- if active.dialog_idx>#dialogs[1] then
+ if active.dialogspeakidx>#dialogs[1] then
   transition_to_playmap()
  end
 end
@@ -351,10 +353,13 @@ function update_play_map()
  -- check for dialog progress
  if btnp(4) and #active.text.dialog > 0 then
   sfx(0)
-  active.dialog_idx+=1
-  if active.dialog_idx > #active.text.dialog[1] then
+  active.dialogspeakidx+=1
+  if active.dialogspeakidx > #get_first_active_dlg() then
+   if type(active.text.dialog[1])=='number' then
+    compltdlgs[#compltdlgs+1]=active.text.dialog[1]
+   end
    active.text.dialog=drop_first_elem(active.text.dialog)
-   active.dialog_idx=1
+   active.dialogspeakidx=1
   end
  end
  -- check for map switch
@@ -406,6 +411,24 @@ function update_play_map()
     end
    end
   end
+ end
+ -- do npc movement
+ for i=1,#npcmovmt do
+  local npc=maps[active.mapsidx].npcs[npcmovmt[i].npci]
+  -- do local mvmt
+  npcmovmt[i].mvmtcldwn-=1
+  if npcmovmt[i].mvmtcldwn==0 then
+   npcmovmt[i].mvmtcldwn=16
+   if abs(npcmovmt[i].destcurmaploc.x-npc.x) > abs(npcmovmt[i].destcurmaploc.y-npc.y) then
+    npc.x+=sgn(npcmovmt[i].destcurmaploc.x-npc.x)
+   else
+    npc.y+=sgn(npcmovmt[i].destcurmaploc.y-npc.y)
+   end
+   maps[active.mapsidx].npcs[npcmovmt[i].npci]=npc
+  end
+  -- do map switch
+
+  --rmv from npc mvmt if done
  end
  -- check for obj selection
  for i=-1,1 do
@@ -490,7 +513,7 @@ function draw_introduction()
  pal(1,1)
  pal(13,13)
  -- draw frog dialog box
- local currentprog=dialogs[1][active.dialog_idx]
+ local currentprog=dialogs[1][active.dialogspeakidx]
  draw_character_dialog_box(currentprog)
 end
 
@@ -579,7 +602,7 @@ function draw_play_map()
  -- draw dialog if necessary
  palt(13,false)
  if #active.text.dialog > 0 then
-  curprogressdlg=active.text.dialog[1][active.dialog_idx]
+  local curprogressdlg=get_first_active_dlg()[active.dialogspeakidx]
   if curprogressdlg != nil then
    draw_character_dialog_box(curprogressdlg)
   end
@@ -588,6 +611,14 @@ end
 
 -->8
 -- utilities
+function get_first_active_dlg()
+ local curprogressdlg=active.text.dialog[1]
+ if type(curprogressdlg)=='number' then
+  curprogressdlg=dialogs[curprogressdlg]
+ end
+ return curprogressdlg
+end
+
 function player_on_location(loc)
  return active.x+maps[active.mapsidx].cellx==loc.x and active.y+maps[active.mapsidx].celly==loc.y
 end
@@ -614,22 +645,26 @@ function playmap_spr_visible(spri)
  return mapspr or npcspr
 end
 
+function dialog_is_complete(dialogi)
+ return is_element_in(compltdlgs,dialogi)
+end
+
 function trigger_complete(trigi)
  return triggers[trigi].complete
 end
 
 function queue_dialog(dialogi)
- active.text.dialog[#active.text.dialog+1]=dialogs[dialogi]
+ active.text.dialog[#active.text.dialog+1]=dialogi
 end
 
-function queue_move_npc(chari,curmaploc,destmap,destmaploc)
- 
+function queue_move_npc(npci,destcurmaploc,destnextmap,destnextmaploc)
+ npcmovmt[#npcmovmt+1]={npci=npci,destcurmaploc=destcurmaploc,destnextmap=destnextmap,destnextmaploc=destnextmaploc,mvmtcldwn=1}
 end
 
 function transition_to_playmap()
  active.stagetype = "playmap"
  active.charidx=2
- active.dialog_idx=1
+ active.dialogspeakidx=1
  party={{charidx=1,x=nil,y=nil},{charidx=4,x=nil,y=nil}}
  transition_to_map({mp=1,loc={x=1, y=14}})
  pal(14,14,1)
