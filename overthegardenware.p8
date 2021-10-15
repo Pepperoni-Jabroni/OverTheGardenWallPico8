@@ -157,6 +157,7 @@ local darkspr={
  idxs={174,204,218,219,235,236,251},
  clrmp={{s=2,d=0},{s=3,d=0},{s=4,d=1},{s=8,d=1},{s=9,d=0},{s=10,d=1},{s=11,d=1}}
 }
+local nonrptdialog={x=nil,y=nil}
 local dialogs={
  {
   {speakeridx=4,nameidx=nil,text="led through the mist"},
@@ -192,21 +193,25 @@ local triggers={
   trig=function(self)return player_on_location({x=10,y=4}) or player_on_location({x=11,y=4})end,
   action=function(self)queue_dialog(2)end,
   complete=false,
+  maplocking=nil,
  },
  {
   trig=function(self)return player_sel_location({x=5,y=7})end,
   action=function(self)queue_dialog(3)end,
   complete=false,
+  maplocking=1,
  },
  {
   trig=function(self)return playmap_spr_visible(33)end,
   action=function(self)queue_dialog(4)end,
   complete=false,
+  maplocking=1,
  },
  {
   trig=function(self)return trigger_complete(3)end,
   action=function(self)queue_move_npc(6,{x=16,y=-1},2,{x=7,y=7})end,
   complete=false,
+  maplocking=1,
  }
 }
 local menuchars={}
@@ -355,10 +360,24 @@ function update_play_map()
  -- check for map switch
  local activemap = maps[active.mapsidx]
  local initmapidx = active.mapsidx
+ local maplocked=false
+ for t in all(triggers) do
+  if t.maplocking != nil and t.maplocking == active.mapsidx and not t.complete then
+   maplocked=true
+   break
+  end
+ end
  for transition in all(activemap.trans) do
   for location in all(transition.locs) do
    if active.x == location.x and active.y == location.y then
-    transition_to_map(transition.dest)
+    if maplocked then
+     if #active.text.dialog == 0 and not (nonrptdialog.x==active.x and nonrptdialog.y==active.y) then
+      active.text.dialog[#active.text.dialog+1]={{speakeridx=active.charidx,text="we aren\'t done here\nyet..."}}
+      nonrptdialog={x=active.x,y=active.y}
+     end
+    else
+     transition_to_map(transition.dest)
+    end
     break
    end
   end
