@@ -588,6 +588,9 @@ function draw_play_map()
   pset(active.x*8+7,active.y*8+7,12)
   line(active.x*8+1,active.y*8+6,active.x*8+6,active.y*8+6,12)
   line(active.x*8+1,active.y*8+8,active.x*8+6,active.y*8+8,12)
+  pset(active.x*8,active.y*8+8,1)
+  pset(active.x*8+7,active.y*8+8,1)
+  line(active.x*8+1,active.y*8+9,active.x*8+6,active.y*8+9,1)
  end
  -- draw player
  spr(characters[active.charidx].mapidx,active.x*8,active.y*8,1,1,active.flipv,false)
