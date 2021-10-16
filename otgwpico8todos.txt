@@ -1,14 +1,18 @@
-todo:
+to-do v1.0:
 - support name idxs more broadly (eg frog name is always Kitty)
 - make linkage between maps singly declarative
-- npc & party movement
+- npc intents
+   - talk to player
+   - follow player
+   - walk in rectangle
 - rotate door & corner interior sprites
-- complete queue_move_npc
 - fix mapspr in playmap_spr_visible
 - finish sprites
 - finish maps
+- finish implementing story
+- map sprite scaling (e.g. enoch)
 
-far off:
+v1.1+:
 - falling leaves on main menu
 - tutorial
 - achievements
