@@ -181,6 +181,7 @@ local darkspr={
  idxs={174,204,218,219,235,236,251},
  clrmp={{s=2,d=0},{s=3,d=0},{s=4,d=1},{s=8,d=1},{s=9,d=0},{s=10,d=1},{s=11,d=1}}
 }
+local darkanims={}
 local nonrptdialog={x=nil,y=nil}
 local compltdlgs={}
 local dialogs={
@@ -607,6 +608,9 @@ function draw_play_map()
        pal(e.s,e.s)
       end
      else
+      if #darkanims<4 and flr(rnd(30000))==0 then
+       darkanims[#darkanims+1]={frmcnt=25,type='eyes',x=i,y=j}
+      end
       rectfill(8*i, 8*j,(8*i)+7, (8*j)+7,0)
      end
     elseif not is_element_in(activemap.discvrdtiles, idtfr) then
@@ -615,6 +619,18 @@ function draw_play_map()
    end
   end
  end
+ local ndas={}
+ for d in all(darkanims) do
+  if d.frmcnt>0 then
+   ndas[#ndas+1]=d
+   if d.type=='eyes' then
+   pset(d.x*8+2,d.y*8+2,10)
+   pset(d.x*8+5,d.y*8+2,10)
+   end
+  d.frmcnt-=1
+  end
+ end
+ darkanims=ndas
  -- draw active char hud
  local xanchor=1
  if active.x<=3 and active.y<=2 then
