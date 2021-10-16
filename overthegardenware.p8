@@ -186,13 +186,13 @@ local nonrptdialog={x=nil,y=nil}
 local compltdlgs={}
 local dialogs={
  {
-  {speakeridx=4,nameidx=nil,text="led through the mist"},
+  {speakeridx=4,nameidx=nil,text="led through the \nmist"},
   {speakeridx=4,nameidx=nil,text="by the milk-light of \nmoon"},
   {speakeridx=4,nameidx=nil,text="all that was lost is \nrevealed"},
   {speakeridx=4,nameidx=nil,text="our long bygone burdens"},
   {speakeridx=4,nameidx=nil,text="mere echoes of the \nspring"},
-  {speakeridx=4,nameidx=nil,text="but where have we come?"},
-  {speakeridx=4,nameidx=nil,text="and where shall we end?"},
+  {speakeridx=4,nameidx=nil,text="but where have we \ncome?"},
+  {speakeridx=4,nameidx=nil,text="and where shall we \nend?"},
   {speakeridx=4,nameidx=nil,text="if dreams can't come \ntrue"},
   {speakeridx=4,nameidx=nil,text="then why not pretend?"}
  },
@@ -212,10 +212,26 @@ local dialogs={
   {speakeridx=2,text="with an ax waiting\nfor victims?"},
   {speakeridx=6,text="*swings axe and chops \ntree*"},
   {speakeridx=1,text="we should ask him\nfor help!"}
+ },
+ {
+  {speakeridx=2,text="whoa... wait greg..."},
+  {speakeridx=2,text="... where are we?"},
+  {speakeridx=1,text="we\'re in the \nwoods!"},
+  {speakeridx=2,text="no, i mean"},
+  {speakeridx=2,text="... where are we?!"},
  }
 }
 local npcmovmt={}
 local triggers={
+ {
+  trig=function(self)
+   return (player_on_location({x=1,y=12}) or player_on_location({x=2,y=12})
+       or player_on_location({x=3,y=13}) or player_on_location({x=3,y=14}))
+  end,
+  action=function(self)queue_dialog(5)end,
+  complete=false,
+  maplocking=1,
+ },
  {
   trig=function(self)return player_on_location({x=10,y=4}) or player_on_location({x=11,y=4})end,
   action=function(self)queue_dialog(2)end,
