@@ -625,7 +625,7 @@ function draw_play_map()
       end
      else
       if #darkanims<4 and flr(rnd(30000))==0 then
-       darkanims[#darkanims+1]={frmcnt=25,type='eyes',x=i,y=j}
+       darkanims[#darkanims+1]={frmcnt=35,type='eyes',x=i,y=j}
       end
       rectfill(8*i, 8*j,(8*i)+7, (8*j)+7,0)
      end
@@ -635,13 +635,18 @@ function draw_play_map()
    end
   end
  end
+ -- draw dark animations
  local ndas={}
  for d in all(darkanims) do
   if d.frmcnt>0 then
    ndas[#ndas+1]=d
    if d.type=='eyes' then
-   pset(d.x*8+2,d.y*8+2,10)
-   pset(d.x*8+5,d.y*8+2,10)
+    local pcol=10
+    if d.frmcnt<8 or d.frmcnt>27 then
+     pcol=1
+    end
+    pset(d.x*8+2,d.y*8+4,pcol)
+    pset(d.x*8+5,d.y*8+4,pcol)
    end
   d.frmcnt-=1
   end
