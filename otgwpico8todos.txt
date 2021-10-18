@@ -1,26 +1,45 @@
 to-do v1.0:
 - support name idxs more broadly (eg frog name is always Kitty)
+- fix mapspr in playmap_spr_visible
 - make linkage between maps singly declarative
 - npc intents
    - talk to player
-   - follow player
+   - follow player,queue location to walk to player
    - walk in rectangle
-- rotate door & corner interior sprites
-- fix mapspr in playmap_spr_visible
+- map sprite scaling (e.g. enoch)
+- player/character inventory
+- player actions
+   - dropping candy
+   - digging grave w/ shovel
+   - picking up old cat
 - finish sprites
 - finish maps
 - finish implementing story
-- map sprite scaling (e.g. enoch)
 
 v1.1+:
-- falling leaves on main menu
-- tutorial
 - achievements
    - starting/finishing the game
    - talking to all edlewoods
    - completely exploring all outdoors
    - playing as every playable character
    - getting all idle dialogues
+- falling leaves on main menu
+- tutorial
 - password-based save/load
-- credits
 - multiplayer co-op
+
+completed v1.0:
+- main menu w/ 4 characters
+- intro + music
+- various maps, characters/sprites
+- map titles on entry
+- active character select & party system
+- player movement & directional selection
+- selectable objects & characters in map
+- npc idle texts
+- dialog system, UI, and data
+- "trigger" system (e.g. on sprite discover)
+- lockable maps (i.e. no exit) by certain triggers
+- npc walk-to-location
+- buildings w/ enterable/exitable interiors
+- undiscovered/dark tiles w/ some transparency & sp00ky eyes
