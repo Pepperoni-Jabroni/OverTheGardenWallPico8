@@ -641,7 +641,8 @@ function draw_play_map()
  -- draw dark animations
  local ndas={}
  for d in all(darkanims) do
-  if d.frmcnt>0 then
+  local idtfr=tostr(d.x)..'|'..tostr(d.y)
+  if d.frmcnt>0 and not is_element_in(activemap.discvrdtiles, idtfr) then
    ndas[#ndas+1]=d
    if d.type=='eyes' then
     local pcol=10
