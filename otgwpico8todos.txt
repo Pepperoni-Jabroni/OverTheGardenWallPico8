@@ -1,12 +1,13 @@
 to-do v1.0:
 - support name idxs more broadly (eg frog name is always Kitty)
 - fix mapspr in playmap_spr_visible
+- fix crash on loading new map while npc is in transit
 - make linkage between maps singly declarative
+- make chaning maps require moving off screen
 - npc intents
    - talk to player
    - follow player,queue location to walk to player
    - walk in rectangle
-- map sprite scaling (e.g. enoch)
 - player/character inventory
 - player actions
    - dropping candy
@@ -43,3 +44,4 @@ completed v1.0:
 - npc walk-to-location
 - buildings w/ enterable/exitable interiors
 - undiscovered/dark tiles w/ some transparency & sp00ky eyes
+- map sprite scaling (e.g. enoch)

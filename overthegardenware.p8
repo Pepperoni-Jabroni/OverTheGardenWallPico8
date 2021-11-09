@@ -66,7 +66,7 @@ local characters={
  {name='pottsfield citizen', mapidx=80, chrsprdailogueidx=102, idle={'are you new here?'}},
  {name='pottsfield harvest', mapidx=81, chrsprdailogueidx=70, idle={}},
  {name='pottsfield partier', mapidx=96, chrsprdailogueidx=100, idle={}},
- {name='enoch', mapidx=97, chrsprdailogueidx=72, idle={'what a wonderful\nharvest','you don\'t look like\nyou belong here'}},
+ {name='enoch', mapidx=97, chrsprdailogueidx=72, scaling=2, idle={'what a wonderful\nharvest','you don\'t look like\nyou belong here'}},
  {name='dog student', mapidx=10, chrsprdailogueidx=44, idle={}},
  {name='gorilla', mapidx=113, chrsprdailogueidx=12, idle={}},
  {name='jimmy brown', mapidx=11, chrsprdailogueidx=14, idle={}},
@@ -872,7 +872,13 @@ end
 function draw_chars_from_array(npcs)
  for npc in all(npcs) do
   if npc.x != nil and npc.y != nil then
-   spr(characters[npc.charidx].mapidx, npc.x*8, npc.y*8)
+   local sp=characters[npc.charidx].mapidx
+   local sx,sy=(sp%16)*8,(sp\16)*8
+   local scaling=1.0
+   if characters[npc.charidx].scaling != nil then
+    scaling=characters[npc.charidx].scaling
+   end
+   sspr(sx,sy,8,8,npc.x*8,npc.y*8,8*scaling,8*scaling)
   end
  end
 end
