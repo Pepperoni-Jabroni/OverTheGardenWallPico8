@@ -199,7 +199,7 @@ local dialogs={
  {
   {speakeridx=1,text="i sure do love my frog!"},
   {speakeridx=2,text="greg, please stop..."},
-  {speakeridx=4,text="ribbit."},
+  {speakeridx=4,nameidx=4,text="ribbit."},
   {speakeridx=1,text="haha, yeah!"}
  },
  {
@@ -457,7 +457,12 @@ function update_play_map()
  local newnpcmvmt={}
  for i=1,#npcmovmt do
   local curmvmt=npcmovmt[i]
-  local npc=get_npc_by_charidx(maps[active.mapsidx].npcs,curmvmt.charidx)
+  local npcmapidx=get_mapidx_by_charidx(curmvmt.charidx)
+  local npc=get_npc_by_charidx(maps[npcmapidx].npcs,curmvmt.charidx)
+  -- goto dest if active map is not npc cur map
+  if npcmapidx != active.mapsidx then
+   npc.x=-1
+  end
   -- do local mvmt
   curmvmt.mvmtcldwn-=1
   if curmvmt.mvmtcldwn==0 then
@@ -471,12 +476,12 @@ function update_play_map()
   -- do map switch
   if npc.x < 0 or npc.x > 15 or npc.y < 0 or npc.y > 15 then
    local newnpcs={}
-   for i=1,#maps[active.mapsidx].npcs do
-    if maps[active.mapsidx].npcs[i].charidx!=curmvmt.charidx then
-     newnpcs[#newnpcs+1]=maps[active.mapsidx].npcs[i]
+   for i=1,#maps[npcmapidx].npcs do
+    if maps[npcmapidx].npcs[i].charidx!=curmvmt.charidx then
+     newnpcs[#newnpcs+1]=maps[npcmapidx].npcs[i]
     end
    end
-   maps[active.mapsidx].npcs=newnpcs
+   maps[npcmapidx].npcs=newnpcs
    maps[curmvmt.destnextmap].npcs[#maps[curmvmt.destnextmap].npcs+1]={
     charidx=curmvmt.charidx,
     x=curmvmt.destnextmaploc.x,
@@ -696,6 +701,18 @@ function get_npc_by_charidx(npcs,qcharidx)
  for n in all(npcs) do
   if n.charidx==qcharidx then
    return n
+  end
+ end
+ return nil
+end
+
+function get_mapidx_by_charidx(charidx)
+ for i=1,#maps do
+  local m=maps[i]
+  for n in all(m.npcs) do
+   if n.charidx==charidx then
+    return i
+   end
   end
  end
  return nil
