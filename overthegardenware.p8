@@ -147,7 +147,11 @@ local maps={
    {dest={mp=4,loc={x=4, y=3}},locs={{x=7,y=15},{x=8,y=15}}}
   },
   npcs={
-   {charidx=11,x=6,y=7},{charidx=11,x=9,y=4},{charidx=12,x=6,y=4},{charidx=12,x=9,y=8},{charidx=15,x=8,y=8}
+   {charidx=11,x=7,y=7,intent="loop",intentdata={s=0,tl={x=7,y=7},br={x=10,y=10}}},
+   {charidx=11,x=7,y=10,intent="loop",intentdata={s=0,tl={x=7,y=7},br={x=10,y=10}}},
+   {charidx=12,x=10,y=7,intent="loop",intentdata={s=0,tl={x=7,y=7},br={x=10,y=10}}},
+   {charidx=12,x=10,y=10,intent="loop",intentdata={s=0,tl={x=7,y=7},br={x=10,y=10}}},
+   {charidx=15,x=8,y=8}
   },
   playmapidx=4,
   playmapspr=224,
@@ -485,6 +489,22 @@ function update_play_map()
      x=intentdata.destnextmaploc.x,
      y=intentdata.destnextmaploc.y
     }
+   end
+  end
+  if npc.intent == 'loop' then
+   npc.intentdata.s+=1
+   if npc.intentdata.s==1 then
+    if npc.x==npc.intentdata.br.x and npc.y!=npc.intentdata.tl.y then
+     npc.y-=1
+    elseif npc.y==npc.intentdata.tl.y and npc.x!=npc.intentdata.tl.x then
+     npc.x-=1
+    elseif npc.x==npc.intentdata.tl.x and npc.y!=npc.intentdata.br.y then
+     npc.y+=1
+    elseif npc.y==npc.intentdata.br.y then
+     npc.x+=1
+    end
+   elseif npc.intentdata.s==30 then
+    npc.intentdata.s=0
    end
   end
  end
