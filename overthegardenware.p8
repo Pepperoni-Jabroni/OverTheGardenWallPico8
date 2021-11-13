@@ -84,7 +84,7 @@ local maps={
   cellx=0,
   celly=0,
   trans={{dest={mp=2,loc={x=1, y=14}},locs={{x=13,y=0},{x=14,y=0},{x=15,y=0}}}},
-  npcs={{charidx=6,x=6,y=7},{charidx=3,x=9,y=4}},
+  npcs={{charidx=6,x=6,y=7,cldwn=1},{charidx=3,x=9,y=4,cldwn=1}},
   discvrdtiles={}
  },
  {
@@ -147,11 +147,11 @@ local maps={
    {dest={mp=4,loc={x=4, y=3}},locs={{x=7,y=15},{x=8,y=15}}}
   },
   npcs={
-   {charidx=11,x=7,y=7,intent="loop",intentdata={s=0,tl={x=7,y=7},br={x=10,y=10}}},
-   {charidx=11,x=7,y=10,intent="loop",intentdata={s=0,tl={x=7,y=7},br={x=10,y=10}}},
-   {charidx=12,x=10,y=7,intent="loop",intentdata={s=0,tl={x=7,y=7},br={x=10,y=10}}},
-   {charidx=12,x=10,y=10,intent="loop",intentdata={s=0,tl={x=7,y=7},br={x=10,y=10}}},
-   {charidx=15,x=8,y=8}
+   {charidx=11,x=7,y=7,cldwn=1,intent="loop",intentdata={tl={x=7,y=7},br={x=10,y=10}}},
+   {charidx=11,x=7,y=10,cldwn=1,intent="loop",intentdata={tl={x=7,y=7},br={x=10,y=10}}},
+   {charidx=12,x=10,y=7,cldwn=1,intent="loop",intentdata={tl={x=7,y=7},br={x=10,y=10}}},
+   {charidx=12,x=10,y=10,cldwn=1,intent="loop",intentdata={tl={x=7,y=7},br={x=10,y=10}}},
+   {charidx=15,x=8,y=8,cldwn=1}
   },
   playmapidx=4,
   playmapspr=224,
@@ -456,55 +456,57 @@ function update_play_map()
    end
   end
  end
- for npc in all (maps[active.mapsidx].npcs) do
-  -- do npc movement
-  if npc.intent == 'walk' then
-   local npcmapidx=get_mapidx_by_charidx(npc.charidx)
-   local intentdata = npc.intentdata
-   -- goto dest if active map is not npc cur map
-   if npcmapidx != active.mapsidx then
-    npc.x=-1
-   end
-   -- do local mvmt
-   intentdata.mvmtcldwn-=1
-   if intentdata.mvmtcldwn==0 then
-    intentdata.mvmtcldwn=16
-    if abs(intentdata.destcurmaploc.x-npc.x) > abs(intentdata.destcurmaploc.y-npc.y) then
-     npc.x+=sgn(intentdata.destcurmaploc.x-npc.x)
-    else
-     npc.y+=sgn(intentdata.destcurmaploc.y-npc.y)
+ for m in all(maps) do
+  for npc in all (m.npcs) do
+   -- do npc movement
+   if npc.intent == 'walk' then
+    local npcmapidx=get_mapidx_by_charidx(npc.charidx)
+    local intentdata = npc.intentdata
+    -- goto dest if active map is not npc cur map
+    if npcmapidx != active.mapsidx then
+     npc.x=-1
     end
-   end
-   -- do map switch
-   if npc.x < 0 or npc.x > 15 or npc.y < 0 or npc.y > 15 then
-    local newnpcs={}
-    for i=1,#maps[npcmapidx].npcs do
-     if maps[npcmapidx].npcs[i].charidx!=intentdata.charidx then
-      newnpcs[#newnpcs+1]=maps[npcmapidx].npcs[i]
+    -- do local mvmt
+    npc.cldwn-=1
+    if npc.cldwn==0 then
+     npc.cldwn=16
+     if abs(intentdata.destcurmaploc.x-npc.x) > abs(intentdata.destcurmaploc.y-npc.y) then
+      npc.x+=sgn(intentdata.destcurmaploc.x-npc.x)
+     else
+      npc.y+=sgn(intentdata.destcurmaploc.y-npc.y)
      end
     end
-    maps[npcmapidx].npcs=newnpcs
-    maps[intentdata.destnextmap].npcs[#maps[intentdata.destnextmap].npcs+1]={
-     charidx=intentdata.charidx,
-     x=intentdata.destnextmaploc.x,
-     y=intentdata.destnextmaploc.y
-    }
-   end
-  end
-  if npc.intent == 'loop' then
-   npc.intentdata.s+=1
-   if npc.intentdata.s==1 then
-    if npc.x==npc.intentdata.br.x and npc.y!=npc.intentdata.tl.y then
-     npc.y-=1
-    elseif npc.y==npc.intentdata.tl.y and npc.x!=npc.intentdata.tl.x then
-     npc.x-=1
-    elseif npc.x==npc.intentdata.tl.x and npc.y!=npc.intentdata.br.y then
-     npc.y+=1
-    elseif npc.y==npc.intentdata.br.y then
-     npc.x+=1
+    -- do map switch
+    if npc.x < 0 or npc.x > 15 or npc.y < 0 or npc.y > 15 then
+     local newnpcs={}
+     for i=1,#maps[npcmapidx].npcs do
+      if maps[npcmapidx].npcs[i].charidx!=intentdata.charidx then
+       newnpcs[#newnpcs+1]=maps[npcmapidx].npcs[i]
+      end
+     end
+     maps[npcmapidx].npcs=newnpcs
+     maps[intentdata.destnextmap].npcs[#maps[intentdata.destnextmap].npcs+1]={
+      charidx=intentdata.charidx,
+      x=intentdata.destnextmaploc.x,
+      y=intentdata.destnextmaploc.y
+     }
     end
-   elseif npc.intentdata.s==30 then
-    npc.intentdata.s=0
+   end
+   if npc.intent == 'loop' then
+    npc.cldwn+=1
+    if npc.cldwn==1 then
+     if npc.x==npc.intentdata.br.x and npc.y!=npc.intentdata.tl.y then
+      npc.y-=1
+     elseif npc.y==npc.intentdata.tl.y and npc.x!=npc.intentdata.tl.x then
+      npc.x-=1
+     elseif npc.x==npc.intentdata.tl.x and npc.y!=npc.intentdata.br.y then
+      npc.y+=1
+     elseif npc.y==npc.intentdata.br.y then
+      npc.x+=1
+     end
+    elseif npc.cldwn==30 then
+     npc.cldwn=0
+    end
    end
   end
  end
