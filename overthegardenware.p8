@@ -221,7 +221,6 @@ local dialogs={
   {speakeridx=2,text="... where are we?!"},
  }
 }
-local npcmovmt={}
 local triggers={
  {
   trig=function(self)
@@ -453,45 +452,42 @@ function update_play_map()
    end
   end
  end
- -- do npc movement
- local newnpcmvmt={}
- for i=1,#npcmovmt do
-  local curmvmt=npcmovmt[i]
-  local npcmapidx=get_mapidx_by_charidx(curmvmt.charidx)
-  local npc=get_npc_by_charidx(maps[npcmapidx].npcs,curmvmt.charidx)
-  -- goto dest if active map is not npc cur map
-  if npcmapidx != active.mapsidx then
-   npc.x=-1
-  end
-  -- do local mvmt
-  curmvmt.mvmtcldwn-=1
-  if curmvmt.mvmtcldwn==0 then
-   curmvmt.mvmtcldwn=16
-   if abs(curmvmt.destcurmaploc.x-npc.x) > abs(curmvmt.destcurmaploc.y-npc.y) then
-    npc.x+=sgn(curmvmt.destcurmaploc.x-npc.x)
-   else
-    npc.y+=sgn(curmvmt.destcurmaploc.y-npc.y)
+ for npc in all (maps[active.mapsidx].npcs) do
+  -- do npc movement
+  if npc.intent == 'walk' then
+   local npcmapidx=get_mapidx_by_charidx(npc.charidx)
+   local intentdata = npc.intentdata
+   -- goto dest if active map is not npc cur map
+   if npcmapidx != active.mapsidx then
+    npc.x=-1
    end
-  end
-  -- do map switch
-  if npc.x < 0 or npc.x > 15 or npc.y < 0 or npc.y > 15 then
-   local newnpcs={}
-   for i=1,#maps[npcmapidx].npcs do
-    if maps[npcmapidx].npcs[i].charidx!=curmvmt.charidx then
-     newnpcs[#newnpcs+1]=maps[npcmapidx].npcs[i]
+   -- do local mvmt
+   intentdata.mvmtcldwn-=1
+   if intentdata.mvmtcldwn==0 then
+    intentdata.mvmtcldwn=16
+    if abs(intentdata.destcurmaploc.x-npc.x) > abs(intentdata.destcurmaploc.y-npc.y) then
+     npc.x+=sgn(intentdata.destcurmaploc.x-npc.x)
+    else
+     npc.y+=sgn(intentdata.destcurmaploc.y-npc.y)
     end
    end
-   maps[npcmapidx].npcs=newnpcs
-   maps[curmvmt.destnextmap].npcs[#maps[curmvmt.destnextmap].npcs+1]={
-    charidx=curmvmt.charidx,
-    x=curmvmt.destnextmaploc.x,
-    y=curmvmt.destnextmaploc.y
-   }
-  else
-   newnpcmvmt[#newnpcmvmt+1]=curmvmt
+   -- do map switch
+   if npc.x < 0 or npc.x > 15 or npc.y < 0 or npc.y > 15 then
+    local newnpcs={}
+    for i=1,#maps[npcmapidx].npcs do
+     if maps[npcmapidx].npcs[i].charidx!=intentdata.charidx then
+      newnpcs[#newnpcs+1]=maps[npcmapidx].npcs[i]
+     end
+    end
+    maps[npcmapidx].npcs=newnpcs
+    maps[intentdata.destnextmap].npcs[#maps[intentdata.destnextmap].npcs+1]={
+     charidx=intentdata.charidx,
+     x=intentdata.destnextmaploc.x,
+     y=intentdata.destnextmaploc.y
+    }
+   end
   end
  end
- npcmovmt=newnpcmvmt
  -- check for obj selection
  for i=-1,1 do
   for j=-1,1 do
@@ -765,7 +761,14 @@ function queue_dialog(dialogi)
 end
 
 function queue_move_npc(charidx,destcurmaploc,destnextmap,destnextmaploc)
- npcmovmt[#npcmovmt+1]={charidx=charidx,destcurmaploc=destcurmaploc,destnextmap=destnextmap,destnextmaploc=destnextmaploc,mvmtcldwn=1}
+ for m in all(maps) do
+  for npc in all(m.npcs) do
+   if npc.charidx == charidx then
+    npc.intent = "walk"
+    npc.intentdata = {charidx=charidx,destcurmaploc=destcurmaploc,destnextmap=destnextmap,destnextmaploc=destnextmaploc,mvmtcldwn=1}
+   end
+  end
+ end
 end
 
 function transition_to_playmap()
