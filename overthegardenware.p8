@@ -3,36 +3,36 @@ version 33
 __lua__
 
 -- configs, state vars & core fns
-local walkable={43,185,191,202,203,205,207,222,223,238,239,240,241,242}
+local walkable="43,185,191,202,203,205,207,222,223,238,239,240,241,242"
 local alttiles={
- {srcidx=206,dsts={206,221,237}},
- {srcidx=238,dsts={222,238}},
- {srcidx=207,dsts={207,223,239}},
- {srcidx=235,dsts={235,251,218}},
- {srcidx=205,dsts={202,203,205}},
- {srcidx=236,dsts={204,236}}
+ {srcidx=206,dsts="206,221,237"},
+ {srcidx=238,dsts="222,238"},
+ {srcidx=207,dsts="207,223,239"},
+ {srcidx=235,dsts="235,251,218"},
+ {srcidx=205,dsts="202,203,205"},
+ {srcidx=236,dsts="204,236"}
 }
 local altsset={}
 local objdescripts={
- {spridxs={122,123,138,139},descr="what a nice old wagon"},
- {spridxs={124,125,140,141},descr="the poor old mill..."},
- {spridxs={158},descr="look at these pumpkins!"},
- {spridxs={159},descr="it says pottsfield \148"},
- {spridxs={174},descr="looks like its harvest \ntime!"},
- {spridxs={190},descr="this pumpkin is missing"},
- {spridxs={204,236},descr="its just a bush..."},
- {spridxs={218,235,251},descr="this tree sure is tall"},
- {spridxs={220},descr="a stump of some weird\ntree?"},
- {spridxs={219},descr="a creepy tree with a \nface on it"},
- {spridxs={224,225,240,241},descr="pottsfield old barn"},
- {spridxs={226,227,242,243},descr="the old grist mill"},
- {spridxs={228,229,244,245},descr="the animal schoolhouse"},
- {spridxs={230,231,246,247},descr="the inn"},
- {spridxs={232,233,248,249},descr="pottsfield old\nchurch"},
- {spridxs={108},descr="a rickety old fence"},
- {spridxs={109},descr="a scarecrow of sorts"},
- {spridxs={110},descr="the ground is higher\nhere"},
- {spridxs={127},descr="a deep hole in the \nground"},
+ {spridxs="122,123,138,139",descr="what a nice old wagon"},
+ {spridxs="124,125,140,141",descr="the poor old mill..."},
+ {spridxs="158",descr="look at these pumpkins!"},
+ {spridxs="159",descr="it says pottsfield \148"},
+ {spridxs="174",descr="looks like its harvest \ntime!"},
+ {spridxs="190",descr="this pumpkin is missing"},
+ {spridxs="204,236",descr="its just a bush..."},
+ {spridxs="218,235,251",descr="this tree sure is tall"},
+ {spridxs="220",descr="a stump of some weird\ntree?"},
+ {spridxs="219",descr="a creepy tree with a \nface on it"},
+ {spridxs="224,225,240,241",descr="pottsfield old barn"},
+ {spridxs="226,227,242,243",descr="the old grist mill"},
+ {spridxs="228,229,244,245",descr="the animal schoolhouse"},
+ {spridxs="230,231,246,247",descr="the inn"},
+ {spridxs="232,233,248,249",descr="pottsfield old\nchurch"},
+ {spridxs="108",descr="a rickety old fence"},
+ {spridxs="109",descr="a scarecrow of sorts"},
+ {spridxs="110",descr="the ground is higher\nhere"},
+ {spridxs="127",descr="a deep hole in the \nground"},
 }
 local act_x=0
 local act_y=0
@@ -186,7 +186,7 @@ local maps={
  }
 }
 local darkspr={
- idxs={174,204,218,219,235,236,251},
+ idxs="174,204,218,219,235,236,251",
  clrmp={{s=2,d=0},{s=3,d=0},{s=4,d=1},{s=8,d=1},{s=9,d=0},{s=10,d=1},{s=11,d=1}}
 }
 local darkanims={}
@@ -386,14 +386,14 @@ function update_play_map()
     break
    end
   end
-  if btnp(2) and ay > 0 and is_element_in(walkable, mget(ax+maps[mdx].cellx, ay - 1+maps[mdx].celly)) then
+  if btnp(2) and ay > 0 and is_element_in(split(walkable), mget(ax+maps[mdx].cellx, ay - 1+maps[mdx].celly)) then
    act_y = ay - 1
-  elseif btnp(1) and ax < 15 and is_element_in(walkable, mget(ax + 1+maps[mdx].cellx, ay+maps[mdx].celly)) then
+  elseif btnp(1) and ax < 15 and is_element_in(split(walkable), mget(ax + 1+maps[mdx].cellx, ay+maps[mdx].celly)) then
    act_x = ax + 1
    act_flipv=false
-  elseif btnp(3) and ay < 15 and is_element_in(walkable, mget(ax+maps[mdx].cellx, ay + 1+maps[mdx].celly)) then
+  elseif btnp(3) and ay < 15 and is_element_in(split(walkable), mget(ax+maps[mdx].cellx, ay + 1+maps[mdx].celly)) then
    act_y = ay + 1
-  elseif btnp(0) and ax > 0 and is_element_in(walkable, mget(ax - 1+maps[mdx].cellx, ay+maps[mdx].celly)) then
+  elseif btnp(0) and ax > 0 and is_element_in(split(walkable), mget(ax - 1+maps[mdx].cellx, ay+maps[mdx].celly)) then
    act_x = ax - 1
    act_flipv=true
   end
@@ -486,7 +486,7 @@ function update_play_map()
    local y=act_y+j
    if player_sel_location({x=x,y=y}) then
     for descpt in all(objdescripts) do
-     if is_element_in(descpt.spridxs,mget(x+maps[act_mapsidx].cellx,y+maps[act_mapsidx].celly)) and #act_text.dialog==0 then
+     if is_element_in(split(descpt.spridxs),mget(x+maps[act_mapsidx].cellx,y+maps[act_mapsidx].celly)) and #act_text.dialog==0 then
       act_text.dialog[#act_text.dialog+1] = {{speakeridx=act_charidx,text=descpt.descr}}
       break
      end
@@ -657,7 +657,7 @@ function draw_play_map()
   for i=0,15 do
    for j=0,15 do
     local nearforone=false
-    for member in all(union_arrs(party,{active})) do
+    for member in all(union_arrs(party,{{x=act_x,y=act_y}})) do
      if distance(i, j, member.x, member.y) < 2.7 then
       nearforone=true
      end
@@ -666,7 +666,7 @@ function draw_play_map()
     if not nearforone and not is_element_in(activemap.discvrdtiles, idtfr) then
      dark[#dark+1]={i,j}
      local mspr=mget(i+maps[act_mapsidx].cellx, j+maps[act_mapsidx].celly)
-     if (is_element_in(darkspr.idxs,mspr)) then
+     if (is_element_in(split(darkspr.idxs),mspr)) then
       -- draw "dark" sprite
       for e in all(darkspr.clrmp) do
        pal(e.s,e.d)
@@ -867,7 +867,7 @@ function transition_to_map(dest)
   repeat
    x=flr(rnd(3))+act_x-1
    y=flr(rnd(3))+act_y-1
-   if is_element_in(walkable, mget(x+maps[act_mapsidx].cellx, y+maps[act_mapsidx].celly)) then
+   if is_element_in(split(walkable), mget(x+maps[act_mapsidx].cellx, y+maps[act_mapsidx].celly)) then
     didadd = true
     party[i].x=x
     party[i].y=y
@@ -886,7 +886,7 @@ function transition_to_map(dest)
    for j=0,15 do
     local tilspr=mget(i+amcx, j+amcy)
     if (is_element_in(srctiles,tilspr)) then
-     local dsts=get_by_source(tilspr).dsts
+     local dsts=split(get_by_source(tilspr).dsts)
      local randsel=get_rand_idx(dsts)
      mset(i+amcx, j+amcy, dsts[randsel])
     end
