@@ -234,6 +234,7 @@ local triggers={
   action=function(self)queue_dialog(5)end,
   complete=false,
   maplocking=1,
+  title="introduce ourselves",
  },
  {
   trig=function(self)return player_on_location({x=10,y=4}) or player_on_location({x=11,y=4})end,
@@ -246,18 +247,21 @@ local triggers={
   action=function(self)queue_dialog(3)end,
   complete=false,
   maplocking=1,
+  title="find the tree with\nthe face",
  },
  {
   trig=function(self)return playmap_spr_visible(33)end,
   action=function(self)queue_dialog(4)end,
   complete=false,
   maplocking=1,
+  title="meet someone new"
  },
  {
   trig=function(self)return dialog_is_complete(4)end,
   action=function(self)queue_move_npc(6,{x=16,y=-1},2,{x=7,y=7})end,
   complete=false,
   maplocking=1,
+  title="finish the conversation"
  }
 }
 local menuchars={}
@@ -409,19 +413,20 @@ function update_play_map()
  -- check for map switch
  local activemap = maps[active.mapsidx]
  local initmapidx = active.mapsidx
- local maplocked=false
+ local maplocked={}
  for t in all(triggers) do
   if t.maplocking != nil and t.maplocking == active.mapsidx and not t.complete then
-   maplocked=true
+   maplocked[#maplocked+1]=t.title
    break
   end
  end
  for transition in all(activemap.trans) do
   for location in all(transition.locs) do
    if active.x == location.x and active.y == location.y then
-    if maplocked then
+    if #maplocked > 0 then
      if #active.text.dialog == 0 and not (nonrptdialog.x==active.x and nonrptdialog.y==active.y) then
-      active.text.dialog[#active.text.dialog+1]={{speakeridx=active.charidx,text="we aren\'t done here\nyet..."}}
+      active.text.dialog[#active.text.dialog+1]={{speakeridx=active.charidx,text="we aren\'t done here\nyet... we still need to"}}
+      active.text.dialog[#active.text.dialog+1]={{speakeridx=active.charidx,text=maplocked[1]}}
       nonrptdialog={x=active.x,y=active.y}
      end
     else
