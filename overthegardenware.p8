@@ -382,6 +382,12 @@ function update_play_map()
  -- check active movement
  if active.lookingdir == nil and #active.text.dialog == 0 then
   local ax,ay,mdx=active.x,active.y,active.mapsidx
+  for i=0,3 do
+   if btnp(i) then
+    maybe_queue_party_move(active.x, active.y)
+    break
+   end
+  end
   if btnp(2) and ay > 0 and is_element_in(walkable, mget(ax+maps[mdx].cellx, ay - 1+maps[mdx].celly)) then
    active.y = ay - 1
   elseif btnp(1) and ax < 15 and is_element_in(walkable, mget(ax + 1+maps[mdx].cellx, ay+maps[mdx].celly)) then
@@ -396,7 +402,7 @@ function update_play_map()
  end
  -- check for player switch
  if btnp(5) and #active.text.dialog == 0 then
-  party[#party+1] = {charidx=active.charidx,x=active.x,y=active.y}
+  party[#party+1] = {charidx=active.charidx,x=active.x,y=active.y,cldwn=1}
   active.charidx = party[1].charidx
   active.x = party[1].x
   active.y = party[1].y
@@ -468,58 +474,12 @@ function update_play_map()
   end
  end
  for m in all(maps) do
-  for npc in all (m.npcs) do
-   -- do npc movement
-   if npc.intent == 'walk' then
-    local npcmapidx=get_mapidx_by_charidx(npc.charidx)
-    local intentdata = npc.intentdata
-    -- goto dest if active map is not npc cur map
-    if npcmapidx != active.mapsidx then
-     npc.x=-1
-    end
-    -- do local mvmt
-    npc.cldwn-=1
-    if npc.cldwn==0 then
-     npc.cldwn=16
-     if abs(intentdata.destcurmaploc.x-npc.x) > abs(intentdata.destcurmaploc.y-npc.y) then
-      npc.x+=sgn(intentdata.destcurmaploc.x-npc.x)
-     else
-      npc.y+=sgn(intentdata.destcurmaploc.y-npc.y)
-     end
-    end
-    -- do map switch
-    if npc.x < 0 or npc.x > 15 or npc.y < 0 or npc.y > 15 then
-     local newnpcs={}
-     for i=1,#maps[npcmapidx].npcs do
-      if maps[npcmapidx].npcs[i].charidx!=intentdata.charidx then
-       newnpcs[#newnpcs+1]=maps[npcmapidx].npcs[i]
-      end
-     end
-     maps[npcmapidx].npcs=newnpcs
-     maps[intentdata.destnextmap].npcs[#maps[intentdata.destnextmap].npcs+1]={
-      charidx=intentdata.charidx,
-      x=intentdata.destnextmaploc.x,
-      y=intentdata.destnextmaploc.y
-     }
-    end
-   end
-   if npc.intent == 'loop' then
-    npc.cldwn+=1
-    if npc.cldwn==1 then
-     if npc.x==npc.intentdata.br.x and npc.y!=npc.intentdata.tl.y then
-      npc.y-=1
-     elseif npc.y==npc.intentdata.tl.y and npc.x!=npc.intentdata.tl.x then
-      npc.x-=1
-     elseif npc.x==npc.intentdata.tl.x and npc.y!=npc.intentdata.br.y then
-      npc.y+=1
-     elseif npc.y==npc.intentdata.br.y then
-      npc.x+=1
-     end
-    elseif npc.cldwn==30 then
-     npc.cldwn=0
-    end
-   end
+  for npc in all(m.npcs) do
+   exec_npc_intent(npc)
   end
+ end
+ for p in all(party) do
+  exec_npc_intent(p)
  end
  -- check for obj selection
  for i=-1,1 do
@@ -539,6 +499,61 @@ function update_play_map()
  -- play sound if new dialog triggered
  if #active.text.dialog>initialdialoglen or active.lookingdir!= nil then
   sfx(2)
+ end
+end
+
+function exec_npc_intent(npc)
+ -- do npc movement
+ if npc.intent == 'walk' then
+  local npcmapidx=get_mapidx_by_charidx(npc.charidx)
+  local intentdata = npc.intentdata
+  -- goto dest if active map is not npc cur map
+  if npcmapidx != active.mapsidx and npcmapidx!=nil then
+   npc.x=-1
+  end
+  -- do local mvmt
+  npc.cldwn-=1
+  if npc.cldwn==0 then
+   npc.cldwn=16
+   if abs(intentdata.destcurmaploc.x-npc.x) > abs(intentdata.destcurmaploc.y-npc.y) then
+    npc.x+=sgn(intentdata.destcurmaploc.x-npc.x)
+   else
+    npc.y+=sgn(intentdata.destcurmaploc.y-npc.y)
+   end
+  end
+  -- do map switch
+  if (npc.x < 0 or npc.x > 15 or npc.y < 0 or npc.y > 15)  then
+   local newnpcs={}
+   for i=1,#maps[npcmapidx].npcs do
+    if maps[npcmapidx].npcs[i].charidx!=intentdata.charidx then
+     newnpcs[#newnpcs+1]=maps[npcmapidx].npcs[i]
+    end
+   end
+   maps[npcmapidx].npcs=newnpcs
+   maps[intentdata.destnextmap].npcs[#maps[intentdata.destnextmap].npcs+1]={
+    charidx=intentdata.charidx,
+    x=intentdata.destnextmaploc.x,
+    y=intentdata.destnextmaploc.y,
+    cldwn=1,
+   }
+  end
+  if (npcmapidx==nil and npc.x==intentdata.destcurmaploc.x and npc.y==intentdata.destcurmaploc.y) npc.intent=nil
+ end
+ if npc.intent == 'loop' then
+  npc.cldwn+=1
+  if npc.cldwn==1 then
+   if npc.x==npc.intentdata.br.x and npc.y!=npc.intentdata.tl.y then
+    npc.y-=1
+   elseif npc.y==npc.intentdata.tl.y and npc.x!=npc.intentdata.tl.x then
+    npc.x-=1
+   elseif npc.x==npc.intentdata.tl.x and npc.y!=npc.intentdata.br.y then
+    npc.y+=1
+   elseif npc.y==npc.intentdata.br.y then
+    npc.x+=1
+   end
+  elseif npc.cldwn==30 then
+   npc.cldwn=0
+  end
  end
 end
 
@@ -804,22 +819,39 @@ function queue_dialog(dialogi)
  active.text.dialog[#active.text.dialog+1]=dialogi
 end
 
+function maybe_queue_party_move(destx, desty)
+ for p in all(party) do
+  if flr(rnd(2)) == 0 and p.intent==nil then
+   queue_move_npc(p.charidx,{x=destx,y=desty},nil,nil)
+  end
+ end
+end
+
 function queue_move_npc(charidx,destcurmaploc,destnextmap,destnextmaploc)
  for m in all(maps) do
   for npc in all(m.npcs) do
    if npc.charidx == charidx then
-    npc.intent = "walk"
-    npc.intentdata = {charidx=charidx,destcurmaploc=destcurmaploc,destnextmap=destnextmap,destnextmaploc=destnextmaploc,mvmtcldwn=1}
+    set_walk_intent(npc,destcurmaploc,destnextmap,destnextmaploc)
    end
   end
  end
+ for p in all(party) do
+  if p.charidx == charidx then
+   set_walk_intent(p,destcurmaploc,destnextmap,destnextmaploc)
+  end
+ end
+end
+
+function set_walk_intent(npc,destcurmaploc,destnextmap,destnextmaploc)
+ npc.intent = "walk"
+ npc.intentdata = {charidx=npc.charidx,destcurmaploc=destcurmaploc,destnextmap=destnextmap,destnextmaploc=destnextmaploc,mvmtcldwn=1}
 end
 
 function transition_to_playmap()
  active.stagetype = "playmap"
  active.charidx=2
  active.dialogspeakidx=1
- party={{charidx=1,x=nil,y=nil},{charidx=4,x=nil,y=nil}}
+ party={{charidx=1,x=nil,y=nil,cldwn=1},{charidx=4,x=nil,y=nil,cldwn=1}}
  transition_to_map({mp=1,loc={x=1, y=14}})
  pal(14,14,1)
  pal(5,5,1)
@@ -841,6 +873,8 @@ function transition_to_map(dest)
     didadd = true
     party[i].x=x
     party[i].y=y
+    party[i].intent=nil
+    party[i].intentdata=nil
    end
   until didadd
  end
