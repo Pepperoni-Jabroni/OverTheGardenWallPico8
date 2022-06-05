@@ -85,7 +85,8 @@ local maps={
   celly=0,
   trans={{dest={mp=2,loc={x=1, y=14}},locs={{x=13,y=0},{x=14,y=0},{x=15,y=0}}}},
   npcs={{charidx=6,x=6,y=7,cldwn=1},{charidx=3,x=9,y=4,cldwn=1}},
-  discvrdtiles={}
+  discvrdtiles={},
+  undisc_cnt=14,
  },
  {
   type='exterior',
@@ -98,7 +99,8 @@ local maps={
    {dest={mp=5,loc={x=1, y=5}},locs={{x=7,y=3}}}
   },
   npcs={},
-  discvrdtiles={}
+  discvrdtiles={},
+  undisc_cnt=0,
  },
  {
   type='exterior',
@@ -110,7 +112,8 @@ local maps={
    {dest={mp=4,loc={x=8, y=14}},locs={{x=7,y=0},{x=8,y=0}}}
   },
   npcs={},
-  discvrdtiles={}
+  discvrdtiles={},
+  undisc_cnt=0,
  },
  {
   type='exterior',
@@ -123,7 +126,8 @@ local maps={
    {dest={mp=7,loc={x=7, y=14}},locs={{x=9,y=0},{x=10,y=0}}}
   },
   npcs={},
-  discvrdtiles={}
+  discvrdtiles={},
+  undisc_cnt=0,
  },
  {
   type='interior',
@@ -167,7 +171,8 @@ local maps={
    {dest={mp=4,loc={x=9, y=1}},locs={{x=6,y=15},{x=7,y=15}}}
   },
   npcs={},
-  discvrdtiles={}
+  discvrdtiles={},
+  undisc_cnt=0,
  },
  {
   type='exterior',
@@ -178,7 +183,8 @@ local maps={
    {dest={mp=7,loc={x=7, y=1}},locs={{x=7,y=15},{x=8,y=15}}}
   },
   npcs={},
-  discvrdtiles={}
+  discvrdtiles={},
+  undisc_cnt=0,
  }
 }
 local darkspr={
@@ -634,6 +640,7 @@ function draw_play_map()
  end
  -- draw fog of war
  if activemap.type=='exterior' then
+  local dark={}
   for i=0,15 do
    for j=0,15 do
     local nearforone=false
@@ -644,6 +651,7 @@ function draw_play_map()
     end
     local idtfr=tostr(i)..'|'..tostr(j)
     if not nearforone and not is_element_in(activemap.discvrdtiles, idtfr) then
+     dark[#dark+1]={i,j}
      local mspr=mget(i+maps[active.mapsidx].cellx, j+maps[active.mapsidx].celly)
      if (is_element_in(darkspr.idxs,mspr)) then
       -- draw "dark" sprite
@@ -663,6 +671,13 @@ function draw_play_map()
     elseif not is_element_in(activemap.discvrdtiles, idtfr) then
      activemap.discvrdtiles[#activemap.discvrdtiles+1]=idtfr
     end
+   end
+  end
+  -- discover all undiscoverable tiles
+  if #dark==activemap.undisc_cnt then
+   for d in all(dark) do
+    activemap.discvrdtiles[#activemap.discvrdtiles+1]=tostr(d[1])..'|'..tostr(d[2])
+    sfx(2)
    end
   end
  end
