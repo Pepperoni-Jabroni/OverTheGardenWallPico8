@@ -34,17 +34,15 @@ local objdescripts={
  {spridxs={110},descr="the ground is higher\nhere"},
  {spridxs={127},descr="a deep hole in the \nground"},
 }
-local active={
- x=0,
- y=0,
- charidx=nil,
- lookingdir=nil,
- flipv=false,
- text={maptitle=nil,dialog={},charsel=nil},
- stagetype="mainmenu",
- dialogspeakidx=1,
- mapsidx=nil
-}
+local act_x=0
+local act_y=0
+local act_charidx=nil
+local act_lookingdir=nil
+local act_flipv=false
+local act_text={maptitle=nil,dialog={},charsel=nil}
+local act_stagetype="mainmenu"
+local act_dialogspeakidx=1
+local act_mapsidx=nil
 local party={}
 local characters={
  {name='greg', mapidx=0, chrsprdailogueidx=2, idle={'where is that frog\no\' mine!','wanna hear a rock\nfact?'}}, 
@@ -327,25 +325,25 @@ function _init()
 end
 
 function _update()
- get_stage_by_type(active.stagetype).update()
+ get_stage_by_type(act_stagetype).update()
 end
 
 function _draw()
- get_stage_by_type(active.stagetype).draw()
+ get_stage_by_type(act_stagetype).draw()
 end
 -->8
 -- update & draw fns
 function update_main_menu()
- if btn(2) and active.y == 1 then
-  active.y = 0
+ if btn(2) and act_y == 1 then
+  act_y = 0
   sfx(0)
- elseif btn(3) and active.y == 0 then
-  active.y = 1
+ elseif btn(3) and act_y == 0 then
+  act_y = 1
   sfx(0)
  end
  if btn(4) or btn(5) then
-  if active.y==0 then
-   active.stagetype="intro"
+  if act_y==0 then
+   act_stagetype="intro"
    sfx(1)
   else
    stop()
@@ -355,16 +353,16 @@ end
 
 function update_intro()
  if btnp(4) then
-  active.dialogspeakidx+=1
+  act_dialogspeakidx+=1
   sfx(0)
  end
- if active.dialogspeakidx>#dialogs[1] then
+ if act_dialogspeakidx>#dialogs[1] then
   transition_to_playmap()
  end
 end
 
 function update_play_map()
- local initialdialoglen=#active.text.dialog
+ local initialdialoglen=#act_text.dialog
  -- check selection direction
  if btn(4) then
   pressed=nil
@@ -374,72 +372,72 @@ function update_play_map()
    end
   end
   if pressed != nil then
-   active.lookingdir=pressed
+   act_lookingdir=pressed
   end
  else
-  active.lookingdir=nil
+  act_lookingdir=nil
  end
  -- check active movement
- if active.lookingdir == nil and #active.text.dialog == 0 then
-  local ax,ay,mdx=active.x,active.y,active.mapsidx
+ if act_lookingdir == nil and #act_text.dialog == 0 then
+  local ax,ay,mdx=act_x,act_y,act_mapsidx
   for i=0,3 do
    if btnp(i) then
-    maybe_queue_party_move(active.x, active.y)
+    maybe_queue_party_move(act_x, act_y)
     break
    end
   end
   if btnp(2) and ay > 0 and is_element_in(walkable, mget(ax+maps[mdx].cellx, ay - 1+maps[mdx].celly)) then
-   active.y = ay - 1
+   act_y = ay - 1
   elseif btnp(1) and ax < 15 and is_element_in(walkable, mget(ax + 1+maps[mdx].cellx, ay+maps[mdx].celly)) then
-   active.x = ax + 1
-   active.flipv=false
+   act_x = ax + 1
+   act_flipv=false
   elseif btnp(3) and ay < 15 and is_element_in(walkable, mget(ax+maps[mdx].cellx, ay + 1+maps[mdx].celly)) then
-   active.y = ay + 1
+   act_y = ay + 1
   elseif btnp(0) and ax > 0 and is_element_in(walkable, mget(ax - 1+maps[mdx].cellx, ay+maps[mdx].celly)) then
-   active.x = ax - 1
-   active.flipv=true
+   act_x = ax - 1
+   act_flipv=true
   end
  end
  -- check for player switch
- if btnp(5) and #active.text.dialog == 0 then
-  party[#party+1] = {charidx=active.charidx,x=active.x,y=active.y,cldwn=1}
-  active.charidx = party[1].charidx
-  active.x = party[1].x
-  active.y = party[1].y
+ if btnp(5) and #act_text.dialog == 0 then
+  party[#party+1] = {charidx=act_charidx,x=act_x,y=act_y,cldwn=1}
+  act_charidx = party[1].charidx
+  act_x = party[1].x
+  act_y = party[1].y
   party=drop_first_elem(party)
-  local charname = tostr(characters[active.charidx].get_name_at_idx(characters[active.charidx],1))
-  active.text.charsel={txt=charname,frmcnt=32}
+  local charname = tostr(characters[act_charidx].get_name_at_idx(characters[act_charidx],1))
+  act_text.charsel={txt=charname,frmcnt=32}
  end
  -- check for dialog progress
- if btnp(4) and #active.text.dialog > 0 then
+ if btnp(4) and #act_text.dialog > 0 then
   sfx(0)
-  active.dialogspeakidx+=1
-  if active.dialogspeakidx > #get_first_active_dlg() then
-   if type(active.text.dialog[1])=='number' then
-    compltdlgs[#compltdlgs+1]=active.text.dialog[1]
+  act_dialogspeakidx+=1
+  if act_dialogspeakidx > #get_first_active_dlg() then
+   if type(act_text.dialog[1])=='number' then
+    compltdlgs[#compltdlgs+1]=act_text.dialog[1]
    end
-   active.text.dialog=drop_first_elem(active.text.dialog)
-   active.dialogspeakidx=1
+   act_text.dialog=drop_first_elem(act_text.dialog)
+   act_dialogspeakidx=1
   end
  end
  -- check for map switch
- local activemap = maps[active.mapsidx]
- local initmapidx = active.mapsidx
+ local activemap = maps[act_mapsidx]
+ local initmapidx = act_mapsidx
  local maplocked={}
  for t in all(triggers) do
-  if t.maplocking != nil and t.maplocking == active.mapsidx and not t.complete then
+  if t.maplocking != nil and t.maplocking == act_mapsidx and not t.complete then
    maplocked[#maplocked+1]=t.title
    break
   end
  end
  for transition in all(activemap.trans) do
   for location in all(transition.locs) do
-   if active.x == location.x and active.y == location.y then
+   if act_x == location.x and act_y == location.y then
     if #maplocked > 0 then
-     if #active.text.dialog == 0 and not (nonrptdialog.x==active.x and nonrptdialog.y==active.y) then
-      active.text.dialog[#active.text.dialog+1]={{speakeridx=active.charidx,text="we aren\'t done here\nyet... we still need to"}}
-      active.text.dialog[#active.text.dialog+1]={{speakeridx=active.charidx,text=maplocked[1]}}
-      nonrptdialog={x=active.x,y=active.y}
+     if #act_text.dialog == 0 and not (nonrptdialog.x==act_x and nonrptdialog.y==act_y) then
+      act_text.dialog[#act_text.dialog+1]={{speakeridx=act_charidx,text="we aren\'t done here\nyet... we still need to"}}
+      act_text.dialog[#act_text.dialog+1]={{speakeridx=act_charidx,text=maplocked[1]}}
+      nonrptdialog={x=act_x,y=act_y}
      end
     else
      transition_to_map(transition.dest)
@@ -447,7 +445,7 @@ function update_play_map()
     break
    end
   end
-  if active.mapsidx != initmapidx then
+  if act_mapsidx != initmapidx then
    break
   end
  end
@@ -459,14 +457,14 @@ function update_play_map()
   end
  end
  -- check for talk w/ npcs
- if #active.text.dialog == 0 then
+ if #act_text.dialog == 0 then
   for npc in all(get_all_npcs()) do
    for i=-1,1 do
     for j=-1,1 do
-     if i!=j and npc.x+i==active.x and npc.y+j==active.y then
+     if i!=j and npc.x+i==act_x and npc.y+j==act_y then
       if player_sel_location({x=npc.x,y=npc.y}) then
        local idles=get_char_idle_dialog(npc.charidx)
-       active.text.dialog[#active.text.dialog+1]=idles[get_rand_idx(idles)]
+       act_text.dialog[#act_text.dialog+1]=idles[get_rand_idx(idles)]
       end
      end
     end
@@ -484,12 +482,12 @@ function update_play_map()
  -- check for obj selection
  for i=-1,1 do
   for j=-1,1 do
-   local x=active.x+i
-   local y=active.y+j
+   local x=act_x+i
+   local y=act_y+j
    if player_sel_location({x=x,y=y}) then
     for descpt in all(objdescripts) do
-     if is_element_in(descpt.spridxs,mget(x+maps[active.mapsidx].cellx,y+maps[active.mapsidx].celly)) and #active.text.dialog==0 then
-      active.text.dialog[#active.text.dialog+1] = {{speakeridx=active.charidx,text=descpt.descr}}
+     if is_element_in(descpt.spridxs,mget(x+maps[act_mapsidx].cellx,y+maps[act_mapsidx].celly)) and #act_text.dialog==0 then
+      act_text.dialog[#act_text.dialog+1] = {{speakeridx=act_charidx,text=descpt.descr}}
       break
      end
     end
@@ -497,7 +495,7 @@ function update_play_map()
   end
  end
  -- play sound if new dialog triggered
- if #active.text.dialog>initialdialoglen or active.lookingdir!= nil then
+ if #act_text.dialog>initialdialoglen or act_lookingdir!= nil then
   sfx(2)
  end
 end
@@ -508,7 +506,7 @@ function exec_npc_intent(npc)
   local npcmapidx=get_mapidx_by_charidx(npc.charidx)
   local intentdata = npc.intentdata
   -- goto dest if active map is not npc cur map
-  if npcmapidx != active.mapsidx and npcmapidx!=nil then
+  if npcmapidx != act_mapsidx and npcmapidx!=nil then
    npc.x=-1
   end
   -- do local mvmt
@@ -577,11 +575,11 @@ function draw_main_menu()
   end
  end
  -- draw buttons
- draw_fancy_text_box("start",48,65,active.y==0)
- draw_fancy_text_box("quit",50,85,active.y==1)
+ draw_fancy_text_box("start",48,65,act_y==0)
+ draw_fancy_text_box("quit",50,85,act_y==1)
  -- draw selection chevrons
  local sel_y=65
- if active.y==1 then
+ if act_y==1 then
   sel_y=85
  end
  palt(5,true)
@@ -619,12 +617,12 @@ function draw_introduction()
  pal(1,1)
  pal(13,13)
  -- draw frog dialog box
- local currentprog=dialogs[1][active.dialogspeakidx]
+ local currentprog=dialogs[1][act_dialogspeakidx]
  draw_character_dialog_box(currentprog)
 end
 
 function draw_play_map()
- local activemap=maps[active.mapsidx]
+ local activemap=maps[act_mapsidx]
  -- color handling
  palt(0,false)
  palt(13,true)
@@ -632,25 +630,25 @@ function draw_play_map()
  -- draw map
  map(activemap.cellx, activemap.celly)
   -- draw ring around new active char
- if active.text.charsel != nil and active.text.charsel.frmcnt>0 and flr(active.text.charsel.frmcnt/5)%2==0 then
-  pset(active.x*8,active.y*8+7,12)
-  pset(active.x*8+7,active.y*8+7,12)
-  line(active.x*8+1,active.y*8+6,active.x*8+6,active.y*8+6,12)
-  line(active.x*8+1,active.y*8+8,active.x*8+6,active.y*8+8,12)
-  pset(active.x*8,active.y*8+8,1)
-  pset(active.x*8+7,active.y*8+8,1)
-  line(active.x*8+1,active.y*8+9,active.x*8+6,active.y*8+9,1)
+ if act_text.charsel != nil and act_text.charsel.frmcnt>0 and flr(act_text.charsel.frmcnt/5)%2==0 then
+  pset(act_x*8,act_y*8+7,12)
+  pset(act_x*8+7,act_y*8+7,12)
+  line(act_x*8+1,act_y*8+6,act_x*8+6,act_y*8+6,12)
+  line(act_x*8+1,act_y*8+8,act_x*8+6,act_y*8+8,12)
+  pset(act_x*8,act_y*8+8,1)
+  pset(act_x*8+7,act_y*8+8,1)
+  line(act_x*8+1,act_y*8+9,act_x*8+6,act_y*8+9,1)
  end
  -- draw player
- spr(characters[active.charidx].mapidx,active.x*8,active.y*8,1,1,active.flipv,false)
+ spr(characters[act_charidx].mapidx,act_x*8,act_y*8,1,1,act_flipv,false)
  -- draw npcs
  draw_chars_from_array(get_all_npcs())
  -- draw selection direction
- if active.lookingdir != nil then
-  local lkdr=active.lookingdir
+ if act_lookingdir != nil then
+  local lkdr=act_lookingdir
   local sel=get_sel_info_btn(lkdr)
   palt(5,true)
-  spr(sel.i,8*(active.x+sel.x),8*(active.y+sel.y),1,1,sel.x==-1,sel.y==1)
+  spr(sel.i,8*(act_x+sel.x),8*(act_y+sel.y),1,1,sel.x==-1,sel.y==1)
   palt(5,false)
  end
  -- draw fog of war
@@ -667,7 +665,7 @@ function draw_play_map()
     local idtfr=tostr(i)..'|'..tostr(j)
     if not nearforone and not is_element_in(activemap.discvrdtiles, idtfr) then
      dark[#dark+1]={i,j}
-     local mspr=mget(i+maps[active.mapsidx].cellx, j+maps[active.mapsidx].celly)
+     local mspr=mget(i+maps[act_mapsidx].cellx, j+maps[act_mapsidx].celly)
      if (is_element_in(darkspr.idxs,mspr)) then
       -- draw "dark" sprite
       for e in all(darkspr.clrmp) do
@@ -716,24 +714,24 @@ function draw_play_map()
  darkanims=ndas
  -- draw active char hud
  local xanchor=1
- if active.x<=3 and active.y<=2 then
+ if act_x<=3 and act_y<=2 then
   xanchor=114
  end
- if active.text.charsel != nil and active.text.charsel.frmcnt>0 then
-  if active.x<=3 and active.y<=2 then
+ if act_text.charsel != nil and act_text.charsel.frmcnt>0 then
+  if act_x<=3 and act_y<=2 then
    xanchor=90
   end
-  local charname=active.text.charsel.txt
+  local charname=act_text.charsel.txt
   draw_fancy_box(xanchor,1,#charname*4+11, 11, 4,10, 9)
   printsp(charname, xanchor+11, 6, 2)
   printsp(charname, xanchor+10, 5, 9)
-  active.text.charsel.frmcnt-=1
+  act_text.charsel.frmcnt-=1
  else
   draw_fancy_box(xanchor,1,11,11,4,10,9)
  end
- spr(characters[active.charidx].mapidx, xanchor+2, 3)
+ spr(characters[act_charidx].mapidx, xanchor+2, 3)
  -- draw map title
- txtobj=active.text.maptitle
+ txtobj=act_text.maptitle
  if txtobj != nil and txtobj.frmcnt > 0 then
   draw_fancy_box(txtobj.x, txtobj.y, #txtobj.txt*4+4, 8, 4,10, 9)
   printsp(txtobj.txt, txtobj.x+3, txtobj.y+3, 2)
@@ -742,8 +740,8 @@ function draw_play_map()
  end
  -- draw dialog if necessary
  palt(13,false)
- if #active.text.dialog > 0 then
-  local curprogressdlg=get_first_active_dlg()[active.dialogspeakidx]
+ if #act_text.dialog > 0 then
+  local curprogressdlg=get_first_active_dlg()[act_dialogspeakidx]
   if curprogressdlg != nil then
    draw_character_dialog_box(curprogressdlg)
   end
@@ -774,7 +772,7 @@ function get_mapidx_by_charidx(charidx)
 end
 
 function get_first_active_dlg()
- local curprogressdlg=active.text.dialog[1]
+ local curprogressdlg=act_text.dialog[1]
  if type(curprogressdlg)=='number' then
   curprogressdlg=dialogs[curprogressdlg]
  end
@@ -782,24 +780,24 @@ function get_first_active_dlg()
 end
 
 function player_on_location(loc)
- return active.x+maps[active.mapsidx].cellx==loc.x and active.y+maps[active.mapsidx].celly==loc.y
+ return act_x+maps[act_mapsidx].cellx==loc.x and act_y+maps[act_mapsidx].celly==loc.y
 end
 
 function player_sel_location(loc)
- local lkdr=active.lookingdir
+ local lkdr=act_lookingdir
  if lkdr == nil then
   return false
  end
  local sel=get_sel_info_btn(lkdr)
- return active.x+sel.x == loc.x and active.y+sel.y == loc.y
+ return act_x+sel.x == loc.x and act_y+sel.y == loc.y
 end
 
 function playmap_spr_visible(spri)
- local mapspr=sget(active.x+maps[active.mapsidx].cellx,active.y+maps[active.mapsidx].celly)==spri
+ local mapspr=sget(act_x+maps[act_mapsidx].cellx,act_y+maps[act_mapsidx].celly)==spri
  local npcspr=false
- for n in all(maps[active.mapsidx].npcs) do
-  local idtfr=tostr(n.x+maps[active.mapsidx].cellx)..'|'..tostr(n.y+maps[active.mapsidx].celly)
-  if is_element_in(maps[active.mapsidx].discvrdtiles,idtfr) and characters[n.charidx].mapidx==spri then
+ for n in all(maps[act_mapsidx].npcs) do
+  local idtfr=tostr(n.x+maps[act_mapsidx].cellx)..'|'..tostr(n.y+maps[act_mapsidx].celly)
+  if is_element_in(maps[act_mapsidx].discvrdtiles,idtfr) and characters[n.charidx].mapidx==spri then
    npcspr=true
    break
   end
@@ -816,7 +814,7 @@ function trigger_complete(trigi)
 end
 
 function queue_dialog(dialogi)
- active.text.dialog[#active.text.dialog+1]=dialogi
+ act_text.dialog[#act_text.dialog+1]=dialogi
 end
 
 function maybe_queue_party_move(destx, desty)
@@ -848,9 +846,9 @@ function set_walk_intent(npc,destcurmaploc,destnextmap,destnextmaploc)
 end
 
 function transition_to_playmap()
- active.stagetype = "playmap"
- active.charidx=2
- active.dialogspeakidx=1
+ act_stagetype = "playmap"
+ act_charidx=2
+ act_dialogspeakidx=1
  party={{charidx=1,x=nil,y=nil,cldwn=1},{charidx=4,x=nil,y=nil,cldwn=1}}
  transition_to_map({mp=1,loc={x=1, y=14}})
  pal(14,14,1)
@@ -861,15 +859,15 @@ function transition_to_playmap()
 end
 
 function transition_to_map(dest)
- active.mapsidx = dest.mp
- active.x = dest.loc.x
- active.y = dest.loc.y
+ act_mapsidx = dest.mp
+ act_x = dest.loc.x
+ act_y = dest.loc.y
  for i=1,#party do
   didadd=false
   repeat
-   x=flr(rnd(3))+active.x-1
-   y=flr(rnd(3))+active.y-1
-   if is_element_in(walkable, mget(x+maps[active.mapsidx].cellx, y+maps[active.mapsidx].celly)) then
+   x=flr(rnd(3))+act_x-1
+   y=flr(rnd(3))+act_y-1
+   if is_element_in(walkable, mget(x+maps[act_mapsidx].cellx, y+maps[act_mapsidx].celly)) then
     didadd = true
     party[i].x=x
     party[i].y=y
@@ -878,11 +876,11 @@ function transition_to_map(dest)
    end
   until didadd
  end
- local titlex=63-(2*#maps[active.mapsidx].title)
- active.text.maptitle={x=titlex,y=56,txt=maps[active.mapsidx].title,frmcnt=60}
+ local titlex=63-(2*#maps[act_mapsidx].title)
+ act_text.maptitle={x=titlex,y=56,txt=maps[act_mapsidx].title,frmcnt=60}
  -- check alt tiles
- local amcx,amcy=maps[active.mapsidx].cellx,maps[active.mapsidx].celly
- if not is_element_in(altsset, active.mapsidx) then
+ local amcx,amcy=maps[act_mapsidx].cellx,maps[act_mapsidx].celly
+ if not is_element_in(altsset, act_mapsidx) then
   local srctiles=get_sourceidxs()
   for i=0,15 do
    for j=0,15 do
@@ -894,11 +892,11 @@ function transition_to_map(dest)
     end
    end
   end
-  altsset[#altsset+1]=active.mapsidx
+  altsset[#altsset+1]=act_mapsidx
  end
  -- add buildings
  for m in all(maps) do
-  if m.type=='interior' and m.playmapidx==active.mapsidx then
+  if m.type=='interior' and m.playmapidx==act_mapsidx then
    mset(m.playmaploc.x+amcx,m.playmaploc.y+amcy,m.playmapspr)
    mset(m.playmaploc.x+amcx+1,m.playmaploc.y+amcy,m.playmapspr+1)
    mset(m.playmaploc.x+amcx,m.playmaploc.y+1+amcy,m.playmapspr+16)
@@ -954,7 +952,7 @@ function draw_fancy_text_box(text,x,y,active)
 end
 
 function get_all_npcs()
- return union_arrs(party, maps[active.mapsidx].npcs)
+ return union_arrs(party, maps[act_mapsidx].npcs)
 end
 
 function union_arrs(arr1, arr2)
