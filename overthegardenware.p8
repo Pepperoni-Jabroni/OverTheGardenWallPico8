@@ -710,7 +710,8 @@ function draw_play_map()
   end
   local charname=active.text.charsel.txt
   draw_fancy_box(xanchor,1,#charname*4+11, 11, 4,10, 9)
-  printsp(charname, xanchor+10, 5, 0)
+  printsp(charname, xanchor+11, 6, 2)
+  printsp(charname, xanchor+10, 5, 9)
   active.text.charsel.frmcnt-=1
  else
   draw_fancy_box(xanchor,1,11,11,4,10,9)
@@ -720,7 +721,8 @@ function draw_play_map()
  txtobj=active.text.maptitle
  if txtobj != nil and txtobj.frmcnt > 0 then
   draw_fancy_box(txtobj.x, txtobj.y, #txtobj.txt*4+4, 8, 4,10, 9)
-  printsp(txtobj.txt, txtobj.x+2, txtobj.y+2, 0)
+  printsp(txtobj.txt, txtobj.x+3, txtobj.y+3, 2)
+  printsp(txtobj.txt, txtobj.x+2, txtobj.y+2, 9)
   txtobj.frmcnt = txtobj.frmcnt-1
  end
  -- draw dialog if necessary
@@ -912,6 +914,7 @@ function draw_fancy_text_box(text,x,y,active)
  local txtclr=0
  if active then
   txtclr=10
+  printsp(text, x+5, y+5, 2)
  end
  printsp(text, x+4, y+4, txtclr)
 end
@@ -951,7 +954,8 @@ function draw_character_dialog_box(dialogobj)
   nameidx=dialogobj.nameidx
  end
  draw_fancy_box(8,100,112,24,4,10,9)
- printsp(characters[dialogobj.speakeridx].get_name_at_idx(characters[dialogobj.speakeridx],nameidx), 29, 104, 1)
+ print(characters[dialogobj.speakeridx].get_name_at_idx(characters[dialogobj.speakeridx],nameidx), 30, 104, 2)
+ print(characters[dialogobj.speakeridx].get_name_at_idx(characters[dialogobj.speakeridx],nameidx), 29, 103, 9)
  printsp(dialogobj.text, 29, 110, 0)
  draw_fancy_box(10,103,17,17,0,6,5)
  spr(characters[dialogobj.speakeridx].chrsprdailogueidx, 11, 104, 2, 2)
