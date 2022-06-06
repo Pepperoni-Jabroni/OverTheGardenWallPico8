@@ -276,6 +276,11 @@ local stagetypes={
   draw=function(self)draw_main_menu()end
  },
  {
+  title="controls",
+  update=function(self)update_controls()end,
+  draw=function(self)draw_controls()end
+ },
+ {
   title="intro",
   update=function(self)update_intro()end,
   draw=function(self)draw_introduction()end
@@ -333,18 +338,28 @@ function _draw()
 end
 -->8
 -- update & draw fns
+function update_controls()
+ if btnp(4) then
+  act_stagetype="mainmenu"
+ end
+end
+
 function update_main_menu()
- if btn(2) and act_y == 1 then
-  act_y = 0
+ if btnp(2) then
+  act_y = act_y-1
+  if (act_y==-1)act_y=2
   sfx(0)
- elseif btn(3) and act_y == 0 then
-  act_y = 1
+ elseif btnp(3) then
+  act_y = act_y+1
+  if (act_y==3)act_y=0
   sfx(0)
  end
- if btn(4) or btn(5) then
+ if btnp(4) or btnp(5) then
   if act_y==0 then
    act_stagetype="intro"
    sfx(1)
+  elseif act_y==1 then
+   act_stagetype="controls"
   else
    stop()
   end
@@ -352,7 +367,7 @@ function update_main_menu()
 end
 
 function update_intro()
- if btnp(4) then
+ if btnp(5) then
   act_dialogspeakidx+=1
   sfx(0)
  end
@@ -364,7 +379,7 @@ end
 function update_play_map()
  local initialdialoglen=#act_text.dialog
  -- check selection direction
- if btn(4) then
+ if btn(5) then
   pressed=nil
   for i=0,3 do
    if btn(i) then
@@ -399,7 +414,7 @@ function update_play_map()
   end
  end
  -- check for player switch
- if btnp(5) and #act_text.dialog == 0 then
+ if btnp(4) and #act_text.dialog == 0 then
   party[#party+1] = {charidx=act_charidx,x=act_x,y=act_y,cldwn=1}
   act_charidx = party[1].charidx
   act_x = party[1].x
@@ -409,7 +424,7 @@ function update_play_map()
   act_text.charsel={txt=charname,frmcnt=32}
  end
  -- check for dialog progress
- if btnp(4) and #act_text.dialog > 0 then
+ if btnp(5) and #act_text.dialog > 0 then
   sfx(0)
   act_dialogspeakidx+=1
   if act_dialogspeakidx > #get_first_active_dlg() then
@@ -555,6 +570,15 @@ function exec_npc_intent(npc)
  end
 end
 
+function draw_controls()
+ cls(0)
+ draw_two_colored("\148\131\139\145, move",16,50)
+ draw_two_colored("\151, progress dialog",16,60)
+ draw_two_colored("\142, switch characters",16,70)
+ draw_two_colored("\148\131\139\145+\151, select object \nor npc",16,80)
+ draw_two_colored("\142, back to menu",8,118)
+end
+
 function draw_main_menu()
  cls(0)
  -- draw logo
@@ -576,12 +600,10 @@ function draw_main_menu()
  end
  -- draw buttons
  draw_fancy_text_box("start",48,65,act_y==0)
- draw_fancy_text_box("quit",50,85,act_y==1)
+ draw_fancy_text_box("controls",42,85,act_y==1)
+ draw_fancy_text_box("quit",50,105,act_y==2)
  -- draw selection chevrons
- local sel_y=65
- if act_y==1 then
-  sel_y=85
- end
+ local sel_y=65+(act_y*20)
  palt(5,true)
  pal(12,9)
  spr(234,24,sel_y,1,1)
@@ -991,7 +1013,7 @@ function draw_character_dialog_box(dialogobj)
  printsp(dialogobj.text, 29, 110, 0)
  draw_fancy_box(10,103,17,17,0,6,5)
  spr(characters[dialogobj.speakeridx].chrsprdailogueidx, 11, 104, 2, 2)
- print("\142",105,118,0)
+ print("\151",105,118,0)
  palt(5,true)
  pal(12,0)
  spr(234, 112, 116)
@@ -1027,6 +1049,12 @@ function draw_fancy_box(x,y,w,h,fg,otlntl,otlnbr)
  pset(x,y+h,0) -- left black dot
  pset(x+w,y+h,0) -- right black dot
  line(x+1,y+h+1,x+w-1,y+h+1,0) -- bottom black line
+end
+
+function draw_two_colored(s,x,y)
+ local st=split(s)
+ print(st[1],x,y,10)
+ print(st[2],x+(#st[1]*8),y,7)
 end
 
 function get_by_source(source)
