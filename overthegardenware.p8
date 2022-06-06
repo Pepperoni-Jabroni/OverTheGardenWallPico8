@@ -34,6 +34,14 @@ local objdescripts={
  {spridxs="110",descr="the ground is higher\nhere"},
  {spridxs="127",descr="a deep hole in the \nground"},
 }
+local inv_items={
+ {spridx=255,name='candy',charidxs={1}},
+ {spridx=254,name='old cat',charidxs={1,4}},
+ {spridx=253,name='shovel',charidxs={1,2}}
+}
+local act_item=nil
+local act_useitem=nil
+local act_wrld_items={}
 local act_x=0
 local act_y=0
 local act_charidx=nil
@@ -227,6 +235,11 @@ local dialogs={
   {speakeridx=1,text="we\'re in the \nwoods!"},
   {speakeridx=2,text="no, i mean"},
   {speakeridx=2,text="... where are we?!"},
+ },
+ {
+  {speakeridx=2,text="we're really lost greg..."},
+  {speakeridx=1,text="i can leave a trail of candy\n from my pants!"},
+  {speakeridx=1,text="candy trail. candy trail.\ncandytrail!"}
  }
 }
 local triggers={
@@ -245,6 +258,13 @@ local triggers={
   action=function(self)queue_dialog(2)end,
   complete=false,
   maplocking=nil,
+ },
+ {
+  trig=function(self)return player_use_item(1)end,
+  action=function(self)queue_dialog(6)end,
+  complete=false,
+  maplocking=1,
+  title="leave a trail of candy",
  },
  {
   trig=function(self)return player_sel_location({x=5,y=7})end,
@@ -424,7 +444,9 @@ function update_play_map()
   act_text.charsel={txt=charname,frmcnt=32}
  end
  -- check for dialog progress
+ local x_consumed=false
  if btnp(5) and #act_text.dialog > 0 then
+  x_consumed=true
   sfx(0)
   act_dialogspeakidx+=1
   if act_dialogspeakidx > #get_first_active_dlg() then
@@ -480,6 +502,7 @@ function update_play_map()
       if player_sel_location({x=npc.x,y=npc.y}) then
        local idles=get_char_idle_dialog(npc.charidx)
        act_text.dialog[#act_text.dialog+1]=idles[get_rand_idx(idles)]
+       x_consumed=true
       end
      end
     end
@@ -503,10 +526,23 @@ function update_play_map()
     for descpt in all(objdescripts) do
      if is_element_in(split(descpt.spridxs),mget(x+maps[act_mapsidx].cellx,y+maps[act_mapsidx].celly)) and #act_text.dialog==0 then
       act_text.dialog[#act_text.dialog+1] = {{speakeridx=act_charidx,text=descpt.descr}}
+      x_consumed=true
       break
      end
     end
    end
+  end
+ end
+ -- check for item usage
+ if btnp(5) and act_item!=nil and is_element_in(inv_items[act_item].charidxs,act_charidx) and not x_consumed then
+  sfx(0)
+  act_useitem=act_item
+  if act_item==1 then
+   act_wrld_items[#act_wrld_items+1]={spridx=inv_items[act_item].spridx,x=act_x,y=act_y}
+  elseif act_item==2 then
+   -- unimpl
+  elseif act_item==3 then
+   -- unimpl
   end
  end
  -- play sound if new dialog triggered
@@ -661,6 +697,10 @@ function draw_play_map()
   pset(act_x*8+7,act_y*8+8,1)
   line(act_x*8+1,act_y*8+9,act_x*8+6,act_y*8+9,1)
  end
+ -- draw items
+ for i in all(act_wrld_items) do
+  spr(i.spridx,i.x*8,i.y*8)
+ end
  -- draw player
  spr(characters[act_charidx].mapidx,act_x*8,act_y*8,1,1,act_flipv,false)
  -- draw npcs
@@ -734,6 +774,11 @@ function draw_play_map()
   end
  end
  darkanims=ndas
+ -- draw active item hud
+ if act_item!=nil and is_element_in(inv_items[act_item].charidxs,act_charidx) then
+  draw_fancy_box(116,116,11,11,4,10,9)
+  spr(inv_items[act_item].spridx,118,118)
+ end
  -- draw active char hud
  local xanchor=1
  if act_x<=3 and act_y<=2 then
@@ -814,6 +859,14 @@ function player_sel_location(loc)
  return act_x+sel.x == loc.x and act_y+sel.y == loc.y
 end
 
+function player_use_item(itemidx)
+ if act_useitem==itemidx then
+  act_useitem=nil
+  return true
+ end
+ return false
+end
+
 function playmap_spr_visible(spri)
  local mapspr=sget(act_x+maps[act_mapsidx].cellx,act_y+maps[act_mapsidx].celly)==spri
  local npcspr=false
@@ -871,6 +924,7 @@ function transition_to_playmap()
  act_stagetype = "playmap"
  act_charidx=2
  act_dialogspeakidx=1
+ act_item=1
  party={{charidx=1,x=nil,y=nil,cldwn=1},{charidx=4,x=nil,y=nil,cldwn=1}}
  transition_to_map({mp=1,loc={x=1, y=14}})
  pal(14,14,1)
@@ -884,6 +938,7 @@ function transition_to_map(dest)
  act_mapsidx = dest.mp
  act_x = dest.loc.x
  act_y = dest.loc.y
+ act_wrld_items={}
  for i=1,#party do
   didadd=false
   repeat
@@ -1271,14 +1326,14 @@ d4004440444042dddddc1c55055555dd888888888888888888888888888888884222222440504444
 3335444004445000377000773333333333622227722226238888888888888888333338777782223355c55c55334242333bbbbbb3ccc7ccccc66657cc46644444
 335444400444450036600077333333333338877777788223888888888888888833338777777822235c55c5553a2422333bbbbbb3ccc7cccccccc7ccc45645666
 35444444444444503770007655555333333777777777722388888888888888883338777777778223555555559444422333333333cc7ccccccccccccc44444554
-334444444444442237700077555555553337222222227223888888888888888833877777777778235555555543343434ddddddddddddd55ddddddddddddddd2d
-3344444444444422447777776666666333378877787c722388888888888888883337777777777663555cc55543439343dddddddddddd4225dd2cdddddddd8d22
-334444444444442255777667777777733337887778c772238888888888888888333700766700766355c55c5544333443ddddddddddd42225dc2d44ddddd888dd
-3345522222554422447444777007007333378877987c7223888888888888888833370076670076635c5555c534434232daadaaaddd42225ddd2444cddd88888d
-33442442442444225574447770060063333788777888722388888888888888883337777667777663555cc55593442323aa9a99aad42224dddd44422dd88888dd
-3344244244244422446449744007007333378877788872238888888888888888333777766777766355c55c5533424233a9a9aa9a44424ddd244422dddd888ddd
-334424424424442255744476677777733337444444447233888888888888888833377755557776635c5555c533242233a99a999a5444dddd224ddddd22d8dddd
-334424424424442344744474477667733332222222222333888888888888888833377666666776335555555594444229da9999add55dddddd22dddddd2dddddd
+334444444444442237700077555555553337222222227223888888888888888833877777777778235555555543343434ddddddddddddd766dddddddddddddd2d
+3344444444444422447777776666666333378877787c722388888888888888883337777777777663555cc55543439343dddddddddddd7666dd5d5d6ddddd8d22
+334444444444442255777667777777733337887778c772238888888888888888333700766700766355c55c5544333443dddddddddddd6465dd959dd6ddd888dd
+3345522222554422447444777007007333378877987c7223888888888888888833370076670076635c5555c534434232daadaaaddddd445ddd5557d6dd88888d
+33442442442444225574447770060063333788777888722388888888888888883337777667777663555cc55593442323aa9a99aaddd44ddddd666676d88888dd
+3344244244244422446449744007007333378877788872238888888888888888333777766777766355c55c5533424233a9a9aa9add44ddddd6d65567dd888ddd
+334424424424442255744476677777733337444444447233888888888888888833377755557776635c5555c533242233a99a999a444dddddddd5d66622d8dddd
+334424424424442344744474477667733332222222222333888888888888888833377666666776335555555594444229da9999add4ddddddddddd5ddd2dddddd
 __map__
 ebebebebebebebebebebebebebcfcfcfcfcfcfebcececeebebebebebebebebebcdecececcdcdcfcfecececcdcdcdcdebebebebebebebebebebcfcfcfebebebeb7e8e8e8e8e8e8e8e8e8e8e8e8e7e8e7e7e8e8e8e8e8e8e8e8e8e8e8e8e8e8e7eebebebebebebebcfcfebebebebebebebebebebebebebebebebebebebebebebeb
 ebcdebcdebdccdeccdcdcdebcdcfcfcfcfcfcfecebcececdcdecebebebebebebcdcdcdcdcdcdcfcfececcdcdcdcdceceebebebcdcdcdcdcdcdcfcfcdcdcdcdebafbfbfd9d9d9bfbfbfd85bbfbfafbfafafbfbfbfbf4abfbfbfbfbfbfbfbfbfafebcdcdcdcdcdcdcfcfcdcdcdcdcdcdebebcdcdcdcdcdcdcdcdcdcdcdcdcdcdeb
