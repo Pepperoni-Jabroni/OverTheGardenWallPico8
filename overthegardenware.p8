@@ -22,16 +22,16 @@ local objdescripts={
  {spridxs="190",descr="this pumpkin is missing"},
  {spridxs="204,236",descr="its just a bush..."},
  {spridxs="218,235,251",descr="this tree sure is tall"},
- {spridxs="220",descr="a stump of some weirdtree?"},
+ {spridxs="220",descr="a stump of some weird tree?"},
  {spridxs="219",descr="a creepy tree with a face on it"},
  {spridxs="224,225,240,241",descr="pottsfield old barn"},
  {spridxs="226,227,242,243",descr="the old grist mill"},
  {spridxs="228,229,244,245",descr="the animal schoolhouse"},
  {spridxs="230,231,246,247",descr="the inn"},
- {spridxs="232,233,248,249",descr="pottsfield oldchurch"},
+ {spridxs="232,233,248,249",descr="pottsfield old church"},
  {spridxs="108",descr="a rickety old fence"},
  {spridxs="109",descr="a scarecrow of sorts"},
- {spridxs="110",descr="the ground is higherhere"},
+ {spridxs="110",descr="the ground is higher here"},
  {spridxs="127",descr="a deep hole in the ground"},
 }
 local inv_items={
@@ -53,7 +53,7 @@ local act_dialogspeakidx=1
 local act_mapsidx=nil
 local party={}
 local characters={
- {name='greg', mapidx=0, chrsprdailogueidx=2, idle={'where is that frogo\' mine!','wanna hear a rockfact?'}}, 
+ {name='greg', mapidx=0, chrsprdailogueidx=2, idle={'where is that frog o\' mine!','wanna hear a rock fact?'}}, 
  {name='wirt', mapidx=1, chrsprdailogueidx=4, idle={'uh, hi...','oh sorry, just thinking'}}, 
  {name='beatrice', mapidx=16, chrsprdailogueidx=6, idle={'yes, i can talk...','lets get out of here!'}}, 
  {
@@ -72,7 +72,7 @@ local characters={
  {name='pottsfield citizen', mapidx=80, chrsprdailogueidx=102, idle={'are you new here?'}},
  {name='pottsfield harvest', mapidx=81, chrsprdailogueidx=70, idle={}},
  {name='pottsfield partier', mapidx=96, chrsprdailogueidx=100, idle={}},
- {name='enoch', mapidx=97, chrsprdailogueidx=72, scaling=2, idle={'what a wonderfulharvest','you don\'t look likeyou belong here'}},
+ {name='enoch', mapidx=97, chrsprdailogueidx=72, scaling=2, idle={'what a wonderful harvest','you don\'t look like you belong here'}},
  {name='dog student', mapidx=10, chrsprdailogueidx=44, idle={}},
  {name='gorilla', mapidx=113, chrsprdailogueidx=12, idle={}},
  {name='jimmy brown', mapidx=11, chrsprdailogueidx=14, idle={}},
@@ -776,8 +776,8 @@ function draw_play_map()
  darkanims=ndas
  -- draw active item hud
  if act_item!=nil and is_element_in(inv_items[act_item].charidxs,act_charidx) then
-  draw_fancy_box(116,116,11,11,4,10,9)
-  spr(inv_items[act_item].spridx,118,118)
+  draw_fancy_box(115,115,11,11,4,10,9)
+  spr(inv_items[act_item].spridx,117,117)
  end
  -- draw active char hud
  local xanchor=1
