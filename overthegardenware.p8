@@ -18,21 +18,21 @@ local objdescripts={
  {spridxs="124,125,140,141",descr="the poor old mill..."},
  {spridxs="158",descr="look at these pumpkins!"},
  {spridxs="159",descr="it says pottsfield \148"},
- {spridxs="174",descr="looks like its harvest \ntime!"},
+ {spridxs="174",descr="looks like its harvest time!"},
  {spridxs="190",descr="this pumpkin is missing"},
  {spridxs="204,236",descr="its just a bush..."},
  {spridxs="218,235,251",descr="this tree sure is tall"},
- {spridxs="220",descr="a stump of some weird\ntree?"},
- {spridxs="219",descr="a creepy tree with a \nface on it"},
+ {spridxs="220",descr="a stump of some weirdtree?"},
+ {spridxs="219",descr="a creepy tree with a face on it"},
  {spridxs="224,225,240,241",descr="pottsfield old barn"},
  {spridxs="226,227,242,243",descr="the old grist mill"},
  {spridxs="228,229,244,245",descr="the animal schoolhouse"},
  {spridxs="230,231,246,247",descr="the inn"},
- {spridxs="232,233,248,249",descr="pottsfield old\nchurch"},
+ {spridxs="232,233,248,249",descr="pottsfield oldchurch"},
  {spridxs="108",descr="a rickety old fence"},
  {spridxs="109",descr="a scarecrow of sorts"},
- {spridxs="110",descr="the ground is higher\nhere"},
- {spridxs="127",descr="a deep hole in the \nground"},
+ {spridxs="110",descr="the ground is higherhere"},
+ {spridxs="127",descr="a deep hole in the ground"},
 }
 local inv_items={
  {spridx=255,name='candy',charidxs={1}},
@@ -53,7 +53,7 @@ local act_dialogspeakidx=1
 local act_mapsidx=nil
 local party={}
 local characters={
- {name='greg', mapidx=0, chrsprdailogueidx=2, idle={'where is that frog\no\' mine!','wanna hear a rock\nfact?'}}, 
+ {name='greg', mapidx=0, chrsprdailogueidx=2, idle={'where is that frogo\' mine!','wanna hear a rockfact?'}}, 
  {name='wirt', mapidx=1, chrsprdailogueidx=4, idle={'uh, hi...','oh sorry, just thinking'}}, 
  {name='beatrice', mapidx=16, chrsprdailogueidx=6, idle={'yes, i can talk...','lets get out of here!'}}, 
  {
@@ -72,7 +72,7 @@ local characters={
  {name='pottsfield citizen', mapidx=80, chrsprdailogueidx=102, idle={'are you new here?'}},
  {name='pottsfield harvest', mapidx=81, chrsprdailogueidx=70, idle={}},
  {name='pottsfield partier', mapidx=96, chrsprdailogueidx=100, idle={}},
- {name='enoch', mapidx=97, chrsprdailogueidx=72, scaling=2, idle={'what a wonderful\nharvest','you don\'t look like\nyou belong here'}},
+ {name='enoch', mapidx=97, chrsprdailogueidx=72, scaling=2, idle={'what a wonderfulharvest','you don\'t look likeyou belong here'}},
  {name='dog student', mapidx=10, chrsprdailogueidx=44, idle={}},
  {name='gorilla', mapidx=113, chrsprdailogueidx=12, idle={}},
  {name='jimmy brown', mapidx=11, chrsprdailogueidx=14, idle={}},
@@ -202,14 +202,14 @@ local nonrptdialog={x=nil,y=nil}
 local compltdlgs={}
 local dialogs={
  {
-  {speakeridx=4,nameidx=nil,text="led through the \nmist"},
-  {speakeridx=4,nameidx=nil,text="by the milk-light of \nmoon"},
-  {speakeridx=4,nameidx=nil,text="all that was lost is \nrevealed"},
+  {speakeridx=4,nameidx=nil,text="led through the mist"},
+  {speakeridx=4,nameidx=nil,text="by the milk-light of moon"},
+  {speakeridx=4,nameidx=nil,text="all that was lost is revealed"},
   {speakeridx=4,nameidx=nil,text="our long bygone burdens"},
-  {speakeridx=4,nameidx=nil,text="mere echoes of the \nspring"},
-  {speakeridx=4,nameidx=nil,text="but where have we \ncome?"},
-  {speakeridx=4,nameidx=nil,text="and where shall we \nend?"},
-  {speakeridx=4,nameidx=nil,text="if dreams can't come \ntrue"},
+  {speakeridx=4,nameidx=nil,text="mere echoes of the spring"},
+  {speakeridx=4,nameidx=nil,text="but where have we come?"},
+  {speakeridx=4,nameidx=nil,text="and where shall we end?"},
+  {speakeridx=4,nameidx=nil,text="if dreams can't come true"},
   {speakeridx=4,nameidx=nil,text="then why not pretend?"}
  },
  {
@@ -224,22 +224,22 @@ local dialogs={
   {speakeridx=23,text="*howls in the wind*"}
  },
  {
-  {speakeridx=2,text="is that some sort of\nderanged lunatic?"},
-  {speakeridx=2,text="with an ax waiting\nfor victims?"},
-  {speakeridx=6,text="*swings axe and chops \ntree*"},
-  {speakeridx=1,text="we should ask him\nfor help!"}
+  {speakeridx=2,text="is that some sort of deranged lunatic?"},
+  {speakeridx=2,text="with an ax waiting for victims?"},
+  {speakeridx=6,text="*swings axe and chops tree*"},
+  {speakeridx=1,text="we should ask him for help!"}
  },
  {
   {speakeridx=2,text="whoa... wait greg..."},
   {speakeridx=2,text="... where are we?"},
-  {speakeridx=1,text="we\'re in the \nwoods!"},
+  {speakeridx=1,text="we\'re in the woods!"},
   {speakeridx=2,text="no, i mean"},
   {speakeridx=2,text="... where are we?!"},
  },
  {
   {speakeridx=2,text="we're really lost greg..."},
-  {speakeridx=1,text="i can leave a trail of candy\n from my pants!"},
-  {speakeridx=1,text="candy trail. candy trail.\ncandytrail!"}
+  {speakeridx=1,text="i can leave a trail of candy from my pants!"},
+  {speakeridx=1,text="candytrail. candytrail. candytrail!"}
  }
 }
 local triggers={
@@ -271,7 +271,7 @@ local triggers={
   action=function(self)queue_dialog(3)end,
   complete=false,
   maplocking=1,
-  title="find the tree with\nthe face",
+  title="find the tree with the face",
  },
  {
   trig=function(self)return playmap_spr_visible(33)end,
@@ -472,7 +472,7 @@ function update_play_map()
    if act_x == location.x and act_y == location.y then
     if #maplocked > 0 then
      if #act_text.dialog == 0 and not (nonrptdialog.x==act_x and nonrptdialog.y==act_y) then
-      act_text.dialog[#act_text.dialog+1]={{speakeridx=act_charidx,text="we aren\'t done here\nyet... we still need to"}}
+      act_text.dialog[#act_text.dialog+1]={{speakeridx=act_charidx,text="we aren't done here yet... we should"}}
       act_text.dialog[#act_text.dialog+1]={{speakeridx=act_charidx,text=maplocked[1]}}
       nonrptdialog={x=act_x,y=act_y}
      end
@@ -608,10 +608,10 @@ end
 
 function draw_controls()
  cls(0)
- draw_two_colored("\148\131\139\145, move",16,50)
- draw_two_colored("\151, progress dialog",16,60)
- draw_two_colored("\142, switch characters",16,70)
- draw_two_colored("\148\131\139\145+\151, select object \nor npc",16,80)
+ draw_two_colored("\148\131\139\145, move",16,20)
+ draw_two_colored("\151, progress dialog or\n use item",16,40)
+ draw_two_colored("\142, switch characters",16,60)
+ draw_two_colored("\148\131\139\145+\151, select object\n or npc",16,80)
  draw_two_colored("\142, back to menu",8,118)
 end
 
@@ -1065,7 +1065,18 @@ function draw_character_dialog_box(dialogobj)
  draw_fancy_box(8,100,112,24,4,10,9)
  print(characters[dialogobj.speakeridx].get_name_at_idx(characters[dialogobj.speakeridx],nameidx), 30, 104, 2)
  print(characters[dialogobj.speakeridx].get_name_at_idx(characters[dialogobj.speakeridx],nameidx), 29, 103, 9)
- printsp(dialogobj.text, 29, 110, 0)
+ if #dialogobj.text<=22 then
+  printsp(dialogobj.text, 29, 110, 0)
+ else
+  local chi=-1
+  for i=23,1,-1 do
+   if is_element_in(split(",.? ",""),sub(dialogobj.text,i,i)) then
+    chi=i
+    break
+   end
+  end
+  printsp(sub(dialogobj.text,1,chi).."\n"..sub(dialogobj.text,chi+1), 29, 110, 0)
+ end
  draw_fancy_box(10,103,17,17,0,6,5)
  spr(characters[dialogobj.speakeridx].chrsprdailogueidx, 11, 104, 2, 2)
  print("\151",105,118,0)
