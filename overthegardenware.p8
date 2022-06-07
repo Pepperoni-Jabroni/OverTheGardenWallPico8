@@ -88,8 +88,23 @@ local maps={
   type='exterior',
   title='somewhere in the unknown',
   cellx=0,
+  celly=16,
+  trans={
+   {dest={mp=2,loc={x=1, y=14}},locs={{x=15,y=4},{x=15,y=5}}}
+  },
+  npcs={},
+  discvrdtiles={},
+  undisc_cnt=0,
+ },
+ {
+  type='exterior',
+  title='somewhere in the unknown',
+  cellx=0,
   celly=0,
-  trans={{dest={mp=2,loc={x=1, y=14}},locs={{x=13,y=0},{x=14,y=0},{x=15,y=0}}}},
+  trans={
+   {dest={mp=3,loc={x=1, y=14}},locs={{x=13,y=0},{x=14,y=0},{x=15,y=0}}},
+   {dest={mp=1,loc={x=14, y=5}},locs={{x=0,y=14},{x=0,y=15},{x=1,y=15}}}
+  },
   npcs={{charidx=6,x=6,y=7,cldwn=1},{charidx=3,x=9,y=4,cldwn=1}},
   discvrdtiles={},
   undisc_cnt=14,
@@ -100,9 +115,9 @@ local maps={
   cellx=16,
   celly=0,
   trans={
-   {dest={mp=1,loc={x=14, y=1}},locs={{x=0,y=13},{x=0,y=14},{x=0,y=15}}},
-   {dest={mp=3,loc={x=14, y=14}},locs={{x=0,y=0},{x=1,y=0},{x=2,y=0},{x=0,y=1}}},
-   {dest={mp=5,loc={x=1, y=5}},locs={{x=7,y=3}}}
+   {dest={mp=2,loc={x=14, y=1}},locs={{x=0,y=13},{x=0,y=14},{x=0,y=15}}},
+   {dest={mp=4,loc={x=14, y=14}},locs={{x=0,y=0},{x=1,y=0},{x=2,y=0},{x=0,y=1}}},
+   {dest={mp=6,loc={x=1, y=5}},locs={{x=7,y=3}}}
   },
   npcs={},
   discvrdtiles={},
@@ -110,12 +125,12 @@ local maps={
  },
  {
   type='exterior',
-  title='deeper into the unknown',
+  title='somewhere in the unknown',
   cellx=32,
   celly=0,
   trans={
-   {dest={mp=2,loc={x=1, y=1}},locs={{x=13,y=15},{x=14,y=15},{x=15,y=15}}},
-   {dest={mp=4,loc={x=8, y=14}},locs={{x=7,y=0},{x=8,y=0}}}
+   {dest={mp=3,loc={x=1, y=1}},locs={{x=13,y=15},{x=14,y=15},{x=15,y=15}}},
+   {dest={mp=5,loc={x=8, y=14}},locs={{x=7,y=0},{x=8,y=0}}}
   },
   npcs={},
   discvrdtiles={},
@@ -127,9 +142,9 @@ local maps={
   cellx=48,
   celly=0,
   trans={
-   {dest={mp=3,loc={x=7, y=1}},locs={{x=8,y=15},{x=14,y=15},{x=15,y=15}}},
-   {dest={mp=6,loc={x=7, y=14}},locs={{x=4,y=2},{x=5,y=2}}},
-   {dest={mp=7,loc={x=7, y=14}},locs={{x=9,y=0},{x=10,y=0}}}
+   {dest={mp=4,loc={x=7, y=1}},locs={{x=8,y=15},{x=14,y=15},{x=15,y=15}}},
+   {dest={mp=7,loc={x=7, y=14}},locs={{x=4,y=2},{x=5,y=2}}},
+   {dest={mp=8,loc={x=7, y=14}},locs={{x=9,y=0},{x=10,y=0}}}
   },
   npcs={},
   discvrdtiles={},
@@ -141,10 +156,10 @@ local maps={
   cellx=64,
   celly=0,
   trans={
-   {dest={mp=2,loc={x=7, y=4}},locs={{x=0,y=5}}}
+   {dest={mp=3,loc={x=7, y=4}},locs={{x=0,y=5}}}
   },
   npcs={},
-  playmapidx=2,
+  playmapidx=3,
   playmapspr=226,
   playmaploc={x=7,y=2}
  },
@@ -154,7 +169,7 @@ local maps={
   cellx=80,
   celly=0,
   trans={
-   {dest={mp=4,loc={x=4, y=3}},locs={{x=7,y=15},{x=8,y=15}}}
+   {dest={mp=5,loc={x=4, y=3}},locs={{x=7,y=15},{x=8,y=15}}}
   },
   npcs={
    {charidx=11,x=7,y=7,cldwn=1,intent="loop",intentdata={tl={x=7,y=7},br={x=10,y=10}}},
@@ -163,18 +178,18 @@ local maps={
    {charidx=12,x=10,y=10,cldwn=1,intent="loop",intentdata={tl={x=7,y=7},br={x=10,y=10}}},
    {charidx=15,x=8,y=8,cldwn=1}
   },
-  playmapidx=4,
+  playmapidx=5,
   playmapspr=224,
   playmaploc={x=4,y=1}
  },
  {
   type='exterior',
-  title='woods of the unknown',
+  title='somewhere in the unknown',
   cellx=96,
   celly=0,
   trans={
-   {dest={mp=8,loc={x=7, y=14}},locs={{x=7,y=0},{x=8,y=0}}},
-   {dest={mp=4,loc={x=9, y=1}},locs={{x=6,y=15},{x=7,y=15}}}
+   {dest={mp=9,loc={x=7, y=14}},locs={{x=7,y=0},{x=8,y=0}}},
+   {dest={mp=5,loc={x=9, y=1}},locs={{x=6,y=15},{x=7,y=15}}}
   },
   npcs={},
   discvrdtiles={},
@@ -186,7 +201,7 @@ local maps={
   cellx=112,
   celly=0,
   trans={
-   {dest={mp=7,loc={x=7, y=1}},locs={{x=7,y=15},{x=8,y=15}}}
+   {dest={mp=8,loc={x=7, y=1}},locs={{x=7,y=15},{x=8,y=15}}}
   },
   npcs={},
   discvrdtiles={},
@@ -245,8 +260,7 @@ local dialogs={
 local triggers={
  {
   trig=function(self)
-   return (player_on_location({x=1,y=12}) or player_on_location({x=2,y=12})
-       or player_on_location({x=3,y=13}) or player_on_location({x=3,y=14}))
+   return act_mapsidx==1 and (act_x!=8 or act_y!=8)
   end,
   action=function(self)queue_dialog(5)end,
   complete=false,
@@ -260,31 +274,38 @@ local triggers={
   maplocking=nil,
  },
  {
-  trig=function(self)return player_use_item(1)end,
+  trig=function(self)return player_use_item(1,1)end,
   action=function(self)queue_dialog(6)end,
   complete=false,
   maplocking=1,
   title="leave a trail of candy",
  },
  {
+  trig=function(self)return player_use_item(1,2)end,
+  action=function(self)end,
+  complete=false,
+  maplocking=2,
+  title="leave a trail of candy",
+ },
+ {
   trig=function(self)return player_sel_location({x=5,y=7})end,
   action=function(self)queue_dialog(3)end,
   complete=false,
-  maplocking=1,
+  maplocking=2,
   title="find the tree with the face",
  },
  {
   trig=function(self)return playmap_spr_visible(33)end,
   action=function(self)queue_dialog(4)end,
   complete=false,
-  maplocking=1,
+  maplocking=2,
   title="meet someone new"
  },
  {
   trig=function(self)return dialog_is_complete(4)end,
   action=function(self)queue_move_npc(6,{x=16,y=-1},2,{x=7,y=7})end,
   complete=false,
-  maplocking=1,
+  maplocking=2,
   title="finish the conversation"
  }
 }
@@ -470,7 +491,9 @@ function update_play_map()
  for transition in all(activemap.trans) do
   for location in all(transition.locs) do
    if act_x == location.x and act_y == location.y then
-    if #maplocked > 0 then
+    if transition.dest.mp<act_mapsidx then
+     transition_to_map(transition.dest)
+    elseif #maplocked > 0  then
      if #act_text.dialog == 0 and not (nonrptdialog.x==act_x and nonrptdialog.y==act_y) then
       act_text.dialog[#act_text.dialog+1]={{speakeridx=act_charidx,text="we aren't done here yet... we should"}}
       act_text.dialog[#act_text.dialog+1]={{speakeridx=act_charidx,text=maplocked[1]}}
@@ -859,8 +882,8 @@ function player_sel_location(loc)
  return act_x+sel.x == loc.x and act_y+sel.y == loc.y
 end
 
-function player_use_item(itemidx)
- if act_useitem==itemidx then
+function player_use_item(itemidx,mapidx)
+ if act_useitem==itemidx and act_mapsidx==mapidx then
   act_useitem=nil
   return true
  end
@@ -926,7 +949,7 @@ function transition_to_playmap()
  act_dialogspeakidx=1
  act_item=1
  party={{charidx=1,x=nil,y=nil,cldwn=1},{charidx=4,x=nil,y=nil,cldwn=1}}
- transition_to_map({mp=1,loc={x=1, y=14}})
+ transition_to_map({mp=1,loc={x=8, y=8}})
  pal(14,14,1)
  pal(5,5,1)
  pal(12,12,1)
@@ -1366,14 +1389,14 @@ ebebebebebebebebebebebebebebebeb000000000000000000000000000000000000000000000000
 ebcdcdcdcdcdcdcdcdcdcdcdebebebeb00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 ebcdcdcdebcdcdcdcdcdcdcdcdcdebeb00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 ebcdcdebebcdebcdcdcdebebcdcdebeb00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdebebecebebcdebcdecebebcdebeb00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdebeccdebcdcdebebcdcdebcdcdeb00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdcdcdcdcdcdcdebebebcdcdcdcdeb00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-cfcfcfcfcfcfcfcdcdcdcdcdcfcfcfcf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ebcdebebecebebcdebcdecebebcdebcf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ebcdebeccdebcdcdebebcdcdebcdcfcf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ebcdcdcdcdcfcfcfcfcfcfcdcdcdcfcf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+cfcfcfcfcfcfcfcfcfcfcfcdcfcfcfcf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 cfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdcdcfcfcfcfcfcfcfcfcfcfcdcdeb00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdcdcdcdcdcdcfcfcfcdcdcdcdcdeb00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdcdebcdcdcdcdcdcdcdcdcdcdcdeb00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ebcdcdcfcfcfcfcfcfcfcfcfcfcfcdeb00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ebcdcdcdcdcfcfcfcfcfcfcdcdcdcdeb00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ebcdcdebeccdcdcdcdcdcdcdcdcdcdeb00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 ebcdcdebebebcdcdcdebebcdcdebebeb00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 ebebebcdcdcdcdcdcdcdecebebebebeb00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 ebebebebcdcdcdcdcdebebebcdcdebeb00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
