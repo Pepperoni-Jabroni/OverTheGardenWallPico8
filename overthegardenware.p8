@@ -995,8 +995,8 @@ function transition_to_map(dest)
  for i=1,#party do
   didadd=false
   repeat
-   x=act_x + flr(rnd(3) - 1) * 1
-   y=act_y + flr(rnd(3) - 1) * 1
+   x=act_x + flr(rnd(3)) - 1
+   y=act_y + flr(rnd(3)) - 1
    if is_element_in(split(walkable), mget(x+maps[act_mapsidx].cellx, y+maps[act_mapsidx].celly)) then
     didadd = true
     party[i].x=x
