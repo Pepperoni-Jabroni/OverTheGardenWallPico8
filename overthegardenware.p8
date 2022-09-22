@@ -87,9 +87,9 @@ local characters={
 local map_trans = {
  {mp_one=1,mp_two=2,mp_one_locs={'15,4', '15,5'},mp_two_locs={'0,14', '0,15'}},
  {mp_one=2,mp_two=3,mp_one_locs={'13,0', '14,0', '15,0'},mp_two_locs={'0,13', '0,14', '0,15'}},
- {mp_one=3,mp_two=4,mp_one_locs={'0,0', '0,1', '1,0', '2,0'},mp_two_locs={'13,15', '14,15', '15,15'}},
+ {mp_one=3,mp_two=4,mp_one_locs={'0,0', '1,0'},mp_two_locs={'13,15', '14,15', '15,15'}},
  {mp_one=3,mp_two=6,mp_one_locs={'7,3'},mp_two_locs={'0,5'}},
- {mp_one=4,mp_two=5,mp_one_locs={'7,0', '8,0'},mp_two_locs={'14,15', '15,15'}},
+ {mp_one=4,mp_two=5,mp_one_locs={'7,0', '8,0'},mp_two_locs={'7,15', '8,15'}},
  {mp_one=5,mp_two=7,mp_one_locs={'4,2','5,2'},mp_two_locs={'7,15','8,15'}},
  {mp_one=5,mp_two=8,mp_one_locs={'9,0','10,0'},mp_two_locs={'6,15','7,15'}},
  {mp_one=8,mp_two=9,mp_one_locs={'7,0','8,0'},mp_two_locs={'7,15','8,15'}},
@@ -290,7 +290,7 @@ local triggers={
  },
  {
   trig=function(self)return dialog_is_complete(4)end,
-  action=function(self)queue_move_npc(6,{x=16,y=-1},2,{x=7,y=7})end,
+  action=function(self)queue_move_npc(6,{x=16,y=-1},3,{x=7,y=7})end,
   complete=false,
   maplocking=2,
   title="finish the conversation"
@@ -521,7 +521,7 @@ function update_play_map()
     end
    end
   end
-  if to_map_idx != nil then
+  if to_map_idx != nil and to_map_loc != nil then
    if to_map_idx<act_mapsidx then
     transition_to_map({mp=to_map_idx,loc={x=to_map_loc[1],y=to_map_loc[2]}})
    elseif #maplocked > 0  then
@@ -624,7 +624,7 @@ function exec_npc_intent(npc)
    end
   end
   -- do map switch
-  if (npc.x < 0 or npc.x > 15 or npc.y < 0 or npc.y > 15)  then
+  if (npc.x < 0 or npc.x > 15 or npc.y < 0 or npc.y > 15) and npcmapidx != nil  then
    local newnpcs={}
    for i=1,#maps[npcmapidx].npcs do
     if maps[npcmapidx].npcs[i].charidx!=intentdata.charidx then
@@ -979,7 +979,7 @@ function transition_to_playmap()
  act_dialogspeakidx=1
  act_item=1
  party={{charidx=1,x=nil,y=nil,cldwn=1},{charidx=4,x=nil,y=nil,cldwn=1}}
- transition_to_map({mp=4,loc={x=8, y=8}})
+ transition_to_map({mp=1,loc={x=8, y=8}})
  pal(14,14,1)
  pal(5,5,1)
  pal(12,12,1)
@@ -995,8 +995,8 @@ function transition_to_map(dest)
  for i=1,#party do
   didadd=false
   repeat
-   x=flr(rnd(3))+act_x-1
-   y=flr(rnd(3))+act_y-1
+   x=act_x + flr(rnd(3) - 1) * 1
+   y=act_y + flr(rnd(3) - 1) * 1
    if is_element_in(split(walkable), mget(x+maps[act_mapsidx].cellx, y+maps[act_mapsidx].celly)) then
     didadd = true
     party[i].x=x
