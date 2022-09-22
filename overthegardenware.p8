@@ -289,7 +289,7 @@ local triggers={
   action=function(self)queue_dialog(3)end,
   complete=false,
   maplocking=2,
-  title="find the tree with the face",
+  title="look at the tree with the face",
  },
  {
   trig=function(self)return playmap_spr_visible(2, 33)end,
@@ -326,7 +326,7 @@ local triggers={
   end,
   complete=false,
   maplocking=2,
-  title="join your new friend"
+  title="join a new friend"
  },
  {
   trig=function(self)return playmap_spr_visible(3, 33)end,
@@ -531,7 +531,6 @@ function update_play_map()
  for t in all(triggers) do
   if t.maplocking != nil and t.maplocking == act_mapsidx and not t.complete then
    maplocked[#maplocked+1]=t.title
-   break
   end
  end
  for transition in all(map_trans) do
@@ -559,7 +558,9 @@ function update_play_map()
    elseif #maplocked > 0  then
     if #act_text.dialog == 0 and not (nonrptdialog.x==act_x and nonrptdialog.y==act_y) then
      act_text.dialog[#act_text.dialog+1]={{speakeridx=act_charidx,text="we aren't done here yet... we should"}}
-     act_text.dialog[#act_text.dialog+1]={{speakeridx=act_charidx,text=maplocked[1]}}
+     for m in all(maplocked) do
+      act_text.dialog[#act_text.dialog+1]={{speakeridx=act_charidx,text=m}}
+     end
      nonrptdialog={x=act_x,y=act_y}
     end
    else
