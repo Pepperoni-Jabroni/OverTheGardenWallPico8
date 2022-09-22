@@ -408,6 +408,7 @@ function update_main_menu()
  if btnp(4) or btnp(5) then
   if act_y==0 then
    act_stagetype="intro"
+   act_text.dialog[#act_text.dialog+1] = 1
    sfx(1)
   elseif act_y==1 then
    act_stagetype="controls"
@@ -419,7 +420,14 @@ end
 
 function update_intro()
  if btnp(5) then
-  act_dialogspeakidx+=1
+  local curprogressdlg=get_first_active_dlg()[act_dialogspeakidx]
+  if curprogressdlg != nil then
+   if curprogressdlg.time < #curprogressdlg.text then
+    curprogressdlg.time = #curprogressdlg.text
+   else
+    act_dialogspeakidx+=1
+   end
+  end
   sfx(0)
  end
  if act_dialogspeakidx>#dialogs[1] then
@@ -483,8 +491,15 @@ function update_play_map()
  if btnp(5) and #act_text.dialog > 0 then
   x_consumed=true
   sfx(0)
-  act_dialogspeakidx+=1
-  if act_dialogspeakidx > #get_first_active_dlg() then
+  local curprogressdlg=get_first_active_dlg()[act_dialogspeakidx]
+  if curprogressdlg != nil then
+   if curprogressdlg.time < #curprogressdlg.text then
+    curprogressdlg.time = #curprogressdlg.text
+   else
+    act_dialogspeakidx+=1
+   end
+  end
+  if act_dialogspeakidx != nil and act_dialogspeakidx > #get_first_active_dlg() then
    if type(act_text.dialog[1])=='number' then
     compltdlgs[#compltdlgs+1]=act_text.dialog[1]
    end
@@ -728,8 +743,16 @@ function draw_introduction()
  pal(1,1)
  pal(13,13)
  -- draw frog dialog box
- local currentprog=dialogs[1][act_dialogspeakidx]
- draw_character_dialog_box(currentprog)
+ draw_dialog_if_needed()
+end
+
+function draw_dialog_if_needed()
+ if #act_text.dialog > 0 then
+  local curprogressdlg=get_first_active_dlg()[act_dialogspeakidx]
+  if curprogressdlg != nil then
+   draw_character_dialog_box(curprogressdlg)
+  end
+ end
 end
 
 function draw_play_map()
@@ -860,12 +883,7 @@ function draw_play_map()
  end
  -- draw dialog if necessary
  palt(13,false)
- if #act_text.dialog > 0 then
-  local curprogressdlg=get_first_active_dlg()[act_dialogspeakidx]
-  if curprogressdlg != nil then
-   draw_character_dialog_box(curprogressdlg)
-  end
- end
+ draw_dialog_if_needed()
 end
 
 -->8
@@ -978,6 +996,7 @@ function transition_to_playmap()
  act_charidx=2
  act_dialogspeakidx=1
  act_item=1
+ act_text.dialog = {}
  party={{charidx=1,x=nil,y=nil,cldwn=1},{charidx=4,x=nil,y=nil,cldwn=1}}
  transition_to_map({mp=1,loc={x=8, y=8}})
  pal(14,14,1)
@@ -1111,6 +1130,9 @@ function draw_chars_from_array(npcs)
 end
 
 function draw_character_dialog_box(dialogobj)
+ if dialogobj.time == nil then
+  dialogobj.time = 1;
+ end
  local nameidx=1
  if dialogobj.nameidx != nil then
   nameidx=dialogobj.nameidx
@@ -1118,17 +1140,22 @@ function draw_character_dialog_box(dialogobj)
  draw_fancy_box(8,100,112,24,4,10,9)
  print(characters[dialogobj.speakeridx].get_name_at_idx(characters[dialogobj.speakeridx],nameidx), 30, 104, 2)
  print(characters[dialogobj.speakeridx].get_name_at_idx(characters[dialogobj.speakeridx],nameidx), 29, 103, 9)
- if #dialogobj.text<=22 then
-  printsp(dialogobj.text, 29, 110, 0)
+ local fulltext,partial = dialogobj.text,dialogobj.text
+ if dialogobj.time < #fulltext then
+  partial=sub(fulltext,1,dialogobj.time)
+  dialogobj.time += 1
+ end
+ if #partial<=22 then
+  printsp(partial, 29, 110, 0)
  else
   local chi=-1
   for i=23,1,-1 do
-   if is_element_in(split(",.? ",""),sub(dialogobj.text,i,i)) then
+   if is_element_in(split(",.? ",""),sub(partial,i,i)) then
     chi=i
     break
    end
   end
-  printsp(sub(dialogobj.text,1,chi).."\n"..sub(dialogobj.text,chi+1), 29, 110, 0)
+  printsp(sub(partial,1,chi).."\n"..sub(partial,chi+1), 29, 110, 0)
  end
  draw_fancy_box(10,103,17,17,0,6,5)
  spr(characters[dialogobj.speakeridx].chrsprdailogueidx, 11, 104, 2, 2)
