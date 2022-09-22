@@ -39,6 +39,7 @@ local inv_items={
  {spridx=254,name='old cat',charidxs={1,4}},
  {spridx=253,name='shovel',charidxs={1,2}}
 }
+local last_mapidx_mov=nil
 local act_item=nil
 local act_useitem=nil
 local act_wrld_items={}
@@ -83,15 +84,22 @@ local characters={
  {name='edelwood', mapidx=nil, chrsprdailogueidx=192, idle={}},
  {name='racoon student', mapidx=27, chrsprdailogueidx=194, idle={}},
 }
+local map_trans = {
+ {mp_one=1,mp_two=2,mp_one_locs={'15,4', '15,5'},mp_two_locs={'0,14', '0,15'}},
+ {mp_one=2,mp_two=3,mp_one_locs={'13,0', '14,0', '15,0'},mp_two_locs={'0,13', '0,14', '0,15'}},
+ {mp_one=3,mp_two=4,mp_one_locs={'0,0', '0,1', '1,0', '2,0'},mp_two_locs={'13,15', '14,15', '15,15'}},
+ {mp_one=3,mp_two=6,mp_one_locs={'7,3'},mp_two_locs={'0,5'}},
+ {mp_one=4,mp_two=5,mp_one_locs={'7,0', '8,0'},mp_two_locs={'14,15', '15,15'}},
+ {mp_one=5,mp_two=7,mp_one_locs={'4,2','5,2'},mp_two_locs={'7,15','8,15'}},
+ {mp_one=5,mp_two=8,mp_one_locs={'9,0','10,0'},mp_two_locs={'6,15','7,15'}},
+ {mp_one=8,mp_two=9,mp_one_locs={'7,0','8,0'},mp_two_locs={'7,15','8,15'}},
+}
 local maps={
  {
   type='exterior',
   title='somewhere in the unknown',
   cellx=0,
   celly=16,
-  trans={
-   {dest={mp=2,loc={x=1, y=14}},locs={{x=15,y=4},{x=15,y=5}}}
-  },
   npcs={},
   discvrdtiles={},
   undisc_cnt=0,
@@ -101,11 +109,7 @@ local maps={
   title='somewhere in the unknown',
   cellx=0,
   celly=0,
-  trans={
-   {dest={mp=3,loc={x=1, y=14}},locs={{x=13,y=0},{x=14,y=0},{x=15,y=0}}},
-   {dest={mp=1,loc={x=14, y=5}},locs={{x=0,y=14},{x=0,y=15},{x=1,y=15}}}
-  },
-  npcs={{charidx=6,x=6,y=7,cldwn=1},{charidx=3,x=9,y=4,cldwn=1}},
+  npcs={{charidx=6,x=6,y=7,cldwn=1}},
   discvrdtiles={},
   undisc_cnt=14,
  },
@@ -114,11 +118,6 @@ local maps={
   title='the mill and the river',
   cellx=16,
   celly=0,
-  trans={
-   {dest={mp=2,loc={x=14, y=1}},locs={{x=0,y=13},{x=0,y=14},{x=0,y=15}}},
-   {dest={mp=4,loc={x=14, y=14}},locs={{x=0,y=0},{x=1,y=0},{x=2,y=0},{x=0,y=1}}},
-   {dest={mp=6,loc={x=1, y=5}},locs={{x=7,y=3}}}
-  },
   npcs={},
   discvrdtiles={},
   undisc_cnt=0,
@@ -128,10 +127,6 @@ local maps={
   title='somewhere in the unknown',
   cellx=32,
   celly=0,
-  trans={
-   {dest={mp=3,loc={x=1, y=1}},locs={{x=13,y=15},{x=14,y=15},{x=15,y=15}}},
-   {dest={mp=5,loc={x=8, y=14}},locs={{x=7,y=0},{x=8,y=0}}}
-  },
   npcs={},
   discvrdtiles={},
   undisc_cnt=0,
@@ -141,11 +136,6 @@ local maps={
   title='pottsfield',
   cellx=48,
   celly=0,
-  trans={
-   {dest={mp=4,loc={x=7, y=1}},locs={{x=8,y=15},{x=14,y=15},{x=15,y=15}}},
-   {dest={mp=7,loc={x=7, y=14}},locs={{x=4,y=2},{x=5,y=2}}},
-   {dest={mp=8,loc={x=7, y=14}},locs={{x=9,y=0},{x=10,y=0}}}
-  },
   npcs={},
   discvrdtiles={},
   undisc_cnt=0,
@@ -155,9 +145,6 @@ local maps={
   title='the old grist mill',
   cellx=64,
   celly=0,
-  trans={
-   {dest={mp=3,loc={x=7, y=4}},locs={{x=0,y=5}}}
-  },
   npcs={},
   playmapidx=3,
   playmapspr=226,
@@ -168,9 +155,6 @@ local maps={
   title='harvest party',
   cellx=80,
   celly=0,
-  trans={
-   {dest={mp=5,loc={x=4, y=3}},locs={{x=7,y=15},{x=8,y=15}}}
-  },
   npcs={
    {charidx=11,x=7,y=7,cldwn=1,intent="loop",intentdata={tl={x=7,y=7},br={x=10,y=10}}},
    {charidx=11,x=7,y=10,cldwn=1,intent="loop",intentdata={tl={x=7,y=7},br={x=10,y=10}}},
@@ -187,10 +171,6 @@ local maps={
   title='somewhere in the unknown',
   cellx=96,
   celly=0,
-  trans={
-   {dest={mp=9,loc={x=7, y=14}},locs={{x=7,y=0},{x=8,y=0}}},
-   {dest={mp=5,loc={x=9, y=1}},locs={{x=6,y=15},{x=7,y=15}}}
-  },
   npcs={},
   discvrdtiles={},
   undisc_cnt=0,
@@ -200,9 +180,6 @@ local maps={
   title='the schoolgrounds',
   cellx=112,
   celly=0,
-  trans={
-   {dest={mp=8,loc={x=7, y=1}},locs={{x=7,y=15},{x=8,y=15}}}
-  },
   npcs={},
   discvrdtiles={},
   undisc_cnt=0,
@@ -255,6 +232,22 @@ local dialogs={
   {speakeridx=2,text="we're really lost greg..."},
   {speakeridx=1,text="i can leave a trail of candy from my pants!"},
   {speakeridx=1,text="candytrail. candytrail. candytrail!"}
+ },
+ {
+  {speakeridx=3,text="help! help!"},
+  {speakeridx=2,text="i think its coming from a bush?"}
+ },
+ {
+  {speakeridx=3,text="help me!"},
+  {speakeridx=1,text="wow, a talking bush!"},
+  {speakeridx=3,text="i\'m not a talking bush! i\'m a bird!"},
+  {speakeridx=3,text="and i\'m stuck!"},
+  {speakeridx=1,text="wow, a talking bird!"},
+  {speakeridx=3,text="if you help me get unstuck, i\'ll"},
+  {speakeridx=3,text="grant you a wish"},
+  {speakeridx=1,text="ohhhh!"},
+  {speakeridx=1,text="*picks up beatrice out of bush*"},
+  {speakeridx=2,text="uh-uh! no!"},
  }
 }
 local triggers={
@@ -266,12 +259,6 @@ local triggers={
   complete=false,
   maplocking=1,
   title="introduce ourselves",
- },
- {
-  trig=function(self)return player_on_location({x=10,y=4}) or player_on_location({x=11,y=4})end,
-  action=function(self)queue_dialog(2)end,
-  complete=false,
-  maplocking=nil,
  },
  {
   trig=function(self)return player_use_item(1,1)end,
@@ -307,6 +294,29 @@ local triggers={
   complete=false,
   maplocking=2,
   title="finish the conversation"
+ },
+ {
+  trig=function(self)return player_on_location({x=10,y=4}) or player_on_location({x=11,y=4})end,
+  action=function(self)queue_dialog(7)end,
+  complete=false,
+  maplocking=2,
+  title="find a friend"
+ },
+ {
+  trig=function(self)return player_sel_location({x=8,y=4})end,
+  action=function(self)queue_dialog(8)end,
+  complete=false,
+  maplocking=2,
+  title="search the bushes"
+ },
+ {
+  trig=function(self)return dialog_is_complete(8)end,
+  action=function(self)
+   party[#party+1] = {charidx=3,x=act_x-1,y=act_y+1,cldwn=1}
+  end,
+  complete=false,
+  maplocking=2,
+  title="join your new friend"
  }
 }
 local menuchars={}
@@ -444,14 +454,18 @@ function update_play_map()
   end
   if btnp(2) and ay > 0 and is_element_in(split(walkable), mget(ax+maps[mdx].cellx, ay - 1+maps[mdx].celly)) then
    act_y = ay - 1
+   last_mapidx_mov=act_mapsidx
   elseif btnp(1) and ax < 15 and is_element_in(split(walkable), mget(ax + 1+maps[mdx].cellx, ay+maps[mdx].celly)) then
    act_x = ax + 1
    act_flipv=false
+   last_mapidx_mov=act_mapsidx
   elseif btnp(3) and ay < 15 and is_element_in(split(walkable), mget(ax+maps[mdx].cellx, ay + 1+maps[mdx].celly)) then
    act_y = ay + 1
+   last_mapidx_mov=act_mapsidx
   elseif btnp(0) and ax > 0 and is_element_in(split(walkable), mget(ax - 1+maps[mdx].cellx, ay+maps[mdx].celly)) then
    act_x = ax - 1
    act_flipv=true
+   last_mapidx_mov=act_mapsidx
   end
  end
  -- check for player switch
@@ -488,22 +502,38 @@ function update_play_map()
    break
   end
  end
- for transition in all(activemap.trans) do
-  for location in all(transition.locs) do
-   if act_x == location.x and act_y == location.y then
-    if transition.dest.mp<act_mapsidx then
-     transition_to_map(transition.dest)
-    elseif #maplocked > 0  then
-     if #act_text.dialog == 0 and not (nonrptdialog.x==act_x and nonrptdialog.y==act_y) then
-      act_text.dialog[#act_text.dialog+1]={{speakeridx=act_charidx,text="we aren't done here yet... we should"}}
-      act_text.dialog[#act_text.dialog+1]={{speakeridx=act_charidx,text=maplocked[1]}}
-      nonrptdialog={x=act_x,y=act_y}
-     end
-    else
-     transition_to_map(transition.dest)
+ for transition in all(map_trans) do
+  local to_map_idx,to_map_loc = nil,nil
+  if transition.mp_one == act_mapsidx and last_mapidx_mov == act_mapsidx then
+   for loc in all(transition.mp_one_locs) do
+    loc = split(loc)
+    if loc[1] == act_x and loc[2] == act_y then
+     to_map_idx = transition.mp_two
+     to_map_loc = split(transition.mp_two_locs[1])
     end
-    break
    end
+  elseif transition.mp_two == act_mapsidx and last_mapidx_mov == act_mapsidx then
+   for loc in all(transition.mp_two_locs) do
+    loc = split(loc)
+    if loc[1] == act_x and loc[2] == act_y then
+     to_map_idx = transition.mp_one
+     to_map_loc = split(transition.mp_one_locs[1])
+    end
+   end
+  end
+  if to_map_idx != nil then
+   if to_map_idx<act_mapsidx then
+    transition_to_map({mp=to_map_idx,loc={x=to_map_loc[1],y=to_map_loc[2]}})
+   elseif #maplocked > 0  then
+    if #act_text.dialog == 0 and not (nonrptdialog.x==act_x and nonrptdialog.y==act_y) then
+     act_text.dialog[#act_text.dialog+1]={{speakeridx=act_charidx,text="we aren't done here yet... we should"}}
+     act_text.dialog[#act_text.dialog+1]={{speakeridx=act_charidx,text=maplocked[1]}}
+     nonrptdialog={x=act_x,y=act_y}
+    end
+   else
+    transition_to_map({mp=to_map_idx,loc={x=to_map_loc[1],y=to_map_loc[2]}})
+   end
+   break
   end
   if act_mapsidx != initmapidx then
    break
@@ -949,7 +979,7 @@ function transition_to_playmap()
  act_dialogspeakidx=1
  act_item=1
  party={{charidx=1,x=nil,y=nil,cldwn=1},{charidx=4,x=nil,y=nil,cldwn=1}}
- transition_to_map({mp=1,loc={x=8, y=8}})
+ transition_to_map({mp=4,loc={x=8, y=8}})
  pal(14,14,1)
  pal(5,5,1)
  pal(12,12,1)
