@@ -49,7 +49,7 @@ local act_charidx=nil
 local act_lookingdir=nil
 local act_flipv=false
 local act_text={maptitle=nil,dialog={},charsel=nil}
-local act_stagetype="mainmenu"
+local act_stagetype="boot"
 local act_dialogspeakidx=1
 local act_mapsidx=nil
 local party={}
@@ -338,6 +338,11 @@ local triggers={
 }
 local menuchars={}
 local stagetypes={
+ {
+  title="boot",
+  update=function(self)update_boot()end,
+  draw=function(self)draw_boot()end
+ },
  {
   title="mainmenu",
   update=function(self)update_main_menu()end,
@@ -688,6 +693,61 @@ function exec_npc_intent(npc)
    end
   elseif npc.cldwn==30 then
    npc.cldwn=0
+  end
+ end
+end
+
+local boot_age = 0
+local boot_title = 'pepjebs'
+local boot_subtitle = 'pico 8'
+local boot_letters = {}
+function update_boot()
+ if boot_age % 5 == 0 and flr(boot_age / 5) <= #boot_title then
+  local idx = flr(boot_age / 5) + 1
+  boot_letter_add = sub(boot_title, idx, idx)
+  boot_letters[#boot_letters+1] = {letter = boot_letter_add, x = 10 + (12 * idx), y = 45, age = 0}
+ end
+ if #boot_letters == #boot_title and boot_letters[#boot_letters].age > 200 then
+  act_stagetype = 'mainmenu'
+ end
+ boot_age += 1
+ if boot_age > 220 then
+  act_stagetype = "mainmenu"
+ end
+end
+
+function draw_boot()
+ cls(7)
+ local subtitle_x = 58
+ local subtitle_y = 72
+ local subtitle_color = 13
+ if boot_age < 60 then
+  subtitle_color = 7
+ elseif boot_age < 120 then
+  subtitle_color = 6
+ end
+ print(boot_subtitle, subtitle_x - #boot_subtitle, subtitle_y, subtitle_color)
+ if boot_age > 130 and boot_age < 160 then
+  line(subtitle_x - #boot_subtitle + (boot_age - 135), subtitle_y - 8, subtitle_x - #boot_subtitle + (boot_age - 130) + 4, subtitle_y  + 16, 7)
+  line(subtitle_x - #boot_subtitle + (boot_age - 135) + 1, subtitle_y - 8, subtitle_x - #boot_subtitle + (boot_age - 130) + 5, subtitle_y  + 16, 7)
+ end
+ for l in all(boot_letters) do
+  local eff_y_age = l.age
+  if eff_y_age > 100 then
+   eff_y_age = 100
+  end
+  local cur_y = l.y + (100 - eff_y_age)
+  local cur_color = l.age % 6 + 8
+  if l.age > 100 then
+   if l.age > 130 and l.age < 140 then
+    cur_color = 12
+   else 
+    cur_color = 1
+   end
+  end
+  print_big(l.letter, l.x, cur_y, cur_color, 3)
+  if l.age < 200 then
+   l.age += 1
   end
  end
 end
@@ -1315,6 +1375,39 @@ function smallcaps(s)
     end
   end
   return d
+end
+
+-- thanks jwinslow23#6531 on discord!
+function mcpy(dest,src)
+ for i=0,319,4 do
+  poke4(dest+i,peek4(src+i))
+ end
+end
+
+-- thanks jwinslow23#6531 on discord!
+function print_big(text,x,y,col,factor)
+ poke(0x4580,peek(0x5f00+col))
+ poke2(0x4581,peek2(0x5f00))
+ poke4(0x4583,peek4(0x5f28))
+ poke2(0x4587,peek2(0x5f31))
+ poke(0x4589,peek(0x5f33))
+ poke(0x5f00+col,col)
+ poke2(0x5f00,col==0 and 0x1100 or 0x0110)
+ mcpy(0x4440,0x0)
+ mcpy(0x0,0x6000)
+ camera()
+ fillp(0)
+ rectfill(0,0,127,4,(16-peek(0x5f00))*0x0.1)
+ print(text,0,0,col)
+ mcpy(0x4300,0x6000)
+ mcpy(0x6000,0x0)
+ mcpy(0x0,0x4300)
+ camera(peek2(0x4583),peek2(0x4585))
+ sspr(0,0,128,5,x,y,128*factor,5*factor)
+ mcpy(0x0,0x4440)
+ poke(0x5f00+col,peek(0x4580))
+ poke2(0x5f00,peek2(0x4581))
+ fillp(peek2(0x4587)+peek(0x4589)*0x.8)
 end
 
 __gfx__
