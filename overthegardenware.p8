@@ -248,6 +248,16 @@ local dialogs={
   {speakeridx=1,text="ohhhh!"},
   {speakeridx=1,text="*picks up beatrice out of bush*"},
   {speakeridx=2,text="uh-uh! no!"},
+ },
+ {
+  {speakeridx=6,text="these woods are a dangerous place"},
+  {speakeridx=6,text="to be alone"},
+  {speakeridx=2,text="we... we know, sir"},
+  {speakeridx=1,text="yeah! i\'ve been leaving a trail"},
+  {speakeridx=1,text="of candy from my pants"},
+  {speakeridx=6,text="come inside..."},
+  {speakeridx=3,text="i don\'t like the look of this"},
+  {speakeridx=4,text="ribbit."}
  }
 }
 local triggers={
@@ -282,7 +292,7 @@ local triggers={
   title="find the tree with the face",
  },
  {
-  trig=function(self)return playmap_spr_visible(33)end,
+  trig=function(self)return playmap_spr_visible(2, 33)end,
   action=function(self)queue_dialog(4)end,
   complete=false,
   maplocking=2,
@@ -317,6 +327,13 @@ local triggers={
   complete=false,
   maplocking=2,
   title="join your new friend"
+ },
+ {
+  trig=function(self)return playmap_spr_visible(3, 33)end,
+  action=function(self)queue_dialog(9)end,
+  complete=false,
+  maplocking=3,
+  title="talk with axeman"
  }
 }
 local menuchars={}
@@ -938,11 +955,14 @@ function player_use_item(itemidx,mapidx)
  return false
 end
 
-function playmap_spr_visible(spri)
+function playmap_spr_visible(mapidx, spri)
+ if act_mapsidx != mapidx then
+  return false
+ end
  local mapspr=sget(act_x+maps[act_mapsidx].cellx,act_y+maps[act_mapsidx].celly)==spri
  local npcspr=false
  for n in all(maps[act_mapsidx].npcs) do
-  local idtfr=tostr(n.x+maps[act_mapsidx].cellx)..'|'..tostr(n.y+maps[act_mapsidx].celly)
+  local idtfr=n.x..'|'..n.y
   if is_element_in(maps[act_mapsidx].discvrdtiles,idtfr) and characters[n.charidx].mapidx==spri then
    npcspr=true
    break
