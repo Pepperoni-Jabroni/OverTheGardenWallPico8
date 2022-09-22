@@ -193,72 +193,54 @@ local darkanims={}
 local nonrptdialog={x=nil,y=nil}
 local compltdlgs={}
 local dialogs={
- {
-  {speakeridx=4,nameidx=nil,text="led through the mist"},
-  {speakeridx=4,nameidx=nil,text="by the milk-light of moon"},
-  {speakeridx=4,nameidx=nil,text="all that was lost is revealed"},
-  {speakeridx=4,nameidx=nil,text="our long bygone burdens"},
-  {speakeridx=4,nameidx=nil,text="mere echoes of the spring"},
-  {speakeridx=4,nameidx=nil,text="but where have we come?"},
-  {speakeridx=4,nameidx=nil,text="and where shall we end?"},
-  {speakeridx=4,nameidx=nil,text="if dreams can't come true"},
-  {speakeridx=4,nameidx=nil,text="then why not pretend?"}
- },
- {
-  {speakeridx=1,text="i sure do love my frog!"},
-  {speakeridx=2,text="greg, please stop..."},
-  {speakeridx=4,nameidx=4,text="ribbit."},
-  {speakeridx=1,text="haha, yeah!"}
- },
- {
-  {speakeridx=2,text="i dont like this at all"},
-  {speakeridx=1,text="its a tree face!"},
-  {speakeridx=23,text="*howls in the wind*"}
- },
- {
-  {speakeridx=2,text="is that some sort of deranged lunatic?"},
-  {speakeridx=2,text="with an ax waiting for victims?"},
-  {speakeridx=6,text="*swings axe and chops tree*"},
-  {speakeridx=1,text="we should ask him for help!"}
- },
- {
-  {speakeridx=2,text="whoa... wait greg..."},
-  {speakeridx=2,text="... where are we?"},
-  {speakeridx=1,text="we\'re in the woods!"},
-  {speakeridx=2,text="no, i mean"},
-  {speakeridx=2,text="... where are we?!"},
- },
- {
-  {speakeridx=2,text="we're really lost greg..."},
-  {speakeridx=1,text="i can leave a trail of candy from my pants!"},
-  {speakeridx=1,text="candytrail. candytrail. candytrail!"}
- },
- {
-  {speakeridx=3,text="help! help!"},
-  {speakeridx=2,text="i think its coming from a bush?"}
- },
- {
-  {speakeridx=3,text="help me!"},
-  {speakeridx=1,text="wow, a talking bush!"},
-  {speakeridx=3,text="i\'m not a talking bush! i\'m a bird!"},
-  {speakeridx=3,text="and i\'m stuck!"},
-  {speakeridx=1,text="wow, a talking bird!"},
-  {speakeridx=3,text="if you help me get unstuck, i\'ll"},
-  {speakeridx=3,text="grant you a wish"},
-  {speakeridx=1,text="ohhhh!"},
-  {speakeridx=1,text="*picks up beatrice out of bush*"},
-  {speakeridx=2,text="uh-uh! no!"},
- },
- {
-  {speakeridx=6,text="these woods are a dangerous place"},
-  {speakeridx=6,text="to be alone"},
-  {speakeridx=2,text="we... we know, sir"},
-  {speakeridx=1,text="yeah! i\'ve been leaving a trail"},
-  {speakeridx=1,text="of candy from my pants"},
-  {speakeridx=6,text="come inside..."},
-  {speakeridx=3,text="i don\'t like the look of this"},
-  {speakeridx=4,text="ribbit."}
- }
+ "1;4;led through the mist",
+ "1;4;by the milk-light of moon",
+ "1;4;all that was lost is revealed",
+ "1;4;our long bygone burdens",
+ "1;4;mere echoes of the spring",
+ "1;4;but where have we come?",
+ "1;4;and where shall we end?",
+ "1;4;if dreams can't come true",
+ "1;4;then why not pretend?",
+ "2;1;i sure do love my frog!",
+ "2;2;greg, please stop...",
+ "2;4;4;ribbit.",
+ "2;1;haha, yeah!",
+ "3;2;i dont like this at all",
+ "3;1;its a tree face!",
+ "3;23;*howls in the wind*",
+ "4;2;is that some sort of deranged lunatic?",
+ "4;2;with an ax waiting for victims?",
+ "4;6;*swings axe and chops tree*",
+ "4;1;we should ask him for help!",
+ "5;2;whoa... wait greg...",
+ "5;2;... where are we?",
+ "5;1;we\'re in the woods!",
+ "5;2;no, i mean",
+ "5;2;... where are we?!",
+ "6;2;we're really lost greg...",
+ "6;1;i can leave a trail of candy from my pants!",
+ "6;1;candytrail. candytrail. candytrail!",
+ "7;3;help! help!",
+ "7;2;i think its coming from a bush?",
+ "8;3;help me!",
+ "8;1;wow, a talking bush!",
+ "8;3;i\'m not a talking bush! i\'m a bird!",
+ "8;3;and i\'m stuck!",
+ "8;1;wow, a talking bird!",
+ "8;3;if you help me get unstuck, i\'ll",
+ "8;3;grant you a wish",
+ "8;1;ohhhh!",
+ "8;1;*picks up beatrice out of bush*",
+ "8;2;uh-uh! no!",
+ "9;6;these woods are a dangerous place",
+ "9;6;to be alone",
+ "9;2;we... we know, sir",
+ "9;1;yeah! i\'ve been leaving a trail",
+ "9;1;of candy from my pants",
+ "9;6;come inside...",
+ "9;3;i don\'t like the look of this",
+ "9;4;ribbit."
 }
 local triggers={
  {
@@ -386,8 +368,8 @@ function _init()
 
  -- init frog intro name
  local randomname=get_rand_idx(characters[4].name)
- for i=1,#dialogs[1] do
-  dialogs[1][i].nameidx=randomname
+ for i=1,#compute_dialogs()[1] do
+  compute_dialogs()[1][i].nameidx=randomname
  end
 
  -- init object member fns
@@ -452,7 +434,7 @@ function update_intro()
   end
   sfx(0)
  end
- if act_dialogspeakidx>#dialogs[1] then
+ if act_dialogspeakidx>#compute_dialogs()[1] then
   transition_to_playmap()
  end
 end
@@ -733,19 +715,27 @@ function draw_boot()
  end
  for l in all(boot_letters) do
   local eff_y_age = l.age
+  local cur_color = eff_y_age % 6 + 8
+  local cur_scale = 3
   if eff_y_age > 100 then
-   eff_y_age = 100
-  end
-  local cur_y = l.y + (100 - eff_y_age)
-  local cur_color = l.age % 6 + 8
-  if l.age > 100 then
-   if l.age > 130 and l.age < 140 then
+   if eff_y_age > 130 and eff_y_age < 140 then
     cur_color = 12
    else 
     cur_color = 1
    end
+  elseif eff_y_age < 100 then
+   cur_scale = 8 - flr(eff_y_age / 18)
+   if eff_y_age < 85 and eff_y_age > 75 then
+    eff_y_age -= 3
+   elseif eff_y_age < 95 then
+    eff_y_age += 3
+   end
   end
-  print_big(l.letter, l.x, cur_y, cur_color, 3)
+  if eff_y_age > 100 then
+   eff_y_age = 100
+  end
+  local cur_y = l.y + (100 - eff_y_age)
+  print_big(l.letter, l.x, cur_y, cur_color, cur_scale)
   if l.age < 200 then
    l.age += 1
   end
@@ -822,6 +812,27 @@ function draw_introduction()
  pal(13,13)
  -- draw frog dialog box
  draw_dialog_if_needed()
+end
+
+local cdialogs = nil
+function compute_dialogs()
+ if cdialogs != nil then
+  return cdialogs
+ end
+ cdialogs = {}
+ for d in all(dialogs) do
+  s = split(d, ';')
+  local n = tonum(s[1])
+  if cdialogs[n] == nil then
+   cdialogs[n] = {}
+  end
+  if #s == 3 then
+   cdialogs[n][#cdialogs[n] + 1] = {speakeridx=tonum(s[2]), text=s[3]}
+  else
+   cdialogs[n][#cdialogs[n] + 1] = {speakeridx=tonum(s[2]), nameidx=tonum(s[3]), text=s[4]}
+  end
+ end
+ return cdialogs
 end
 
 function draw_dialog_if_needed()
@@ -990,7 +1001,7 @@ end
 function get_first_active_dlg()
  local curprogressdlg=act_text.dialog[1]
  if type(curprogressdlg)=='number' then
-  curprogressdlg=dialogs[curprogressdlg]
+  curprogressdlg=compute_dialogs()[curprogressdlg]
  end
  return curprogressdlg
 end
