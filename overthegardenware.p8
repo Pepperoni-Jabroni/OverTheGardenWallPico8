@@ -732,7 +732,10 @@ function draw_boot()
   local eff_y_age = l.age
   local cur_color = eff_y_age % 6 + 8
   local cur_scale = 3
+  local cur_x = l.x
+  local printbigshadow = false
   if eff_y_age > 100 then
+   printbigshadow = true
    if eff_y_age > 130 and eff_y_age < 140 then
     cur_color = 12
    else 
@@ -742,7 +745,8 @@ function draw_boot()
    cur_scale = 8 - flr(eff_y_age / 18)
    if eff_y_age < 85 and eff_y_age > 75 then
     eff_y_age -= 3
-   elseif eff_y_age < 95 then
+    cur_x += 3
+   elseif eff_y_age > 85 and eff_y_age < 95 then
     eff_y_age += 3
    end
   end
@@ -750,7 +754,10 @@ function draw_boot()
    eff_y_age = 100
   end
   local cur_y = l.y + (100 - eff_y_age)
-  print_big(l.letter, l.x, cur_y, cur_color, cur_scale)
+  if printbigshadow then
+   print_big(l.letter, cur_x+1, cur_y+1, 6, cur_scale)
+  end
+  print_big(l.letter, cur_x, cur_y, cur_color, cur_scale)
   if l.age < 200 then
    l.age += 1
   end
