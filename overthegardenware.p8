@@ -4,15 +4,17 @@ __lua__
 
 -- configs, state vars & core fns
 local walkable="43,185,191,202,203,205,207,222,223,238,239,240,241,242"
+-- of the form "<src_sprite_idx>;<dst_sprite_idxs>#"
 local alttiles={
- {srcidx=206,dsts="206,221,237"},
- {srcidx=238,dsts="222,238"},
- {srcidx=207,dsts="207,223,239"},
- {srcidx=235,dsts="235,251,218"},
- {srcidx=205,dsts="202,203,205"},
- {srcidx=236,dsts="204,236"}
+ "206;206,221,237",
+ "238;222,238",
+ "207;207,223,239",
+ "235;235,251,218",
+ "205;202,203,205",
+ "236;204,236"
 }
 local altsset={}
+-- of the form "<obj_sprite_idxs>;<obj_text>"
 local objdescripts={
  "122,123,138,139;what a nice old wagon",
  "124,125,140,141;the poor old mill...",
@@ -209,6 +211,7 @@ local darkspr={
 local darkanims={}
 local nonrptdialog={x=nil,y=nil}
 local compltdlgs={}
+-- of the form "<dialog_idx>;<speaking_char_idx>;<dialog_text>"
 local dialogs={
  "1;4;led through the mist",
  "1;4;by the milk-light of moon",
@@ -1188,7 +1191,7 @@ function transition_to_map(dest)
    for j=0,15 do
     local tilspr=mget(i+amcx, j+amcy)
     if (is_element_in(srctiles,tilspr)) then
-     local dsts=split(get_by_source(tilspr).dsts)
+     local dsts=split(get_dsts_by_source(tilspr))
      local randsel=get_rand_idx(dsts)
      mset(i+amcx, j+amcy, dsts[randsel])
     end
@@ -1356,10 +1359,11 @@ function draw_two_colored(s,x,y)
  print(st[2],x+(#st[1]*8),y,7)
 end
 
-function get_by_source(source)
- for altobj in all(alttiles) do
-  if altobj.srcidx==source then
-   return altobj
+function get_dsts_by_source(source)
+ for altstr in all(alttiles) do
+  local alt = split(altstr, ';')
+  if source==alt[1] then
+   return alt[2]
   end
  end
  return nil
@@ -1368,7 +1372,8 @@ end
 function get_sourceidxs()
  local sources={}
  for altobj in all(alttiles) do
-  sources[#sources+1]=altobj.srcidx
+  local srcidx = split(altobj, ';')[1]
+  sources[#sources+1]=srcidx
  end
  return sources
 end
@@ -1500,9 +1505,9 @@ dd9c77dddd3333dddd773377773377ddd11111177111111dddd7eeeeeeee7dddddd3333333333ddd
 ddddddddd3333dddd77733777733777d1111197777911111ddc77eeeeee77cddddb3333333333bddd4aaaa4dd5cccc5d00110110100011000000011111000000
 ddddddddd3b3bdddd77333333333377d1197777777777911dcc7777777777ccddbb3333333333bbdddaaaadddd0dd0dd00001001011100000000000000000000
 51dddd15dd0000dd1d5d5ddddddd5d15dd655555555555ddd00ddd0000ddd00ddddddddddddddddd0020202000202020ddddddddddddddddddddd4ddddd4dddd
-15111151dd0000dd11d5ddddddd5511dd65555555555552dd00d00000000d00dddd4444444444ddd0004740000944490ddddddddddddddddddddd44dddd44ddd
-51161615d000000dd115dd1111d51155d66666666666622dd000c00000c0000dd44477444477444d0004440000045400dddd4dddddd4dddddddd444dde4e4ddd
-d511115dddf0f0dd5511d6611665155dd65555555555552ddd0cac000cac00dd44476074476074440004740000045400ddd44dddccd44ddddddd99999eee9ddd
+15161651dd0000dd11d5ddddddd5511dd65555555555552dd00d00000000d00dddd4444444444ddd0004740000944490ddddddddddddddddddddd44dddd44ddd
+51676765d000000dd115dd1111d51155d66666666666622dd000c00000c0000dd44477444477444d0004440000045400dddd4dddddd4dddddddd444dde4e4ddd
+d516165dddf0f0dd5511d6611665155dd65555555555552ddd0cac000cac00dd44476074476074440004740000045400ddd44dddccd44ddddddd99999eee9ddd
 ddd11dddd54ff44add51677667761ddddd666666666662ddddcaeac0caeac0dd44470074470074440004740000045400ddd4411111144dddddd99977997999dd
 d111111d460000a9d5dd67766776d5ddddff760ff760ffdddcaeeea0aeeeacdd44447744447744440004440000044400ddd44ccc11144dddddd27744774774dd
 d111111dd6000060dddd16611661ddddddff700ff700ffddddcaeac0caeac0dd4d444440044444440004740000202020ddd441cccc144dddddd24aa444aa44dd
