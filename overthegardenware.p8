@@ -104,7 +104,7 @@ local characters={
  {name='racoon student', mapidx=27, chrsprdailogueidx=194, idle={}},
 }
 local map_trans = {
- {mp_one=1,mp_two=2,mp_one_locs={'15,4', '15,5'},mp_two_locs={'0,14', '0,15'}},
+ {mp_one=1,mp_two=2,mp_one_locs={'15,5', '15,4'},mp_two_locs={'0,14', '0,15'}},
  {mp_one=2,mp_two=3,mp_one_locs={'13,0', '14,0', '15,0'},mp_two_locs={'0,13', '0,14', '0,15'}},
  {mp_one=3,mp_two=4,mp_one_locs={'0,0', '1,0'},mp_two_locs={'13,15', '14,15', '15,15'}},
  {mp_one=3,mp_two=6,mp_one_locs={'7,3'},mp_two_locs={'0,5'}},
@@ -343,7 +343,14 @@ local triggers={
   complete=false,
   maplocking=3,
   title="talk with the axeman"
- }
+ },
+ {
+  trig=function(self) return act_mapsidx==6 end,
+  action=function(self)act_item = nil end,
+  complete=false,
+  maplocking=nil,
+  title="",
+ },
 }
 local menuchars={}
 local stagetypes={
