@@ -714,7 +714,7 @@ end
 
 local boot_age = 0
 local boot_title = 'pepjebs'
-local boot_subtitle = 'pico 8'
+local boot_subtitle = 'studios'
 local boot_letters = {}
 function update_boot()
  if boot_age % 5 == 0 and flr(boot_age / 5) <= #boot_title then
@@ -748,7 +748,7 @@ function draw_boot()
  end
  for l in all(boot_letters) do
   local eff_y_age = l.age
-  local cur_color = eff_y_age % 6 + 8
+  local cur_color = flr(eff_y_age / 9) % 7 + 8
   local cur_scale = 3
   local cur_x = l.x
   local printbigshadow = false
