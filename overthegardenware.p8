@@ -14,25 +14,42 @@ local alttiles={
 }
 local altsset={}
 local objdescripts={
- {spridxs="122,123,138,139",descr="what a nice old wagon"},
- {spridxs="124,125,140,141",descr="the poor old mill..."},
- {spridxs="158",descr="look at these pumpkins!"},
- {spridxs="159",descr="it says pottsfield \148"},
- {spridxs="174",descr="looks like its harvest time!"},
- {spridxs="190",descr="this pumpkin is missing"},
- {spridxs="204,236",descr="its just a bush..."},
- {spridxs="218,235,251",descr="this tree sure is tall"},
- {spridxs="220",descr="a stump of some weird tree?"},
- {spridxs="219",descr="a creepy tree with a face on it"},
- {spridxs="224,225,240,241",descr="pottsfield old barn"},
- {spridxs="226,227,242,243",descr="the old grist mill"},
- {spridxs="228,229,244,245",descr="the animal schoolhouse"},
- {spridxs="230,231,246,247",descr="the inn"},
- {spridxs="232,233,248,249",descr="pottsfield old church"},
- {spridxs="108",descr="a rickety old fence"},
- {spridxs="109",descr="a scarecrow of sorts"},
- {spridxs="110",descr="the ground is higher here"},
- {spridxs="127",descr="a deep hole in the ground"},
+ "122,123,138,139;what a nice old wagon",
+ "124,125,140,141;the poor old mill...",
+ "158;look at these pumpkins!",
+ "159;it says pottsfield \148",
+ "174;looks like its harvest time!",
+ "190;this pumpkin is missing",
+ "204,236;its just a bush...",
+ "218,235,251;this tree sure is tall",
+ "220;a stump of some weird tree?",
+ "219;a creepy tree with a face on it",
+ "224,225,240,241;pottsfield old barn",
+ "226,227,242,243;the old grist mill",
+ "228,229,244,245;the animal schoolhouse",
+ "230,231,246,247;the inn",
+ "232,233,248,249;pottsfield old church",
+ "108;a rickety old fence",
+ "109;a scarecrow of sorts",
+ "110;the ground is higher here",
+ "127;a deep hole in the ground",
+ "42;what a nice view out this window",
+ "43;this is the door",
+ "58;its a large cabinet",
+ "59;its a comfortable chair",
+ "74;its a small desk",
+ "75;its a school desk",
+ "90;its a lounge chair",
+ "91;its a bundle of logs",
+ "106;its a ladder (i swear)",
+ "107;its a railing",
+ "143;its a piano!",
+ "177;its the mill\'s grinder!",
+ "178;its a jar of thick oil",
+ "179;its a broken jar of oil",
+ "200;its a chalk board",
+ "216;its warm by the fireplace",
+ "217;its a bundle of oily sticks"
 }
 local inv_items={
  {spridx=255,name='candy',charidxs={1}},
@@ -319,7 +336,7 @@ local triggers={
  },
  {
   trig=function(self)return dialog_is_complete(9)end,
-  action=function(self)queue_move_npc(6,{x=7,y=3},6,{x=7,y=7})end,
+  action=function(self)queue_move_npc(6,{x=7,y=3},6,{x=7,y=4})end,
   complete=false,
   maplocking=3,
   title="talk with the axeman"
@@ -604,8 +621,9 @@ function update_play_map()
    local y=act_y+j
    if player_sel_location({x=x,y=y}) then
     for descpt in all(objdescripts) do
-     if is_element_in(split(descpt.spridxs),mget(x+maps[act_mapsidx].cellx,y+maps[act_mapsidx].celly)) and #act_text.dialog==0 then
-      act_text.dialog[#act_text.dialog+1] = {{speakeridx=act_charidx,text=descpt.descr}}
+     local splt = split(descpt, ';')
+     if is_element_in(split(splt[1]),mget(x+maps[act_mapsidx].cellx,y+maps[act_mapsidx].celly)) and #act_text.dialog==0 then
+      act_text.dialog[#act_text.dialog+1] = {{speakeridx=act_charidx,text=splt[2]}}
       x_consumed=true
       break
      end
