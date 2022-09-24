@@ -234,7 +234,7 @@ local dialogs={
  "8;1;*picks up beatrice out of bush*",
  "8;2;uh-uh! no!",
  "9;6;these woods are a dangerous place",
- "9;6;to be alone",
+ "9;6;for 2 kids to be alone",
  "9;2;we... we know, sir",
  "9;1;yeah! i\'ve been leaving a trail",
  "9;1;of candy from my pants",
@@ -316,6 +316,13 @@ local triggers={
   complete=false,
   maplocking=3,
   title="talk with axeman"
+ },
+ {
+  trig=function(self)return dialog_is_complete(9)end,
+  action=function(self)queue_move_npc(6,{x=7,y=3},6,{x=7,y=7})end,
+  complete=false,
+  maplocking=3,
+  title="talk with the axeman"
  }
 }
 local menuchars={}
@@ -496,7 +503,7 @@ function update_play_map()
   x_consumed=true
   sfx(0)
   local curprogressdlg=get_first_active_dlg()[act_dialogspeakidx]
-  if curprogressdlg != nil then
+  if curprogressdlg != nil and curprogressdlg.time != nil then
    if curprogressdlg.time < #curprogressdlg.text then
     curprogressdlg.time = #curprogressdlg.text
    else
@@ -644,20 +651,28 @@ function exec_npc_intent(npc)
    end
   end
   -- do map switch
-  if (npc.x < 0 or npc.x > 15 or npc.y < 0 or npc.y > 15) and npcmapidx != nil  then
-   local newnpcs={}
-   for i=1,#maps[npcmapidx].npcs do
-    if maps[npcmapidx].npcs[i].charidx!=intentdata.charidx then
-     newnpcs[#newnpcs+1]=maps[npcmapidx].npcs[i]
+  if npcmapidx != nil then
+    for transition in all(map_trans) do
+     local to_map_idx = nil
+     if transition.mp_one == act_mapsidx and last_mapidx_mov == act_mapsidx then
+      for loc in all(transition.mp_one_locs) do
+       loc = split(loc)
+       if loc[1] == npc.x and loc[2] == npc.y then
+        to_map_idx = transition.mp_two
+       end
+      end
+     elseif transition.mp_two == act_mapsidx and last_mapidx_mov == act_mapsidx then
+      for loc in all(transition.mp_two_locs) do
+       loc = split(loc)
+       if loc[1] == npc.x and loc[2] == npc.y then
+        to_map_idx = transition.mp_one
+       end
+      end
+     end
+     if to_map_idx != nil  then
+      transition_npc_to_map(npc, to_map_idx, intentdata.destnextmaploc.x, intentdata.destnextmaploc.y)
+     end
     end
-   end
-   maps[npcmapidx].npcs=newnpcs
-   maps[intentdata.destnextmap].npcs[#maps[intentdata.destnextmap].npcs+1]={
-    charidx=intentdata.charidx,
-    x=intentdata.destnextmaploc.x,
-    y=intentdata.destnextmaploc.y,
-    cldwn=1,
-   }
   end
   if (npcmapidx==nil and npc.x==intentdata.destcurmaploc.x and npc.y==intentdata.destcurmaploc.y) npc.intent=nil
  end
@@ -1096,6 +1111,27 @@ function transition_to_playmap()
  pal(12,12,1)
  pal(1,1,1)
  pal(13,13,1)
+end
+
+function transition_npc_to_map(npc, dest_mapidx, dest_x, dest_y)
+ for i=1,#maps do
+  local m = maps[i]
+  local filtered_npcs={}
+  for n in all(m.npcs) do
+   if n.charidx != npc.charidx then
+    filtered_npcs[#filtered_npcs+1] = n
+   end
+  end
+  if dest_mapidx == i then
+    filtered_npcs[#filtered_npcs+1] = {
+     charidx=npc.charidx,
+     x=dest_x,
+     y=dest_y,
+     cldwn=1
+    }
+  end
+  m.npcs = filtered_npcs
+ end
 end
 
 function transition_to_map(dest)
