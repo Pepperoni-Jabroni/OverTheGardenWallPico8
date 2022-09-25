@@ -14,7 +14,7 @@ local alttiles={
  "236;204,236"
 }
 local altsset={}
--- of the form "<obj_sprite_idxs>;<obj_text>"
+-- of the form "<obj_sprite_idxs>;<obj_text>#"
 local objdescript_list="122,123,138,139;what a nice old wagon#124,125,140,141;the poor old mill...#158;look at these pumpkins!#159;it says pottsfield \148#174;looks like its harvest time!#190;this pumpkin is missing#204,236;its just a bush...#218,235,251;this tree sure is tall#220;a stump of some weird tree?#219;a creepy tree with a face on it#224,225,240,241;pottsfield old barn#226,227,242,243;the old grist mill#228,229,244,245;the animal schoolhouse#232,233,248,249;pottsfield old church#108;a rickety old fence#109;a scarecrow of sorts#110;the ground is higher here#127;a deep hole in the ground#42;what a nice view out this window#43;this is the door#58;its a large cabinet#59;its a comfortable chair#74;its a small desk#75;its a school desk#90;its a lounge chair#91;its a bundle of logs#106;its a ladder (i swear)#107;its a railing#143;its a piano!#177;its the mill\'s grinder!#178;its a jar of thick oil#179;its a broken jar of oil#200;its a chalk board#216;its warm by the fireplace#180,181;a cafeteria bench and table#230,231,246,247;the town gazebo#232,233,248,249;pottsfield home"
 local objdescripts=split(objdescript_list,'#')
 local inv_items={
@@ -38,6 +38,7 @@ local act_mapsidx=nil
 local party={}
 -- of the form "<name>;<map_spr_idx>;<speak_spr_idx>;<idle_txts>;<scaling>#"
 local character_list='greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?;1#wirt;1;4;uh, hi...|oh sorry, just thinking;1#beatrice;16;6;yes, i can talk...|lets get out of here!;1#kitty,wirt,wirt jr.,george washington,mr. president,benjamin franklin,doctor cucumber,greg jr.,skipper,ronald,jason funderburker;17;8;ribbit;1#the beast;32;34;;1#the woodsman;33;36;i need more oil|beware these woods;1#the beast?;48;38;;2#dog;49;40;;1#black turtle;64;66;;1#turkey;65;68;gobble. gobble. gobble.;1#pottsfield citizen;80;98;you\'re too early;1#pottsfield citizen;80;102;are you new here?;1#pottsfield harvest;81;70;thanks for digging me up!;1#pottsfield partier;96;100;let\'s celebrate!;1#enoch;97;72;what a wonderful harvest|you don\'t look like you belong here;2#dog student;10;44;humph...|huh...;1#gorilla;113;12;;1#jimmy brown;11;14;;1#cat student;26;46;humph...|huh...;1#ms langtree;112;104;oh that jimmy brown|i miss him so...;1#the lantern;nil;76;;1#rock fact;nil;78;;1#edelwood;nil;192;;1#racoon student;27;194;humph...|huh...;1'
+-- of the form "<mp_one_idx>;<mp_two_idx>;<mp_one_locs>;<mp_two_locs>#"
 local map_trans_list='1;2;15,5|15,4;0,14|0,15#2;3;13,0|14,0|15,0;0,13|0,14|0,15#3;4;0,0|1,0;13,15|14,15|15,15#3;6;7,3;0,5#4;5;7,0|8,0;7,15|8,15#5;7;4,2|5,2;7,15|8,15#5;8;9,0|10,0;6,15|7,15#8;9;7,0|8,0;7,15|8,15#9;10;6,7|7,7;8,15|9,15|11,0#5;11;10,8|11,8;7,12'
 local maps={
  {
