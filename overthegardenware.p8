@@ -1179,11 +1179,11 @@ end
 
 function transition_to_playmap()
  act_stagetype = "playmap"
- act_charidx=2
+ act_charidx=1
  act_dialogspeakidx=1
  act_item=1
  act_text.dialog = {}
- party={{charidx=1,x=nil,y=nil,cldwn=1},{charidx=4,x=nil,y=nil,cldwn=1}}
+ party={{charidx=2,x=nil,y=nil,cldwn=1},{charidx=4,x=nil,y=nil,cldwn=1}}
  transition_to_map({mp=1,loc={x=8, y=8}})
  pal(14,14,1)
  pal(5,5,1)
