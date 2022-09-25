@@ -88,7 +88,7 @@ local characters={
  {name={'the beast?','dog'}, mapidx=48, chrsprdailogueidx=38, idle={}},
  {name='dog', mapidx=49, chrsprdailogueidx=40, idle={}},
  {name='black turtle', mapidx=64, chrsprdailogueidx=66, idle={}},
- {name='turkey', mapidx=65, chrsprdailogueidx=68, idle={}},
+ {name='turkey', mapidx=65, chrsprdailogueidx=68, idle={'gobble. gobble. gobble.'}},
  {name='pottsfield citizen', mapidx=80, chrsprdailogueidx=98, idle={'you\'re too early'}},
  {name='pottsfield citizen', mapidx=80, chrsprdailogueidx=102, idle={'are you new here?'}},
  {name='pottsfield harvest', mapidx=81, chrsprdailogueidx=70, idle={}},
@@ -221,7 +221,9 @@ local maps={
   title='pottsfield home',
   cellx=32,
   celly=16,
-  npcs={},
+  npcs={
+   {charidx=10,x=7,y=6}
+  },
   playmapidx=5,
   playmapspr=232,
   playmaploc={x=10,y=7}
@@ -283,7 +285,10 @@ local dialogs={
  "9;1;of candy from my pants",
  "9;6;come inside...",
  "9;3;i don\'t like the look of this",
- "9;4;ribbit."
+ "9;4;ribbit.",
+ "10;2;oh! terribly sorry to have",
+ "10;2;disturbed you sir!",
+ "10;10;gobble. gobble. gobble.",
 }
 local triggers={
  {
@@ -374,6 +379,13 @@ local triggers={
   maplocking=nil,
   title="",
  },
+ {
+  trig=function(self) return act_mapsidx==11 end,
+  action=function(self)queue_dialog(10) end,
+  complete=false,
+  maplocking=nil,
+  title="",
+ }
 }
 local menuchars={}
 local stagetypes={
