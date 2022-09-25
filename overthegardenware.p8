@@ -73,37 +73,7 @@ local act_stagetype="boot"
 local act_dialogspeakidx=1
 local act_mapsidx=nil
 local party={}
-local characters={
- {name='greg', mapidx=0, chrsprdailogueidx=2, idle={'where is that frog o\' mine!','wanna hear a rock fact?'}}, 
- {name='wirt', mapidx=1, chrsprdailogueidx=4, idle={'uh, hi...','oh sorry, just thinking'}}, 
- {name='beatrice', mapidx=16, chrsprdailogueidx=6, idle={'yes, i can talk...','lets get out of here!'}}, 
- {
-  name={'kitty','wirt','wirt jr.','george washington','mr. president','benjamin franklin','doctor cucumber','greg jr.','skipper','ronald','jason funderburker'}, 
-  mapidx=17, 
-  chrsprdailogueidx=8,
-  idle={'ribbit'}
- }, 
- {name='the beast', mapidx=32, chrsprdailogueidx=34, idle={}}, 
- {name='the woodsman', mapidx=33, chrsprdailogueidx=36, idle={'i need more oil','beware these woods'}}, 
- {name={'the beast?','dog'}, mapidx=48, chrsprdailogueidx=38, idle={}},
- {name='dog', mapidx=49, chrsprdailogueidx=40, idle={}},
- {name='black turtle', mapidx=64, chrsprdailogueidx=66, idle={}},
- {name='turkey', mapidx=65, chrsprdailogueidx=68, idle={'gobble. gobble. gobble.'}},
- {name='pottsfield citizen', mapidx=80, chrsprdailogueidx=98, idle={'you\'re too early'}},
- {name='pottsfield citizen', mapidx=80, chrsprdailogueidx=102, idle={'are you new here?'}},
- {name='pottsfield harvest', mapidx=81, chrsprdailogueidx=70, idle={}},
- {name='pottsfield partier', mapidx=96, chrsprdailogueidx=100, idle={}},
- {name='enoch', mapidx=97, chrsprdailogueidx=72, scaling=2, idle={'what a wonderful harvest','you don\'t look like you belong here'}},
- {name='dog student', mapidx=10, chrsprdailogueidx=44, idle={'humph...', 'huh...'}},
- {name='gorilla', mapidx=113, chrsprdailogueidx=12, idle={}},
- {name='jimmy brown', mapidx=11, chrsprdailogueidx=14, idle={}},
- {name='cat student', mapidx=26, chrsprdailogueidx=46, idle={'humph...', 'huh...'}},
- {name='ms langtree', mapidx=112, chrsprdailogueidx=104, idle={'oh that jimmy brown', 'i miss him so...'}},
- {name='the lantern', mapidx=nil, chrsprdailogueidx=76, idle={}},
- {name='rock fact', mapidx=nil, chrsprdailogueidx=78, idle={}},
- {name='edelwood', mapidx=nil, chrsprdailogueidx=192, idle={}},
- {name='racoon student', mapidx=27, chrsprdailogueidx=194, idle={'humph...', 'huh...'}},
-}
+local character_list='greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?;1#wirt;1;4;uh, hi...|oh sorry, just thinking;1#beatrice;16;6;yes, i can talk...|lets get out of here!;1#kitty,wirt,wirt jr.,george washington,mr. president,benjamin franklin,doctor cucumber,greg jr.,skipper,ronald,jason funderburker;17;8;ribbit;1#the beast;32;34;;1#the woodsman;33;36;i need more oil|beware these woods;1#the beast?;48;38;;2#dog;49;40;;1#black turtle;64;66;;1#turkey;65;68;gobble. gobble. gobble.;1#pottsfield citizen;80;98;you\'re too early;1#pottsfield citizen;80;102;are you new here?;1#pottsfield harvest;81;70;thanks for digging me up!;1#pottsfield partier;96;100;let\'s celebrate!;1#enoch;97;72;what a wonderful harvest|you don\'t look like you belong here;2#dog student;10;44;humph...|huh...;1#gorilla;113;12;;1#jimmy brown;11;14;;1#cat student;26;46;humph...|huh...;1#ms langtree;112;104;oh that jimmy brown|i miss him so...;1#the lantern;nil;76;;1#rock fact;nil;78;;1#edelwood;nil;192;;1#racoon student;27;194;humph...|huh...;1'
 local map_trans = {
  {mp_one=1,mp_two=2,mp_one_locs={'15,5', '15,4'},mp_two_locs={'0,14', '0,15'}},
  {mp_one=2,mp_two=3,mp_one_locs={'13,0', '14,0', '15,0'},mp_two_locs={'0,13', '0,14', '0,15'}},
@@ -242,59 +212,7 @@ local darkanims={}
 local nonrptdialog={x=nil,y=nil}
 local compltdlgs={}
 -- of the form "<dialog_idx>;<speaking_char_idx>;<dialog_text>"
-local dialogs={
- "1;4;led through the mist",
- "1;4;by the milk-light of moon",
- "1;4;all that was lost is revealed",
- "1;4;our long bygone burdens",
- "1;4;mere echoes of the spring",
- "1;4;but where have we come?",
- "1;4;and where shall we end?",
- "1;4;if dreams can't come true",
- "1;4;then why not pretend?",
- "2;1;i sure do love my frog!",
- "2;2;greg, please stop...",
- "2;4;4;ribbit.",
- "2;1;haha, yeah!",
- "3;2;i dont like this at all",
- "3;1;its a tree face!",
- "3;23;*howls in the wind*",
- "4;2;is that some sort of deranged lunatic?",
- "4;2;with an ax waiting for victims?",
- "4;6;*swings axe and chops tree*",
- "4;1;we should ask him for help!",
- "5;2;whoa... wait greg...",
- "5;2;... where are we?",
- "5;1;we\'re in the woods!",
- "5;2;no, i mean",
- "5;2;... where are we?!",
- "6;2;we're really lost greg...",
- "6;1;i can leave a trail of candy from my pants!",
- "6;1;candytrail. candytrail. candytrail!",
- "7;3;help! help!",
- "7;2;i think its coming from a bush?",
- "8;3;help me!",
- "8;1;wow, a talking bush!",
- "8;3;i\'m not a talking bush! i\'m a bird!",
- "8;3;and i\'m stuck!",
- "8;1;wow, a talking bird!",
- "8;3;if you help me get unstuck, i\'ll",
- "8;3;grant you a wish",
- "8;1;ohhhh!",
- "8;1;*picks up beatrice out of bush*",
- "8;2;uh-uh! no!",
- "9;6;these woods are a dangerous place",
- "9;6;for 2 kids to be alone",
- "9;2;we... we know, sir",
- "9;1;yeah! i\'ve been leaving a trail",
- "9;1;of candy from my pants",
- "9;6;come inside...",
- "9;3;i don\'t like the look of this",
- "9;4;ribbit.",
- "10;2;oh! terribly sorry to have",
- "10;2;disturbed you sir!",
- "10;10;gobble. gobble. gobble.",
-}
+local dialog_list="1;4;led through the mist#1;4;by the milk-light of moon#1;4;all that was lost is revealed#1;4;our long bygone burdens#1;4;mere echoes of the spring#1;4;but where have we come?#1;4;and where shall we end?#1;4;if dreams can't come true#1;4;then why not pretend?#2;1;i sure do love my frog!#2;2;greg, please stop...#2;4;4;ribbit.#2;1;haha, yeah!#3;2;i dont like this at all#3;1;its a tree face!#3;23;*howls in the wind*#4;2;is that some sort of deranged lunatic?#4;2;with an ax waiting for victims?#4;6;*swings axe and chops tree*#4;1;we should ask him for help!#5;2;whoa... wait greg...#5;2;... where are we?#5;1;we\'re in the woods!#5;2;no, i mean#5;2;... where are we?!#6;2;we're really lost greg...#6;1;i can leave a trail of candy from my pants!#6;1;candytrail. candytrail. candytrail!#7;3;help! help!#7;2;i think its coming from a bush?#8;3;help me!#8;1;wow, a talking bush!#8;3;i\'m not a talking bush! i\'m a bird!#8;3;and i\'m stuck!#8;1;wow, a talking bird!#8;3;if you help me get unstuck, i\'ll#8;3;grant you a wish#8;1;ohhhh!#8;1;*picks up beatrice out of bush*#8;2;uh-uh! no!#9;6;these woods are a dangerous place#9;6;for 2 kids to be alone#9;2;we... we know, sir#9;1;yeah! i\'ve been leaving a trail#9;1;of candy from my pants#9;6;come inside...#9;3;i don\'t like the look of this#9;4;ribbit.#10;2;oh! terribly sorry to have#10;2;disturbed you sir!#10;10;gobble. gobble. gobble."
 local triggers={
  {
   trig=function(self)
@@ -430,6 +348,48 @@ local title_lines={
 }
 
 -- base functions
+local cchar = nil
+function compute_characters()
+ if cchar != nil then
+  return cchar
+ end
+ cchar={}
+ for c in all(split(character_list, '#')) do
+  local cdata = split(c, ';')
+  local mapidx=cdata[2]
+  if mapidx == 'nil' then
+   mapidx=nil
+  else
+   mapidx=tonum(mapidx)
+  end
+  cchar[#cchar+1] = {name=split(cdata[1]), mapidx=mapidx,chrsprdailogueidx=tonum(cdata[3]), idle=split(cdata[4],'|'), scaling=tonum(cdata[5])}
+ end
+ return cchar
+end
+local characters = compute_characters()
+
+local cdialogs = nil
+function compute_dialogs()
+ if cdialogs != nil then
+  return cdialogs
+ end
+ cdialogs = {}
+ for d in all(split(dialog_list,'#')) do
+  s = split(d, ';')
+  local n = tonum(s[1])
+  if cdialogs[n] == nil then
+   cdialogs[n] = {}
+  end
+  if #s == 3 then
+   cdialogs[n][#cdialogs[n] + 1] = {speakeridx=tonum(s[2]), text=s[3]}
+  else
+   cdialogs[n][#cdialogs[n] + 1] = {speakeridx=tonum(s[2]), nameidx=tonum(s[3]), text=s[4]}
+  end
+ end
+ return cdialogs
+end
+local dialogs = compute_dialogs()
+
 function _init()
 -- init main menu chars
  local genrandcnt=4
@@ -442,8 +402,8 @@ function _init()
 
  -- init frog intro name
  local randomname=get_rand_idx(characters[4].name)
- for i=1,#compute_dialogs()[1] do
-  compute_dialogs()[1][i].nameidx=randomname
+ for i=1,#dialogs[1] do
+  dialogs[1][i].nameidx=randomname
  end
 
  -- init object member fns
@@ -508,7 +468,7 @@ function update_intro()
   end
   sfx(0)
  end
- if act_dialogspeakidx>#compute_dialogs()[1] then
+ if act_dialogspeakidx>#dialogs[1] then
   transition_to_playmap()
  end
 end
@@ -909,27 +869,6 @@ function draw_introduction()
  draw_dialog_if_needed()
 end
 
-local cdialogs = nil
-function compute_dialogs()
- if cdialogs != nil then
-  return cdialogs
- end
- cdialogs = {}
- for d in all(dialogs) do
-  s = split(d, ';')
-  local n = tonum(s[1])
-  if cdialogs[n] == nil then
-   cdialogs[n] = {}
-  end
-  if #s == 3 then
-   cdialogs[n][#cdialogs[n] + 1] = {speakeridx=tonum(s[2]), text=s[3]}
-  else
-   cdialogs[n][#cdialogs[n] + 1] = {speakeridx=tonum(s[2]), nameidx=tonum(s[3]), text=s[4]}
-  end
- end
- return cdialogs
-end
-
 function draw_dialog_if_needed()
  if #act_text.dialog > 0 then
   local curprogressdlg=get_first_active_dlg()[act_dialogspeakidx]
@@ -1105,7 +1044,7 @@ end
 function get_first_active_dlg()
  local curprogressdlg=act_text.dialog[1]
  if type(curprogressdlg)=='number' then
-  curprogressdlg=compute_dialogs()[curprogressdlg]
+  curprogressdlg=dialogs[curprogressdlg]
  end
  return curprogressdlg
 end
