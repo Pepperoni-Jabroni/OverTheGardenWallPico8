@@ -94,15 +94,15 @@ local characters={
  {name='pottsfield harvest', mapidx=81, chrsprdailogueidx=70, idle={}},
  {name='pottsfield partier', mapidx=96, chrsprdailogueidx=100, idle={}},
  {name='enoch', mapidx=97, chrsprdailogueidx=72, scaling=2, idle={'what a wonderful harvest','you don\'t look like you belong here'}},
- {name='dog student', mapidx=10, chrsprdailogueidx=44, idle={}},
+ {name='dog student', mapidx=10, chrsprdailogueidx=44, idle={'humph...', 'huh...'}},
  {name='gorilla', mapidx=113, chrsprdailogueidx=12, idle={}},
  {name='jimmy brown', mapidx=11, chrsprdailogueidx=14, idle={}},
- {name='cat student', mapidx=26, chrsprdailogueidx=46, idle={}},
- {name='ms langtree', mapidx=112, chrsprdailogueidx=104, idle={}},
+ {name='cat student', mapidx=26, chrsprdailogueidx=46, idle={'humph...', 'huh...'}},
+ {name='ms langtree', mapidx=112, chrsprdailogueidx=104, idle={'oh that jimmy brown', 'i miss him so...'}},
  {name='the lantern', mapidx=nil, chrsprdailogueidx=76, idle={}},
  {name='rock fact', mapidx=nil, chrsprdailogueidx=78, idle={}},
  {name='edelwood', mapidx=nil, chrsprdailogueidx=192, idle={}},
- {name='racoon student', mapidx=27, chrsprdailogueidx=194, idle={}},
+ {name='racoon student', mapidx=27, chrsprdailogueidx=194, idle={'humph...', 'huh...'}},
 }
 local map_trans = {
  {mp_one=1,mp_two=2,mp_one_locs={'15,5', '15,4'},mp_two_locs={'0,14', '0,15'}},
@@ -211,7 +211,12 @@ local maps={
   title='schoolhouse',
   cellx=16,
   celly=16,
-  npcs={},
+  npcs={
+   {charidx=20,x=8,y=9},
+   {charidx=16,x=7,y=11},
+   {charidx=19,x=9,y=11},
+   {charidx=24,x=9,y=13}
+  },
   playmapidx=9,
   playmapspr=228,
   playmaploc={x=6,y=6}
