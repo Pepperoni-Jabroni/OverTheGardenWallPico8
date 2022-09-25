@@ -4,7 +4,7 @@ __lua__
 
 -- configs, state vars & core fns
 local walkable="43,185,106,191,202,203,205,207,222,223,238,239,240,241,242,244,245,246,247,248,249"
--- of the form "<src_sprite_idx>;<dst_sprite_idxs>#"
+-- of the form "<src_sprite_idx>;<dst_sprite_idxs>"
 local alttiles={
  "206;206,221,237",
  "238;222,238",
@@ -37,7 +37,7 @@ local act_dialogspeakidx=1
 local act_mapsidx=nil
 local party={}
 -- of the form "<name>;<map_spr_idx>;<speak_spr_idx>;<idle_txts>;<scaling>#"
-local character_list='greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?;1#wirt;1;4;uh, hi...|oh sorry, just thinking;1#beatrice;16;6;yes, i can talk...|lets get out of here!;1#kitty,wirt,wirt jr.,george washington,mr. president,benjamin franklin,doctor cucumber,greg jr.,skipper,ronald,jason funderburker;17;8;ribbit;1#the beast;32;34;;1#the woodsman;33;36;i need more oil|beware these woods;1#the beast?;48;38;;2#dog;49;40;;1#black turtle;64;66;;1#turkey;65;68;gobble. gobble. gobble.;1#pottsfield citizen;80;98;you\'re too early;1#pottsfield citizen;80;102;are you new here?;1#pottsfield harvest;81;70;thanks for digging me up!;1#pottsfield partier;96;100;let\'s celebrate!;1#enoch;97;72;what a wonderful harvest|you don\'t look like you belong here;2#dog student;10;44;humph...|huh...;1#gorilla;113;12;;1#jimmy brown;11;14;;1#cat student;26;46;humph...|huh...;1#ms langtree;112;104;oh that jimmy brown|i miss him so...;1#the lantern;nil;76;;1#rock fact;nil;78;;1#edelwood;nil;192;;1#racoon student;27;194;humph...|huh...;1'
+local character_list='greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?;1#wirt;1;4;uh, hi...|oh sorry, just thinking;1#beatrice;16;6;yes, i can talk...|lets get out of here!;1#kitty,wirt,wirt jr.,george washington,mr. president,benjamin franklin,doctor cucumber,greg jr.,skipper,ronald,jason funderburker;17;8;ribbit;1#the beast;32;34;;1#the woodsman;33;36;i need more oil|beware these woods;1#the beast?;48;38;;2#dog;49;40;;1#black turtle;64;66;*stares blankly*;1#turkey;65;68;gobble. gobble. gobble.;1#pottsfield citizen;80;98;you\'re too early;1#pottsfield citizen;80;102;are you new here?;1#pottsfield harvest;81;70;thanks for digging me up!;1#pottsfield partier;96;100;let\'s celebrate!;1#enoch;97;72;what a wonderful harvest|you don\'t look like you belong here;2#dog student;10;44;humph...|huh...;1#gorilla;113;12;;1#jimmy brown;11;14;;1#cat student;26;46;humph...|huh...;1#ms langtree;112;104;oh that jimmy brown|i miss him so...;1#the lantern;nil;76;;1#rock fact;nil;78;;1#edelwood;nil;192;;1#racoon student;27;194;humph...|huh...;1'
 -- of the form "<mp_one_idx>;<mp_two_idx>;<mp_one_locs>;<mp_two_locs>#"
 local map_trans_list='1;2;15,5|15,4;0,14|0,15#2;3;13,0|14,0|15,0;0,13|0,14|0,15#3;4;0,0|1,0;13,15|14,15|15,15#3;6;7,3;0,5#4;5;7,0|8,0;7,15|8,15#5;7;4,2|5,2;7,15|8,15#5;8;9,0|10,0;6,15|7,15#8;9;7,0|8,0;7,15|8,15#9;10;6,7|7,7;8,15|9,15|11,0#5;11;10,8|11,8;7,12'
 local maps={
@@ -46,7 +46,7 @@ local maps={
   title='somewhere in the unknown',
   cellx=0,
   celly=16,
-  npcs={},
+  npcs={{charidx=9,x=13,y=7,cldwn=1}},
   discvrdtiles={},
   undisc_cnt=0,
  },
@@ -166,7 +166,7 @@ local darkanims={}
 local nonrptdialog={x=nil,y=nil}
 local compltdlgs={}
 -- of the form "<dialog_idx>;<speaking_char_idx>;<dialog_text>"
-local dialog_list="1;4;led through the mist#1;4;by the milk-light of moon#1;4;all that was lost is revealed#1;4;our long bygone burdens#1;4;mere echoes of the spring#1;4;but where have we come?#1;4;and where shall we end?#1;4;if dreams can't come true#1;4;then why not pretend?#2;1;i sure do love my frog!#2;2;greg, please stop...#2;4;4;ribbit.#2;1;haha, yeah!#3;2;i dont like this at all#3;1;its a tree face!#3;23;*howls in the wind*#4;2;is that some sort of deranged lunatic?#4;2;with an ax waiting for victims?#4;6;*swings axe and chops tree*#4;1;we should ask him for help!#5;2;whoa... wait greg...#5;2;... where are we?#5;1;we\'re in the woods!#5;2;no, i mean#5;2;... where are we?!#6;2;we're really lost greg...#6;1;i can leave a trail of candy from my pants!#6;1;candytrail. candytrail. candytrail!#7;3;help! help!#7;2;i think its coming from a bush?#8;3;help me!#8;1;wow, a talking bush!#8;3;i\'m not a talking bush! i\'m a bird!#8;3;and i\'m stuck!#8;1;wow, a talking bird!#8;3;if you help me get unstuck, i\'ll#8;3;grant you a wish#8;1;ohhhh!#8;1;*picks up beatrice out of bush*#8;2;uh-uh! no!#9;6;these woods are a dangerous place#9;6;for 2 kids to be alone#9;2;we... we know, sir#9;1;yeah! i\'ve been leaving a trail#9;1;of candy from my pants#9;6;come inside...#9;3;i don\'t like the look of this#9;4;ribbit.#10;2;oh! terribly sorry to have#10;2;disturbed you sir!#10;10;gobble. gobble. gobble."
+local dialog_list="1;4;led through the mist#1;4;by the milk-light of moon#1;4;all that was lost is revealed#1;4;our long bygone burdens#1;4;mere echoes of the spring#1;4;but where have we come?#1;4;and where shall we end?#1;4;if dreams can't come true#1;4;then why not pretend?#2;1;i sure do love my frog!#2;2;greg, please stop...#2;4;4;ribbit.#2;1;haha, yeah!#3;2;i dont like this at all#3;1;its a tree face!#3;23;*howls in the wind*#4;2;is that some sort of deranged lunatic?#4;2;with an ax waiting for victims?#4;6;*swings axe and chops tree*#4;1;we should ask him for help!#5;2;whoa... wait greg...#5;2;... where are we?#5;1;we\'re in the woods!#5;2;no, i mean#5;2;... where are we?!#6;2;we're really lost greg...#6;1;i can leave a trail of candy from my pants!#6;1;candytrail. candytrail. candytrail!#7;3;help! help!#7;2;i think its coming from a bush?#8;3;help me!#8;1;wow, a talking bush!#8;3;i\'m not a talking bush! i\'m a bird!#8;3;and i\'m stuck!#8;1;wow, a talking bird!#8;3;if you help me get unstuck, i\'ll#8;3;grant you a wish#8;1;ohhhh!#8;1;*picks up beatrice out of bush*#8;2;uh-uh! no!#9;6;these woods are a dangerous place#9;6;for 2 kids to be alone#9;2;we... we know, sir#9;1;yeah! i\'ve been leaving a trail#9;1;of candy from my pants#9;6;come inside...#9;3;i don\'t like the look of this#9;4;ribbit.#10;2;oh! terribly sorry to have#10;2;disturbed you sir!#10;10;gobble. gobble. gobble.#11;1;wow, look at this turtle!#11;2;well thats strange#11;1;i bet he wants some candy!#11;9;*stares blankly*"
 local triggers={
  {
   trig=function(self)
@@ -183,6 +183,13 @@ local triggers={
   complete=false,
   maplocking=1,
   title="leave a trail of candy",
+ },
+ {
+  trig=function(self)return player_use_item(1,1,13,7)end,
+  action=function(self)queue_dialog(11)end,
+  complete=false,
+  maplocking=1,
+  title="give the turtle a candy",
  },
  {
   trig=function(self)return player_use_item(1,2)end,
@@ -608,6 +615,8 @@ function update_play_map()
   elseif act_item==3 then
    -- unimpl
   end
+ else
+  act_useitem=nil
  end
  -- play sound if new dialog triggered
  if #act_text.dialog>initialdialoglen or act_lookingdir!= nil then
@@ -1018,8 +1027,11 @@ function player_sel_location(loc)
  return act_x+sel.x == loc.x and act_y+sel.y == loc.y
 end
 
-function player_use_item(itemidx,mapidx)
+function player_use_item(itemidx,mapidx,x_idx,y_idx)
  if act_useitem==itemidx and act_mapsidx==mapidx then
+  if x_idx != nil and (x_idx != act_x or y_idx != act_y) then
+   return false
+  end 
   act_useitem=nil
   return true
  end
