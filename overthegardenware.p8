@@ -25,6 +25,7 @@ local objdescripts={
  "204,236;its just a bush...",
  "218,235,251;this tree sure is tall",
  "220;a stump of some weird tree?",
+ "219;a creepy tree with a face on it",
  "224,225,240,241;pottsfield old barn",
  "226,227,242,243;the old grist mill",
  "228,229,244,245;the animal schoolhouse",
@@ -100,7 +101,7 @@ local characters={
  {name='ms langtree', mapidx=112, chrsprdailogueidx=104, idle={'oh that jimmy brown', 'i miss him so...'}},
  {name='the lantern', mapidx=nil, chrsprdailogueidx=76, idle={}},
  {name='rock fact', mapidx=nil, chrsprdailogueidx=78, idle={}},
- {name='edelwood', mapidx=219, chrsprdailogueidx=192, idle={'*howls in the wind*'}},
+ {name='edelwood', mapidx=nil, chrsprdailogueidx=192, idle={}},
  {name='racoon student', mapidx=27, chrsprdailogueidx=194, idle={'humph...', 'huh...'}},
 }
 local map_trans = {
