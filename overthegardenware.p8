@@ -3,7 +3,7 @@ version 33
 __lua__
 
 -- configs, state vars & core fns
-local walkable="43,185,191,202,203,205,207,222,223,238,239,240,241,242,244,245,246,247,248,249"
+local walkable="43,185,106,191,202,203,205,207,222,223,238,239,240,241,242,244,245,246,247,248,249"
 -- of the form "<src_sprite_idx>;<dst_sprite_idxs>#"
 local alttiles={
  "206;206,221,237",
