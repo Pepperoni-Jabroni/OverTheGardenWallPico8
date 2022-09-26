@@ -167,6 +167,7 @@ local nonrptdialog={x=nil,y=nil}
 local compltdlgs={}
 -- of the form "<dialog_idx>;<speaking_char_idx>;<dialog_text>"
 local dialog_list="1;4;led through the mist#1;4;by the milk-light of moon#1;4;all that was lost is revealed#1;4;our long bygone burdens#1;4;mere echoes of the spring#1;4;but where have we come?#1;4;and where shall we end?#1;4;if dreams can't come true#1;4;then why not pretend?#2;1;i sure do love my frog!#2;2;greg, please stop...#2;4;4;ribbit.#2;1;haha, yeah!#3;2;i dont like this at all#3;1;its a tree face!#3;23;*howls in the wind*#4;2;is that some sort of deranged lunatic?#4;2;with an ax waiting for victims?#4;6;*swings axe and chops tree*#4;1;we should ask him for help!#5;2;whoa... wait greg...#5;2;... where are we?#5;1;we\'re in the woods!#5;2;no, i mean#5;2;... where are we?!#6;2;we're really lost greg...#6;1;i can leave a trail of candy from my pants!#6;1;candytrail. candytrail. candytrail!#7;3;help! help!#7;2;i think its coming from a bush?#8;3;help me!#8;1;wow, a talking bush!#8;3;i\'m not a talking bush! i\'m a bird!#8;3;and i\'m stuck!#8;1;wow, a talking bird!#8;3;if you help me get unstuck, i\'ll#8;3;grant you a wish#8;1;ohhhh!#8;1;*picks up beatrice out of bush*#8;2;uh-uh! no!#9;6;these woods are a dangerous place#9;6;for 2 kids to be alone#9;2;we... we know, sir#9;1;yeah! i\'ve been leaving a trail#9;1;of candy from my pants#9;6;come inside...#9;3;i don\'t like the look of this#9;4;ribbit.#10;2;oh! terribly sorry to have#10;2;disturbed you sir!#10;10;gobble. gobble. gobble.#11;1;wow, look at this turtle!#11;2;well thats strange#11;1;i bet he wants some candy!#11;9;*stares blankly*"
+local complete_triggers={}
 local triggers={
  {
   trig=function(self)
@@ -256,7 +257,7 @@ local triggers={
   end,
   complete=false,
   maplocking=3,
-  title="talk with the axeman"
+  title="finish talk with the axeman"
  },
  {
   trig=function(self) return act_mapsidx==6 end,
@@ -277,6 +278,16 @@ local triggers={
   complete=false,
   maplocking=nil,
   title="",
+ },
+ {
+  trig=function(self) return act_mapsidx==3 end,
+  action=function(self)
+   maps[3].npcs[#maps[3].npcs+1] = {charidx=7,x=10,y=13}
+  end,
+  complete=false,
+  maplocking=3,
+  title="spot a stranger",
+  depend_on=13,
  },
  {
   trig=function(self) return act_mapsidx==11 end,
@@ -524,7 +535,7 @@ function update_play_map()
  local initmapidx = act_mapsidx
  local maplocked={}
  for t in all(triggers) do
-  if t.maplocking != nil and t.maplocking == act_mapsidx and not t.complete then
+  if t.maplocking != nil and t.maplocking == act_mapsidx and not t.complete and (t.depend_on == nil or is_element_in(complete_triggers, t.depend_on)) then
    maplocked[#maplocked+1]=t.title
   end
  end
@@ -568,10 +579,12 @@ function update_play_map()
   end
  end
  -- check for triggers
- for t in all(triggers) do
-  if not t.complete and t.trig() then
+ for i=1,#triggers do
+  local t = triggers[i]
+  if not t.complete and (t.depend_on == nil or is_element_in(complete_triggers, t.depend_on)) and t.trig() then
    t.action()
-   t.complete=true
+   triggers[i].complete=true
+   complete_triggers[#complete_triggers+1] = i
   end
  end
  -- check for talk w/ npcs
