@@ -853,20 +853,21 @@ function draw_play_map()
  map(activemap.cellx, activemap.celly)
   -- draw ring around new active char
  if act_text.charsel != nil and act_text.charsel.frmcnt>0 and flr(act_text.charsel.frmcnt/5)%2==0 then
-  pset(act_x*8,act_y*8+7,12)
-  pset(act_x*8+7,act_y*8+7,12)
-  line(act_x*8+1,act_y*8+6,act_x*8+6,act_y*8+6,12)
-  line(act_x*8+1,act_y*8+8,act_x*8+6,act_y*8+8,12)
-  pset(act_x*8,act_y*8+8,1)
-  pset(act_x*8+7,act_y*8+8,1)
-  line(act_x*8+1,act_y*8+9,act_x*8+6,act_y*8+9,1)
+  local x,y=act_x*8,act_y*8
+  pset(x,y+9,12)
+  pset(x+7,y+9,12)
+  line(x+1,y+8,x+6,y+8,12)
+  line(x+1,y+10,x+6,y+10,12)
+  pset(x,y+10,1)
+  pset(x+7,y+10,1)
+  line(x+1,y+11,x+6,y+11,1)
  end
  -- draw items
  for i in all(act_wrld_items) do
   spr(i.spridx,i.x*8,i.y*8)
  end
  -- draw player
- spr(characters[act_charidx].mapidx,act_x*8,act_y*8,1,1,act_flipv,false)
+ draw_spr_w_outline(0, characters[act_charidx].mapidx, act_x, act_y)
  -- draw npcs
  draw_chars_from_array(get_all_npcs())
  -- draw selection direction
@@ -985,6 +986,23 @@ end
 
 -->8
 -- utilities
+function draw_spr_w_outline(outline_color, spr_idx, x, y, scaling)
+ local sx,sy=(spr_idx%16)*8,(spr_idx\16)*8
+ for i=0,15 do
+  pal(i, outline_color)
+ end
+ scaling = scaling or 1
+ scaling *= 8
+ sspr(sx,sy,8,8,x*8,y*8+1,scaling,scaling,act_flipv,false)
+ sspr(sx,sy,8,8,x*8+1,y*8,scaling,scaling,act_flipv,false)
+ sspr(sx,sy,8,8,x*8-1,y*8,scaling,scaling,act_flipv,false)
+ sspr(sx,sy,8,8,x*8,y*8-1,scaling,scaling,act_flipv,false)
+ for i=0,15 do
+  pal(i, i)
+ end
+ sspr(sx,sy,8,8,x*8,y*8,scaling,scaling,act_flipv,false)
+end
+
 function get_npc_by_charidx(npcs,qcharidx)
  for n in all(npcs) do
   if n.charidx==qcharidx then
@@ -1243,12 +1261,11 @@ function draw_chars_from_array(npcs)
  for npc in all(npcs) do
   if npc.x != nil and npc.y != nil then
    local sp=characters[npc.charidx].mapidx
-   local sx,sy=(sp%16)*8,(sp\16)*8
    local scaling=1.0
    if characters[npc.charidx].scaling != nil then
     scaling=characters[npc.charidx].scaling
    end
-   sspr(sx,sy,8,8,npc.x*8,npc.y*8,8*scaling,8*scaling)
+   draw_spr_w_outline(0, sp, npc.x, npc.y, scaling)
   end
  end
 end
