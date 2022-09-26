@@ -251,14 +251,29 @@ local triggers={
  },
  {
   trig=function(self)return dialog_is_complete(9)end,
-  action=function(self)queue_move_npc(6,{x=7,y=3},6,{x=7,y=4})end,
+  action=function(self)
+   queue_move_npc(6,{x=7,y=3},6,{x=7,y=4})
+  end,
   complete=false,
   maplocking=3,
   title="talk with the axeman"
  },
  {
   trig=function(self) return act_mapsidx==6 end,
-  action=function(self)act_item = nil end,
+  action=function(self)
+   act_item = nil 
+   if act_charidx == 4 then
+    perform_active_party_swap()
+   end
+   maps[3].npcs = {{charidx=4,x=8,y=9}}
+   local newparty={}
+   for p in all(party) do
+    if p.charidx != 4 then
+     newparty[#newparty+1]=p
+    end
+   end
+   party=newparty
+  end,
   complete=false,
   maplocking=nil,
   title="",
@@ -479,11 +494,7 @@ function update_play_map()
  end
  -- check for player switch
  if btnp(4) and #act_text.dialog == 0 then
-  party[#party+1] = {charidx=act_charidx,x=act_x,y=act_y,cldwn=1}
-  act_charidx = party[1].charidx
-  act_x = party[1].x
-  act_y = party[1].y
-  party=drop_first_elem(party)
+  perform_active_party_swap()
   local charname = tostr(characters[act_charidx].get_name_at_idx(characters[act_charidx],1))
   act_text.charsel={txt=charname,frmcnt=32}
  end
@@ -685,6 +696,14 @@ function exec_npc_intent(npc)
    npc.cldwn=0
   end
  end
+end
+
+function perform_active_party_swap()
+ party[#party+1] = {charidx=act_charidx,x=act_x,y=act_y,cldwn=1}
+ act_charidx = party[1].charidx
+ act_x = party[1].x
+ act_y = party[1].y
+ party=drop_first_elem(party)
 end
 
 local boot_age = 0
