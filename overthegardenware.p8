@@ -995,8 +995,7 @@ function draw_spr_w_outline(outline_color, spr_idx, x, y, scaling)
  scaling *= 8
  sspr(sx,sy,8,8,x*8,y*8+1,scaling,scaling,act_flipv,false)
  sspr(sx,sy,8,8,x*8+1,y*8,scaling,scaling,act_flipv,false)
- sspr(sx,sy,8,8,x*8-1,y*8,scaling,scaling,act_flipv,false)
- sspr(sx,sy,8,8,x*8,y*8-1,scaling,scaling,act_flipv,false)
+ sspr(sx,sy,8,8,x*8+1,y*8+1,scaling,scaling,act_flipv,false)
  for i=0,15 do
   pal(i, i)
  end
