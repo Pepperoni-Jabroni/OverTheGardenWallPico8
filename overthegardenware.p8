@@ -186,13 +186,6 @@ local triggers={
   title="leave a trail of candy",
  },
  {
-  trig=function(self)return playmap_spr_visible(1, 64) end,
-  action=function(self)queue_dialog(11)end,
-  complete=false,
-  maplocking=1,
-  title="spot the turtle",
- },
- {
   trig=function(self)return player_use_item(1,1,13,7)end,
   action=function(self)end,
   complete=false,
@@ -259,7 +252,7 @@ local triggers={
   action=function(self)queue_dialog(9)end,
   complete=false,
   maplocking=3,
-  title="talk with axeman"
+  title="talk with the woodsman"
  },
  {
   trig=function(self)return dialog_is_complete(9)end,
@@ -268,7 +261,7 @@ local triggers={
   end,
   complete=false,
   maplocking=3,
-  title="finish talk with the axeman"
+  title="finish talking with the woodsman"
  },
  {
   trig=function(self) return act_mapsidx==6 end,
@@ -306,7 +299,7 @@ local triggers={
   action=function(self)queue_dialog(12) end,
   complete=false,
   maplocking=3,
-  title="spot a stranger",
+  title="find the frog!",
   depend_on=13,
  },
  {
@@ -315,6 +308,13 @@ local triggers={
   complete=false,
   maplocking=nil,
   title="find the turkey",
+ },
+ {
+  trig=function(self)return playmap_spr_visible(1, 64) end,
+  action=function(self)queue_dialog(11)end,
+  complete=false,
+  maplocking=1,
+  title="spot the turtle",
  }
 }
 local menuchars={}
