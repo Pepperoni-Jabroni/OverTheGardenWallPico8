@@ -37,7 +37,7 @@ local act_dialogspeakidx=1
 local act_mapsidx=nil
 local party={}
 -- of the form "<name>;<map_spr_idx>;<speak_spr_idx>;<idle_txts>;<scaling>#"
-local character_list='greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?;1#wirt;1;4;uh, hi...|oh sorry, just thinking;1#beatrice;16;6;yes, i can talk...|lets get out of here!;1#kitty,wirt,wirt jr.,george washington,mr. president,benjamin franklin,doctor cucumber,greg jr.,skipper,ronald,jason funderburker;17;8;ribbit;1#the beast;32;34;;1#the woodsman;33;36;i need more oil|beware these woods;1#the beast?;48;38;;2#dog;49;40;;1#black turtle;64;66;*stares blankly*;1#turkey;65;68;gobble. gobble. gobble.;1#pottsfield citizen;80;98;you\'re too early;1#pottsfield citizen;80;102;are you new here?;1#pottsfield harvest;81;70;thanks for digging me up!;1#pottsfield partier;96;100;let\'s celebrate!;1#enoch;97;72;what a wonderful harvest|you don\'t look like you belong here;2#dog student;10;44;humph...|huh...;1#gorilla;113;12;;1#jimmy brown;11;14;;1#cat student;26;46;humph...|huh...;1#ms langtree;112;104;oh that jimmy brown|i miss him so...;1#the lantern;nil;76;;1#rock fact;nil;78;;1#edelwood;nil;192;;1#racoon student;27;194;humph...|huh...;1'
+local character_list='greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?;1#wirt;1;4;uh, hi...|oh sorry, just thinking;1#beatrice;16;6;yes, i can talk...|lets get out of here!;1#kitty,wirt,wirt jr.,george washington,mr. president,benjamin franklin,doctor cucumber,greg jr.,skipper,ronald,jason funderburker;17;8;ribbit;1#the beast;32;34;;1#the woodsman;33;36;i need more oil|beware these woods;1#the beast?;48;38;;2#dog;49;40;;1#black turtle;64;66;*stares blankly*;1#turkey;65;68;gobble. gobble. gobble.;1#pottsfield citizen;80;98;you\'re too early;1#pottsfield citizen;80;102;are you new here?;1#pottsfield harvest;81;70;thanks for digging me up!;1#pottsfield partier;96;100;let\'s celebrate!;1#enoch;97;72;what a wonderful harvest|you don\'t look like you belong here;2#dog student;10;44;humph...|huh...;1#gorilla;113;12;;1#jimmy brown;11;14;;1#cat student;26;46;humph...|huh...;1#ms langtree;112;104;oh that jimmy brown|i miss him so...;1#the lantern;nil;76;;1#rock fact;nil;78;;1#edelwood;219;192;;1#racoon student;27;194;humph...|huh...;1'
 -- of the form "<mp_one_idx>;<mp_two_idx>;<mp_one_locs>;<mp_two_locs>#"
 local map_trans_list='1;2;15,5|15,4;0,14|0,15#2;3;13,0|14,0|15,0;0,13|0,14|0,15#3;4;0,0|1,0;13,15|14,15|15,15#3;6;7,3;0,5#4;5;7,0|8,0;7,15|8,15#5;7;4,2|5,2;7,15|8,15#5;8;9,0|10,0;6,15|7,15#8;9;7,0|8,0;7,15|8,15#9;10;6,7|7,7;8,15|9,15|11,0#5;11;10,8|11,8;7,12'
 local maps={
@@ -1027,20 +1027,22 @@ end
 
 -->8
 -- utilities
-function draw_spr_w_outline(outline_color, spr_idx, x, y, scaling)
+function draw_spr_w_outline(outline_color, spr_idx, x, y, scaling, dim)
+ dim = dim or 1
+ dim *= 8
  local sx,sy=(spr_idx%16)*8,(spr_idx\16)*8
  for i=0,15 do
   pal(i, outline_color)
  end
  scaling = scaling or 1
- scaling *= 8
- sspr(sx,sy,8,8,x*8,y*8+1,scaling,scaling,act_flipv,false)
- sspr(sx,sy,8,8,x*8+1,y*8,scaling,scaling,act_flipv,false)
- sspr(sx,sy,8,8,x*8+1,y*8+1,scaling,scaling,act_flipv,false)
+ scaling *= dim
+ sspr(sx,sy,dim,dim,x*8,y*8+1,scaling,scaling,act_flipv,false)
+ sspr(sx,sy,dim,dim,x*8+1,y*8,scaling,scaling,act_flipv,false)
+ sspr(sx,sy,dim,dim,x*8+1,y*8+1,scaling,scaling,act_flipv,false)
  for i=0,15 do
   pal(i, i)
  end
- sspr(sx,sy,8,8,x*8,y*8,scaling,scaling,act_flipv,false)
+ sspr(sx,sy,dim,dim,x*8,y*8,scaling,scaling,act_flipv,false)
 end
 
 function get_npc_by_charidx(npcs,qcharidx)
@@ -1339,7 +1341,13 @@ function draw_character_dialog_box(dialogobj)
   printsp(sub(partial,1,chi).."\n"..sub(partial,chi+1), 29, 110, 0)
  end
  draw_fancy_box(10,103,17,17,0,6,5)
- spr(characters[dialogobj.speakeridx].chrsprdailogueidx, 11, 104, 2, 2)
+ local mapspridx,charspridx = characters[dialogobj.speakeridx].mapidx,characters[dialogobj.speakeridx].chrsprdailogueidx
+ local sx,sy=(mapspridx%16)*8,(mapspridx\16)*8
+ sspr(sx, sy, 8, 8, 11, 104, 16, 16)
+ palt(13, true)
+ draw_fancy_box(30,22,68,68,1,6,5)
+ draw_spr_w_outline(0, charspridx, 4, 3, 4, 2, 2)
+ palt(13, false)
  print("\151",105,118,0)
  palt(5,true)
  pal(12,0)
