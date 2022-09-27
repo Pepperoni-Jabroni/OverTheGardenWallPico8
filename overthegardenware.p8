@@ -230,7 +230,7 @@ local triggers={
  {
   trig=function(self)return player_on_location({x=10,y=4}) or player_on_location({x=11,y=4})end,
   action=function(self)
-   if not is_element_in(complete_triggers, 9) then
+   if not is_element_in(complete_triggers, 10) then
     queue_dialog(7)
    end
   end,
