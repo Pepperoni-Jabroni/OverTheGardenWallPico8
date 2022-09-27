@@ -186,8 +186,15 @@ local triggers={
   title="leave a trail of candy",
  },
  {
-  trig=function(self)return player_use_item(1,1,13,7)end,
+  trig=function(self)return playmap_spr_visible(1, 64) end,
   action=function(self)queue_dialog(11)end,
+  complete=false,
+  maplocking=1,
+  title="spot the turtle",
+ },
+ {
+  trig=function(self)return player_use_item(1,1,13,7)end,
+  action=function(self)end,
   complete=false,
   maplocking=1,
   title="give the turtle a candy",
@@ -222,7 +229,11 @@ local triggers={
  },
  {
   trig=function(self)return player_on_location({x=10,y=4}) or player_on_location({x=11,y=4})end,
-  action=function(self)queue_dialog(7)end,
+  action=function(self)
+   if not is_element_in(complete_triggers, 9) then
+    queue_dialog(7)
+   end
+  end,
   complete=false,
   maplocking=2,
   title="find a friend"
