@@ -694,6 +694,15 @@ function update_play_map()
 end
 
 function exec_npc_intent(npc)
+ if npc.cldwn == nil then
+  npc.cldwn=1
+ end
+ npc.cldwn-=1
+ if npc.cldwn==0 then
+  npc.cldwn=16
+ else
+  return
+ end
  -- do npc movement
  if npc.intent == 'walk' then
   local npcmapidx=get_mapidx_by_charidx(npc.charidx)
@@ -703,14 +712,10 @@ function exec_npc_intent(npc)
    npc.x=-1
   end
   -- do local mvmt
-  npc.cldwn-=1
-  if npc.cldwn==0 then
-   npc.cldwn=16
-   if abs(intentdata.destcurmaploc.x-npc.x) > abs(intentdata.destcurmaploc.y-npc.y) then
-    npc.x+=sgn(intentdata.destcurmaploc.x-npc.x)
-   else
-    npc.y+=sgn(intentdata.destcurmaploc.y-npc.y)
-   end
+  if abs(intentdata.destcurmaploc.x-npc.x) > abs(intentdata.destcurmaploc.y-npc.y) then
+   npc.x+=sgn(intentdata.destcurmaploc.x-npc.x)
+  else
+   npc.y+=sgn(intentdata.destcurmaploc.y-npc.y)
   end
   -- do map switch
   if npcmapidx != nil then
@@ -739,19 +744,22 @@ function exec_npc_intent(npc)
   if (npcmapidx==nil and npc.x==intentdata.destcurmaploc.x and npc.y==intentdata.destcurmaploc.y) npc.intent=nil
  end
  if npc.intent == 'loop' then
-  npc.cldwn+=1
-  if npc.cldwn==1 then
-   if npc.x==npc.intentdata.br.x and npc.y!=npc.intentdata.tl.y then
-    npc.y-=1
-   elseif npc.y==npc.intentdata.tl.y and npc.x!=npc.intentdata.tl.x then
-    npc.x-=1
-   elseif npc.x==npc.intentdata.tl.x and npc.y!=npc.intentdata.br.y then
-    npc.y+=1
-   elseif npc.y==npc.intentdata.br.y then
-    npc.x+=1
-   end
-  elseif npc.cldwn==30 then
-   npc.cldwn=0
+  if npc.x==npc.intentdata.br.x and npc.y!=npc.intentdata.tl.y then
+   npc.y-=1
+  elseif npc.y==npc.intentdata.tl.y and npc.x!=npc.intentdata.tl.x then
+   npc.x-=1
+  elseif npc.x==npc.intentdata.tl.x and npc.y!=npc.intentdata.br.y then
+   npc.y+=1
+  elseif npc.y==npc.intentdata.br.y then
+   npc.x+=1
+  end
+ end
+ if npc.intent == 'chase_player' then
+  if npc.x != act_x then
+   npc.x += sgn(act_x-npc.x)
+  end
+  if npc.y != act_y then
+   npc.y += sgn(act_y-npc.y)
   end
  end
 end
