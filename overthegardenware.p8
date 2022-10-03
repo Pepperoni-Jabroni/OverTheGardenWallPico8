@@ -366,14 +366,7 @@ local stagetypes={
   draw=function(self)draw_play_map()end
  }
 }
-local title_lines={
- {{sp=128},{sp=129},{sp=130},{sp=131},{sp=132},{sp=132,fh=true},{sp=131,fh=true},{sp=130,fh=true},{sp=129,fh=true},{sp=128,fh=true}},
- {{sp=144},{f=0},{sp=133},{sp=134},{sp=135},{sp=136},{sp=137},{sp=145},{f=0},{sp=144,fh=true}},
- {{sp=144},{f=0},{sp=146},{sp=147},{sp=148},{sp=149},{sp=150},{sp=151},{f=0},{sp=144,fh=true}},
- {{sp=144},{f=0},{sp=152},{sp=153},{sp=160},{sp=161},{sp=162},{sp=163},{f=0},{sp=144,fh=true}},
- {{sp=144},{f=0},{f=0},{sp=164},{sp=165},{sp=166},{sp=167},{f=0},{f=0},{sp=144,fh=true}},
- {{sp=168},{sp=169},{sp=176},{sp=176},{sp=176},{sp=176},{sp=176},{sp=176},{sp=169,fh=true},{sp=168,fh=true}}
-}
+local title_line_data='128#129#130#131#132#132,true#131,true#130,true#129,true#128,true#144#0#133#134#135#136#137#145#0#144,true#144#0#146#147#148#149#150#151#0#144,true#144#0#152#153#160#161#162#163#0#144,true#144#0#0#164#165#166#167#0#0#144,true#168#169#176#176#176#176#176#176#169,true#168,true'
 
 -- base functions
 function compute_map_trans()
@@ -860,18 +853,18 @@ function draw_main_menu()
  cls(0)
  -- draw logo
  local anchrx,anchry=16,4
- for i=1,#title_lines do
-  local ln=title_lines[i]
-  for j=1,#ln do
-   local section=ln[j]
+ local title_lines = split(title_line_data, '#')
+ for i=1,6 do
+  for j=1,10 do
+   local ln=split(title_lines[(i-1)*10+j])
    local fliph=false
-   if section.sp != nil then
-    if section.fh != nil and section.fh then
-     fliph=section.fh
-    end
-    spr(section.sp,anchrx+(j*8),anchry+(i*8),1,1,fliph,false)
+   if #ln > 1 then
+    fliph=true
+   end
+   if ln[1] != 0 then
+    spr(ln[1],anchrx+(j*8),anchry+(i*8),1,1,fliph,false)
    else
-    rectfill(anchrx+(j*8),anchry+(i*8),anchrx+(j*8)+8,anchry+(i*8)+8,section.f)
+    rectfill(anchrx+(j*8),anchry+(i*8),anchrx+(j*8)+8,anchry+(i*8)+8,ln[1])
    end
   end
  end
