@@ -476,7 +476,7 @@ function update_main_menu()
  if btnp(4) or btnp(5) then
   if act_y==0 then
    act_stagetype="intro"
-   act_text.dialog[#act_text.dialog+1] = 1
+   add(act_text.dialog,1)
   elseif act_y==1 then
    act_stagetype="controls"
   else
@@ -608,9 +608,9 @@ function update_play_map()
     transition_to_map({mp=to_map_idx,loc={x=to_map_loc[1],y=to_map_loc[2]}})
    elseif #maplocked > 0  then
     if #act_text.dialog == 0 and not (nonrptdialog.x==act_x and nonrptdialog.y==act_y) then
-     act_text.dialog[#act_text.dialog+1]={{speakeridx=act_charidx,text="we aren't done here yet... we should"}}
+     add(act_text.dialog,{{speakeridx=act_charidx,text="we aren't done here yet... we should"}})
      for m in all(maplocked) do
-      act_text.dialog[#act_text.dialog+1]={{speakeridx=act_charidx,text=m}}
+      add(act_text.dialog,{{speakeridx=act_charidx,text=m}})
      end
      nonrptdialog={x=act_x,y=act_y}
     end
@@ -640,7 +640,7 @@ function update_play_map()
      if i!=j and npc.x+i==act_x and npc.y+j==act_y then
       if player_sel_location({x=npc.x,y=npc.y}) then
        local idles=get_char_idle_dialog(npc.charidx)
-       act_text.dialog[#act_text.dialog+1]=idles[get_rand_idx(idles)]
+       add(act_text.dialog,idles[get_rand_idx(idles)])
        x_consumed=true
       end
      end
@@ -665,7 +665,7 @@ function update_play_map()
     for descpt in all(objdescripts) do
      local splt = split(descpt, ';')
      if is_element_in(split(splt[1]),mget(x+maps[act_mapsidx].cellx,y+maps[act_mapsidx].celly)) and #act_text.dialog==0 then
-      act_text.dialog[#act_text.dialog+1] = {{speakeridx=act_charidx,text=splt[2]}}
+      add(act_text.dialog,{{speakeridx=act_charidx,text=splt[2]}})
       x_consumed=true
       break
      end
@@ -765,7 +765,7 @@ function exec_npc_intent(npc)
 end
 
 function perform_active_party_swap()
- party[#party+1] = {charidx=act_charidx,x=act_x,y=act_y}
+ add(party,{charidx=act_charidx,x=act_x,y=act_y})
  act_charidx = party[1].charidx
  act_x = party[1].x
  act_y = party[1].y
@@ -994,14 +994,14 @@ function draw_play_map()
       rectfill(8*i, 8*j,(8*i)+7, (8*j)+7,0)
      end
     elseif not is_element_in(activemap.discvrdtiles, idtfr) then
-     activemap.discvrdtiles[#activemap.discvrdtiles+1]=idtfr
+     add(activemap.discvrdtiles,idtfr)
     end
    end
   end
   -- discover all undiscoverable tiles
   if #dark==activemap.undisc_cnt then
    for d in all(dark) do
-    activemap.discvrdtiles[#activemap.discvrdtiles+1]=tostr(d[1])..'|'..tostr(d[2])
+    add(activemap.discvrdtiles,tostr(d[1])..'|'..tostr(d[2]))
     sfx(2)
    end
   end
@@ -1167,7 +1167,7 @@ function trigger_complete(trigi)
 end
 
 function queue_dialog(dialogi)
- act_text.dialog[#act_text.dialog+1]=dialogi
+ add(act_text.dialog,dialogi)
 end
 
 function maybe_queue_party_move(destx, desty)
