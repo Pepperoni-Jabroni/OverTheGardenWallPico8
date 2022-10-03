@@ -46,7 +46,7 @@ local maps={
   title='somewhere in the unknown',
   cellx=0,
   celly=16,
-  npcs={{charidx=9,x=13,y=7,cldwn=1}},
+  npcs={{charidx=9,x=13,y=7}},
   discvrdtiles={},
   undisc_cnt=0,
  },
@@ -55,7 +55,7 @@ local maps={
   title='somewhere in the unknown',
   cellx=0,
   celly=0,
-  npcs={{charidx=6,x=6,y=7,cldwn=1}},
+  npcs={{charidx=6,x=6,y=7}},
   discvrdtiles={},
   undisc_cnt=14,
  },
@@ -102,11 +102,11 @@ local maps={
   cellx=80,
   celly=0,
   npcs={
-   {charidx=11,x=7,y=7,cldwn=1,intent="loop",intentdata={tl={x=7,y=7},br={x=10,y=10}}},
-   {charidx=11,x=7,y=10,cldwn=1,intent="loop",intentdata={tl={x=7,y=7},br={x=10,y=10}}},
-   {charidx=12,x=10,y=7,cldwn=1,intent="loop",intentdata={tl={x=7,y=7},br={x=10,y=10}}},
-   {charidx=12,x=10,y=10,cldwn=1,intent="loop",intentdata={tl={x=7,y=7},br={x=10,y=10}}},
-   {charidx=15,x=8,y=8,cldwn=1}
+   {charidx=11,x=7,y=7,intent="loop",intentdata={tl={x=7,y=7},br={x=10,y=10}}},
+   {charidx=11,x=7,y=10,intent="loop",intentdata={tl={x=7,y=7},br={x=10,y=10}}},
+   {charidx=12,x=10,y=7,intent="loop",intentdata={tl={x=7,y=7},br={x=10,y=10}}},
+   {charidx=12,x=10,y=10,intent="loop",intentdata={tl={x=7,y=7},br={x=10,y=10}}},
+   {charidx=15,x=8,y=8}
   },
   playmapidx=5,
   playmapspr=224,
@@ -241,7 +241,7 @@ local triggers={
  {
   trig=function(self)return dialog_is_complete(8)end,
   action=function(self)
-   party[#party+1] = {charidx=3,x=act_x-1,y=act_y+1,cldwn=1}
+   party[#party+1] = {charidx=3,x=act_x-1,y=act_y+1}
   end,
   complete=false,
   maplocking=2,
@@ -765,7 +765,7 @@ function exec_npc_intent(npc)
 end
 
 function perform_active_party_swap()
- party[#party+1] = {charidx=act_charidx,x=act_x,y=act_y,cldwn=1}
+ party[#party+1] = {charidx=act_charidx,x=act_x,y=act_y}
  act_charidx = party[1].charidx
  act_x = party[1].x
  act_y = party[1].y
@@ -1195,7 +1195,7 @@ end
 
 function set_walk_intent(npc,destcurmaploc,destnextmap,destnextmaploc)
  npc.intent = "walk"
- npc.intentdata = {charidx=npc.charidx,destcurmaploc=destcurmaploc,destnextmap=destnextmap,destnextmaploc=destnextmaploc,mvmtcldwn=1}
+ npc.intentdata = {charidx=npc.charidx,destcurmaploc=destcurmaploc,destnextmap=destnextmap,destnextmaploc=destnextmaploc}
 end
 
 function transition_to_playmap()
@@ -1205,7 +1205,7 @@ music(-1)
  act_dialogspeakidx=1
  act_item=1
  act_text.dialog = {}
- party={{charidx=2,x=nil,y=nil,cldwn=1},{charidx=4,x=nil,y=nil,cldwn=1}}
+ party={{charidx=2,x=nil,y=nil},{charidx=4,x=nil,y=nil}}
  transition_to_map({mp=1,loc={x=8, y=8}})
  pal(14,14,1)
  pal(5,5,1)
@@ -1228,7 +1228,6 @@ function transition_npc_to_map(npc, dest_mapidx, dest_x, dest_y)
      charidx=npc.charidx,
      x=dest_x,
      y=dest_y,
-     cldwn=1
     }
   end
   m.npcs = filtered_npcs
