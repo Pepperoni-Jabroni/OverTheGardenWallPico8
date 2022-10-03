@@ -165,8 +165,8 @@ local darkspr={
 local darkanims={}
 local nonrptdialog={x=nil,y=nil}
 local compltdlgs={}
--- of the form "<dialog_idx>;<speaking_char_idx>;<dialog_text>"
-local dialog_list="1;4;led through the mist#1;4;by the milk-light of moon#1;4;all that was lost is revealed#1;4;our long bygone burdens#1;4;mere echoes of the spring#1;4;but where have we come?#1;4;and where shall we end?#1;4;if dreams can't come true#1;4;then why not pretend?#2;1;i sure do love my frog!#2;2;greg, please stop...#2;4;4;ribbit.#2;1;haha, yeah!#3;2;i dont like this at all#3;1;its a tree face!#3;23;*howls in the wind*#4;2;is that some sort of deranged lunatic?#4;2;with an ax waiting for victims?#4;6;*swings axe and chops tree*#4;1;we should ask him for help!#5;2;whoa... wait greg...#5;2;... where are we?#5;1;we\'re in the woods!#5;2;no, i mean#5;2;... where are we?!#6;2;we're really lost greg...#6;1;i can leave a trail of candy from my pants!#6;1;candytrail. candytrail. candytrail!#7;3;help! help!#7;2;i think its coming from a bush?#8;3;help me!#8;1;wow, a talking bush!#8;3;i\'m not a talking bush! i\'m a bird!#8;3;and i\'m stuck!#8;1;wow, a talking bird!#8;3;if you help me get unstuck, i\'ll#8;3;grant you a wish#8;1;ohhhh!#8;1;*picks up beatrice out of bush*#8;2;uh-uh! no!#9;6;these woods are a dangerous place#9;6;for 2 kids to be alone#9;2;we... we know, sir#9;1;yeah! i\'ve been leaving a trail#9;1;of candy from my pants#9;6;come inside...#9;3;i don\'t like the look of this#9;4;ribbit.#10;2;oh! terribly sorry to have#10;2;disturbed you sir!#10;10;gobble. gobble. gobble.#11;1;wow, look at this turtle!#11;2;well thats strange#11;1;i bet he wants some candy!#11;9;*stares blankly*#12;7;*glares at you, panting*#12;1;you have beautiful eyes!#12;1;ahhhh!"
+-- of the form "<dialog_idx>;<speaking_char_idx>;<dialog_text>#"
+local dialog_list="1;4;led through the mist#1;4;by the milk-light of moon#1;4;all that was lost is revealed#1;4;our long bygone burdens#1;4;mere echoes of the spring#1;4;but where have we come?#1;4;and where shall we end?#1;4;if dreams can't come true#1;4;then why not pretend?#1;4;how the gentle wind#1;4;beckons through the leaves#1;4;as autumn colors fall#1;4;dancing in a swirl#1;4;of golden memories#1;4;the loveliest lies of all#2;1;i sure do love my frog!#2;2;greg, please stop...#2;4;4;ribbit.#2;1;haha, yeah!#3;2;i dont like this at all#3;1;its a tree face!#3;23;*howls in the wind*#4;2;is that some sort of deranged lunatic?#4;2;with an ax waiting for victims?#4;6;*swings axe and chops tree*#4;1;we should ask him for help!#5;2;whoa... wait greg...#5;2;... where are we?#5;1;we\'re in the woods!#5;2;no, i mean#5;2;... where are we?!#6;2;we're really lost greg...#6;1;i can leave a trail of candy from my pants!#6;1;candytrail. candytrail. candytrail!#7;3;help! help!#7;2;i think its coming from a bush?#8;3;help me!#8;1;wow, a talking bush!#8;3;i\'m not a talking bush! i\'m a bird!#8;3;and i\'m stuck!#8;1;wow, a talking bird!#8;3;if you help me get unstuck, i\'ll#8;3;grant you a wish#8;1;ohhhh!#8;1;*picks up beatrice out of bush*#8;2;uh-uh! no!#9;6;these woods are a dangerous place#9;6;for 2 kids to be alone#9;2;we... we know, sir#9;1;yeah! i\'ve been leaving a trail#9;1;of candy from my pants#9;6;come inside...#9;3;i don\'t like the look of this#9;4;ribbit.#10;2;oh! terribly sorry to have#10;2;disturbed you sir!#10;10;gobble. gobble. gobble.#11;1;wow, look at this turtle!#11;2;well thats strange#11;1;i bet he wants some candy!#11;9;*stares blankly*#12;7;*glares at you, panting*#12;1;you have beautiful eyes!#12;1;ahhhh!"
 local complete_triggers={}
 local triggers={
  {
@@ -270,7 +270,7 @@ local triggers={
    if act_charidx == 4 then
     perform_active_party_swap()
    end
-   maps[3].npcs = {{charidx=4,x=9,y=13}}
+   maps[3].npcs = {{charidx=4,x=11,y=6}}
    local newparty={}
    for p in all(party) do
     if p.charidx != 4 then
@@ -287,7 +287,7 @@ local triggers={
   trig=function(self) return act_mapsidx==3 end,
   action=function(self)
    maps[3].discvrdtiles={}
-   maps[3].npcs[#maps[3].npcs+1] = {charidx=7,x=10,y=13}
+   maps[3].npcs[#maps[3].npcs+1] = {charidx=7,x=12,y=6}
   end,
   complete=false,
   maplocking=3,
@@ -296,7 +296,14 @@ local triggers={
  },
  {
   trig=function(self) return playmap_spr_visible(3, 48) end,
-  action=function(self)queue_dialog(12) end,
+  action=function(self)
+   queue_dialog(12)
+   local dt = maps[act_mapsidx].discvrdtiles
+   add(dt, '12|6')
+   add(dt, '12|7')
+   add(dt, '13|6')
+   add(dt, '13|7')
+  end,
   complete=false,
   maplocking=3,
   title="find the frog!",
@@ -315,6 +322,20 @@ local triggers={
   complete=false,
   maplocking=1,
   title="spot the turtle",
+ },
+ {
+  trig=function(self) return dialog_is_complete(12) end,
+  action=function(self)
+   local ns = maps[act_mapsidx].npcs
+   for n in all(ns) do
+    n.intent = 'chase_player'
+   end
+   maps[act_mapsidx].npcs = ns
+  end,
+  complete=false,
+  maplocking=3,
+  title="get chased!",
+  depend_on=13,
  }
 }
 local menuchars={}
@@ -456,7 +477,6 @@ function update_main_menu()
   if act_y==0 then
    act_stagetype="intro"
    act_text.dialog[#act_text.dialog+1] = 1
-   sfx(1)
   elseif act_y==1 then
    act_stagetype="controls"
   else
@@ -465,7 +485,12 @@ function update_main_menu()
  end
 end
 
+local firstrun=true
 function update_intro()
+ if firstrun then
+  music(0)
+  firstrun=false
+ end
  if btnp(5) then
   local curprogressdlg=get_first_active_dlg()[act_dialogspeakidx]
   if curprogressdlg != nil then
@@ -1166,6 +1191,7 @@ function set_walk_intent(npc,destcurmaploc,destnextmap,destnextmaploc)
 end
 
 function transition_to_playmap()
+music(-1)
  act_stagetype = "playmap"
  act_charidx=1
  act_dialogspeakidx=1
@@ -1352,13 +1378,7 @@ function draw_character_dialog_box(dialogobj)
   printsp(sub(partial,1,chi).."\n"..sub(partial,chi+1), 29, 110, 0)
  end
  draw_fancy_box(10,103,17,17,0,6,5)
- local mapspridx,charspridx = characters[dialogobj.speakeridx].mapidx,characters[dialogobj.speakeridx].chrsprdailogueidx
- local sx,sy=(mapspridx%16)*8,(mapspridx\16)*8
- sspr(sx, sy, 8, 8, 11, 104, 16, 16)
- palt(13, true)
- draw_fancy_box(30,22,68,68,1,6,5)
- draw_spr_w_outline(0, charspridx, 4, 3, 4, 2, 2)
- palt(13, false)
+ spr(characters[dialogobj.speakeridx].chrsprdailogueidx, 11, 104, 2, 2)
  print("\151",105,118,0)
  palt(5,true)
  pal(12,0)
@@ -1663,17 +1683,17 @@ d4004440444042dddddc1c55055555dd888888888888888888888888000000004222222440504444
 __map__
 ebebebebebebebebebebebebebcfcfcfcfcfcfebcececeebebebebebebebebebcdecececcdcdcfcfecececcdcdcdcdebebebebebebebebebebcfcfcfebebebeb7e8e8e8e8e8e8e8e8e8e8e8e8e7e8e7e7e8e8e8e8e8e8e8e8e8e8e8e8e8e8e7eebebebebebebebcfcfebebebebebebebebebebebebebebebebebebebebebebeb
 ebcdebcdebdccdeccdcdcdebcdcfcfcfcfcfcfecebcececdcdecebebebebebebcdcdcdcdcdcdcfcfececcdcdcdcdceceebebebcdcdcdcdcdcdcfcfcdcdcdcdebafbfbfd9d9d9bfbfbfd85bbfbfafbfafafbfbfbfbf4abfbfbfbfbfbfbfbfbfafebcdcdcdcdcdcdcfcfcdcdcdcdcdcdebebebebebebebebebcdcdcdebebebebeb
-ebcdeccdcdeccdcdcdcdececcfcfcfcfebcfcfcfcecececdcdcdcdebdbebebebcdcdebcdcdcdcfcfeccdcdcdebcececeebebcd6ccdcdcdcdcdcfcfcdbe9ecddc2abfbfbfbfbfbf5abfbfbf3bbfafbf2aafbfbfbfbfbfbfbfbfbfbfbfb9b9bfafebcdcdeccdcdcdcfcfcdcdcdeccdcdebebebebebcdcdcdcdcdcdcdcdcdebebeb
+ebcdeccdcdeccdcdcdcdececcfcfcfcfebcfcfcfcecececdcdcdcdebebebebebcdcdebcdcdcdcfcfeccdcdcdebcececeebebcd6ccdcdcdcdcdcfcfcdbe9ecddc2abfbfbfbfbfbf5abfbfbf3bbfafbf2aafbfbfbfbfbfbfbfbfbfbfbfb9b9bfafebcdcdeccdcdcdcfcfcdcdcdeccdcdebebebebebcdcdcdcdcdcdcdcdcdebebeb
 ebcdcdebcdcdcdebcdeccfcfcfcfcfebebebcfcfeecececdcdcdcdcdcdebebebcdebebcdebcdcfcfcdcdcdcdcecececdebcd6ccfcfcfcf6ccfcfcfcd9e9ecdebafbfbfbfbfbfbfbfbf3bbfbfbfafbfaf2abfbfbfbfbfbfbfbfbfbfbfbfbfbf2aebcdcdcdcdcdcdcfcfcdebcdcdcdcdebebebebcdcdcdcdcdcdcdcdcdcdcdebeb
-ebcdcdcdecececececcfcfcfcfcfcdebebebceceeeeecfcfcfebeccdcddcebebcdcdcdcdebcdcfcfcdcdececcececdebeb6ccfcfcfcfcfcfcfcfcd6d9e9ecdebafbfbfbfbfbfbfbfbfbfbfbfbfafbfafafbfb9b9bfbfbfbfbfbfbfbfbfbfbfafebcdcdcdcdcd6ccfcfcdebebcdcdcdebebebebcdcdcdcdcdcdcdcdcdcdcdcdeb
-ebebcdeccfcfcfcfcfcfcfcfeccdcdebcecececeeecfcfcfcfcfcfeccdcdebebcdebebcdebcdcfcf9fcdcdecceceebcdebcdcdcdcdcfcfcfcfcfcd9ebe9ecdeb2bbfbfbfbfbfbfbfbfbfbfbfbf2bbf2aafbfbfbfbfbfbfbfbfbfbfbfbfbf5bafebcdeccdcdebcfcfcfcdebcdcdcdcdebebcdcdcdcdcdcdcdcdcdcdcdcdcdcdeb
-ebcdcdcfcfcfcfcfcfcfcfcfeccdebebcececeebcfcfcfcfcfcfcfcdcdcdebebcdcdcdcdcdcdcfcfcfcdcdcdcecececdebebececcdcfcfcfcfcfcdcdbe9ecdebafbfbfbf4abfbfbfbf3abfbfbfafbfafafbfbfbfbfbfbfbfbfbfbfbfbfbf5bafebcdcdcdebcdcfcfcdebcdcdcdeccdebebcdcdcdeccdcdcdcdcdcdcdcdcdcdeb
-ebcdcdcfcddbcdcfcfcfececcdcdecebceceebebebcfcfcfcfcfebebcdcdebebebcdcdcdcdeccfcfcfcfcdcdcdcececeebcdcdcdcd6dcfcfcfcfcdcdececcdcd7e8e8e8e8e8e8e8e8e8e8e8e8e7ebfafafbfbfbfbfbfbfbfbfbfbfbfbfbf5bafebcdcdcdebcdcfcfeccdebcdcdcdcdebebcdcdcdeccdcdcdcdcdcdcdcdcdcdeb
-ebebcdcfcdcdcfcfcfeccdcdcdcdcdebebebebebeb6ccfcfcfcfecebebcdebebcdcdebebcdcdeccfcfcfcdcdcdcdceceebcd9ebe9ecdcdcfcfcfcdcdcdcdcdaeafd9d96bbfbf4ab2bfbf3abfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfb9b9bfafebcdcdcdcdebcfcfcfecebebcdcdcdebebcdcdcdeccdcdcdcfcdcde6e7cdcdeb
-ebcddccfcfcfcfcfeccdebcdcdebcdebebebebeb6ccfcfcfececebebeccdebebcdebcdcdcdcdeccfcfcfcfcdcdcdcdcdebcd9e9e9ebecdcdcfcfcfcdcdaeaeaeafbfbf6bbfbfbfbfbfbfbfbfbfbfbfafaf5bbfbfbfbfbfbfbfbfbfbfbfbfbfafebcdcdcdcdcdcdcfcfcdebcdcdcdcdebebcdcdcdeccdcdcfcfcdcdf6f7cdcdeb
-ebcdcdcfcfcfcfeccdcdcdcdeccdebebebebeb6ccfcfcfecebebebebcdcdebebcdcdcdcdebcdcdeccfcfcfcfcdcdebebebcdbe9ebe9e6e6ecfcfeccdaeaeaeae2abfbf6bbfbfbfbfbfbfbfbfbfbfbfafaf5bbfbfbfbfbfbfbfbfbfbfbfbfbfafebcdcdcdcdcdcdcfcfcdcdcdcdcddbebebcdcdeccdcdcdcfcfcfcfcfcdcdcdeb
-ebcdcfcfcfcfeccdcdcdcdcdcdcdebebebeb6ccfcfcfcdebcdcdebebcdcdebebebcdcdcdebebcdcdeccfcfcfcfcdcdebebcd9e9ebecdcd6ccfcfeccdaeaeaeaeafbfbf6bbfbfbfbfbfbfbfbfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfbfbfbfafebcdeccdcdcdcdcfcfcdebcdcdcdcdebebcdcdcdcdcdcdcfcfcfcfcdcdcdcdeb
-ebcfcfcfcfcdcdcdcdeccdebcdcdebebeb6ccfcfcfcdcdcdcdcddceccdcdebebebcdcddccdebcdcdcdcdcfcfcfcfcdebebcdcdcdcdcdcfcfcfcfeccdaeaeaeae2abfbf6bbfbfbfbfbfbfbfbfbfbfbfaf2abfbfbfbfbfbfbfbfbfbfbfbfbfbf2aebcdcdcdcdcdeccfcfcdebcdcdcd9eebebebebcdcdcdcfcfcfcdcdcdcdecebeb
+ebcdcdcdecececececcfcfcfcfcfcdebebebceceeeeecfcfcfebececcddcebebcdcdcdcdebcdcfcfcdcdececcececdebeb6ccfcfcfcfcfcfcfcfcd6d9e9ecdebafbfbfbfbfbfbfbfbfbfbfbfbfafbfafafbfb9b9bfbfbfbfbfbfbfbfbfbfbfafebcdcdcdcdcd6ccfcfcdebebcdcdcdebebebebcdcdcdcdcdcdcdcdcdcdcdcdeb
+ebebcdeccfcfcfcfcfcfcfcfeccdcdebcecececeeecfcfcfcfcfcfcfcfcdebebcdebebcdebcdcfcf9fcdcdecceceebcdebcdcdcdcdcfcfcfcfcfcd9ebe9ecdeb2bbfbfbfbfbfbfbfbfbfbfbfbf2bbf2aafbfbfbfbfbfbfbfbfbfbfbfbfbf5bafebcdeccdcdebcfcfcfcdebcdcdcdcdebebcdcdcdcdcdcdcdcdcdcdcdcdcdcdeb
+ebcdcdcfcfcfcfcfcfcfcfcfeccdebebcececeebcfcfcfcfcfcfcfcfcfcfebebcdcdcdcdcdcdcfcfcfcdcdcdcecececdebebececcdcfcfcfcfcfcdcdbe9ecdebafbfbfbf4abfbfbfbf3abfbfbfafbfafafbfbfbfbfbfbfbfbfbfbfbfbfbf5bafebcdcdcdebcdcfcfcdebcdcdcdeccdebebcdcdcdeccdcdcdcdcdcdcdcdcdcdeb
+ebcdcdcfcddbcdcfcfcfececcdcdecebceceebebebcfcfcfcfcfcfcfcfcfebebebcdcdcdcdeccfcfcfcfcdcdcdcececeebcdcdcdcd6dcfcfcfcfcdcdececcdcd7e8e8e8e8e8e8e8e8e8e8e8e8e7ebfafafbfbfbfbfbfbfbfbfbfbfbfbfbf5bafebcdcdcdebcdcfcfeccdebcdcdcdcdebebcdcdcdeccdcdcdcdcdcdcdcdcdcdeb
+ebebcdcfcdcdcfcfcfeccdcdcdcdcdebebebebebeb6ccfcfcfcfcfcfcfcdebebcdcdebebcdcdeccfcfcfcdcdcdcdceceebcd9ebe9ecdcdcfcfcfcdcdcdcdcdaeafd9d96bbfbf4ab2bfbf3abfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfb9b9bfafebcdcdcdcdebcfcfcfecebebcdcdcdebebcdcdcdeccdcdcdcfcdcde6e7cdcdeb
+ebcddccfcfcfcfcfeccdebcdcdebcdebebebebeb6ccfcfcfcfcfcfebeccdebebcdebcdcdcdcdeccfcfcfcfcdcdcdcdcdebcd9e9e9ebecdcdcfcfcfcdcdaeaeaeafbfbf6bbfbfbfbfbfbfbfbfbfbfbfafaf5bbfbfbfbfbfbfbfbfbfbfbfbfbfafebcdcdcdcdcdcdcfcfcdebcdcdcdcdebebcdcdcdeccdcdcfcfcdcdf6f7cdcdeb
+ebcdcdcfcfcfcfeccdcdcdcdeccdebebebebeb6ccfcfcfcfcfebebebcdcdebebcdcdcdcdebcdcdeccfcfcfcfcdcdebebebcdbe9ebe9e6e6ecfcfeccdaeaeaeae2abfbf6bbfbfbfbfbfbfbfbfbfbfbfafaf5bbfbfbfbfbfbfbfbfbfbfbfbfbfafebcdcdcdcdcdcdcfcfcdcdcdcdcddbebebcdcdeccdcdcdcfcfcfcfcfcdcdcdeb
+ebcdcfcfcfcfeccdcdcdcdcdcdcdebebebeb6ccfcfcfcfebebebebebcdcdebebebcdcdcdebebcdcdeccfcfcfcfcdcdebebcd9e9ebecdcd6ccfcfeccdaeaeaeaeafbfbf6bbfbfbfbfbfbfbfbfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfbfbfbfafebcdeccdcdcdcdcfcfcdebcdcdcdcdebebcdcdcdcdcdcdcfcfcfcfcdcdcdcdeb
+ebcfcfcfcfcdcdcdcdeccdebcdcdebebeb6ccfcfcfcdcdcdcdebdbeccdcdebebebcdcddccdebcdcdcdcdcfcfcfcfcdebebcdcdcdcdcdcfcfcfcfeccdaeaeaeae2abfbf6bbfbfbfbfbfbfbfbfbfbfbfaf2abfbfbfbfbfbfbfbfbfbfbfbfbfbf2aebcdcdcdcdcdeccfcfcdebcdcdcd9eebebebebcdcdcdcfcfcfcdcdcdcdecebeb
 cfcfcfcfcdcdebcdebcdcdcdcdeccdebebcfcfcfcdcdcdcdcdcdcdcdcdcdebebebcdcdcdcdcdcdcdcdcdcdcfcfcfcfcfebcdaeaeaecdcfcfcfcf7a7baeaeaeaeafbfbf6abfbfbfbfbfbfbfbfbfbfbfafafb9b9bfbfbfbfbfbfbfbfbfbfbfbfafebcdaeaeaeeccfcfcfcdebcdcd9eebebebebebcdcdcdcfcfcdcdcdcdecebebeb
 cfcfcfcdcdcdeccdcdcdcdebcdcdcdebcfcfcfcfcdcdcdecdccdcdcdcdcdebebebdbcdcdcdcdcdcdcdcdcdcdcdcfcfcfebcdaeaeaecdcdcfcfcf8a8baeaeaeaeafbfbf6bbfbfbfb1bfb2bfb25b5bbfafafbfbfbfbfbfbfbfbfbfbfbfbfbf4aafebaeaeaeaeaecfcfcdcdcdcd9eebebebebebebebcdcdcfcfcdcdcdebebebebeb
 cfcfebebebebebebebebebebebebebebcfcfcfebebebebebebebebebebebebebebebebebebebebebebebebebebcfcfcfdbcdaeaeaeaecdcfcfcdcdcdcdaeaeae7eafafafafafafafafafafafafafaf7e7e8e8e8e8e8e8e2b2b8e8e8e8e8e8e7eebaeaeaeaeaecfcfebebebebebebebebebebebebebebcfcfebebebebebebebeb
@@ -1699,3 +1719,40 @@ __sfx__
 00060000277502a7502c7500070000700007000070000700007000070000700007000070000700007000070000700007000070000700007000070000700007000070000700007000070000700007000070000700
 091000000b753097530975308753087530975309753097530a7530b7530c7530d7530f7531075312753137531475316753197531b7531e7532175325753297532b7532d753077530775307753077530c7530c753
 99100000000053c0453c0453c0453e0453e0453e04535005380053b0053e005000050000500005000050000500005000050000500005000050000500005000050000500005000050000500005000050000500005
+001200002c0302c0302c0302f0302d0302d0302c0302c0302b0302b0302c0302c0303803038030310303103034030340303903039030380303803039030390303803038030380303803033030330303303033030
+001200003003030030300303003031030310303103031030310303103031030310303103031030310303103031030310303103031030310303103031030310303103031030310303103020030200302003020030
+001200002003020030200302003020030200302003020030000000000000000000000000000000000000000020030200301f0301f0301f0301f0301e0301e0301e0301e0301e0301e0301e0301e0301e0301e030
+001200001e0301e0301e0301e0301e0301e0301e0301e0301e0301e0301e0301e0301c0301c0301c0301c0301c0301c0301c0301c0301b0301b0301c0301c0301b0301b0301b0301b0301b0301b0301b0301b030
+0012000000000000001c0301b030010300103008030080300d0300d03010030100301403014030190301903008030080300f0300f030120301203014030140301803018030200302003020030200302003020030
+001200000d0300d0300d0300d03014030140301403014030170301703000000000000000000000000000000020030200302003020030250302503025030250301503015030150301503025030250302703027030
+00120000170301703017030000001203012030120301203014030140301403014030210302103021030210302103021030210302103019030190301c0301c0302003020030200302003020030200302003020030
+001200001403014030140301403015030150301503015030150301503015030150301a0301a0301e0301e03020030200302003020030200302003020030200300000000000200302003019030190301903019030
+00120000190301903015030150301503015030100301003010030100300803008030080300803014030140301403014030100301003010030100301e0301e0301e0301e030190301903019030190301903019030
+001200001e0301e0301b0301b0301b0301b0301903019030190301903016030160301603016030180301803018030180301803018030180301803020030200302003020030200302003020030200302003020030
+0012000022030220301c0301c0301d0301d03020030200302003020030200302003020030200302003020030200302003020030200301e0301e0301e0301e0301e0301e0301e0301e03018030180301d0301d030
+001200001d0301d0301d0301d0301d0301d030140301403014030140301b0301b0301903019030190301903019030190300d0300d0300d0300d03018030180301803018030180301803018030180301103011030
+001200001103011030060300603006030060300a0300a0300d0300d030120301203016030160301603016030160301603016030160301603016030160301603016030160301e0301e0301e0301e0301e0301e030
+001200001e0301e0301d0301d0301b0301b0301e0301e0301e0301e0301e0301e0301e0301e03000000000001d0301d0301e0301e0301e0301e0301d0301d0301d0301d0301c0301c0301e0301e0301d0301d030
+001200001d0301d0301d0301d0301d0301d03000000000001d0301d0301d0301d03000000000000a0300a0300a0300a03000000000000000000000080300803008030080300f0300f0300f0300f0301403014030
+0012000014030140301d0301d030010300103008030080300d0300d030110301103014030140301903019030160301603016030160301b0301b0301b0301b0301903019030190301903019030190301d0301d030
+00121400250302503029030290302c0302c0300000031030310303103031030310303103031030310303103031030310303103031030014000140001400014000140001400014000140001400014000140001400
+001210000000000000000003103031030310303103031030310303103031030310303103031030310303103001400014000140001400014000140001400014000140001400014000140001400014000140001400
+__music__
+00 05404040
+00 06404040
+00 07404040
+00 08404040
+00 09404040
+00 0a404040
+00 0b404040
+00 0c404040
+00 0d404040
+00 0e404040
+00 0f404040
+00 10404040
+00 11404040
+00 12404040
+00 13404040
+00 14404040
+04 15164040
+
