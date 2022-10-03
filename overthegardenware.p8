@@ -241,7 +241,7 @@ local triggers={
  {
   trig=function(self)return dialog_is_complete(8)end,
   action=function(self)
-   party[#party+1] = {charidx=3,x=act_x-1,y=act_y+1}
+   add(party,{charidx=3,x=act_x-1,y=act_y+1})
   end,
   complete=false,
   maplocking=2,
@@ -274,7 +274,7 @@ local triggers={
    local newparty={}
    for p in all(party) do
     if p.charidx != 4 then
-     newparty[#newparty+1]=p
+     add(newparty,p)
     end
    end
    party=newparty
@@ -380,7 +380,7 @@ function compute_map_trans()
  local cmaptrans = {}
  for m in all(split(map_trans_list, '#')) do
   local mdata = split(m, ';')
-  cmaptrans[#cmaptrans+1] = {mp_one=mdata[1],mp_two=mdata[2],mp_one_locs=split(mdata[3],'|'),mp_two_locs=split(mdata[4],'|')}
+  add(cmaptrans,{mp_one=mdata[1],mp_two=mdata[2],mp_one_locs=split(mdata[3],'|'),mp_two_locs=split(mdata[4],'|')})
  end
  return cmaptrans
 end
@@ -396,7 +396,7 @@ function compute_characters()
   else
    mapidx=tonum(mapidx)
   end
-  cchar[#cchar+1] = {name=split(cdata[1]), mapidx=mapidx,chrsprdailogueidx=tonum(cdata[3]), idle=split(cdata[4],'|'), scaling=tonum(cdata[5])}
+  add(cchar,{name=split(cdata[1]), mapidx=mapidx,chrsprdailogueidx=tonum(cdata[3]), idle=split(cdata[4],'|'), scaling=tonum(cdata[5])})
  end
  return cchar
 end
@@ -426,7 +426,7 @@ function _init()
  repeat
   local choice=get_rand_idx(get_chars_w_dialog())
   if not is_element_in(menuchars,choice) then
-   menuchars[#menuchars+1]=choice
+   add(menuchars,choice)
   end
  until #menuchars==genrandcnt
 
@@ -569,7 +569,7 @@ function update_play_map()
   end
   if act_dialogspeakidx != nil and act_dialogspeakidx > #get_first_active_dlg() then
    if type(act_text.dialog[1])=='number' then
-    compltdlgs[#compltdlgs+1]=act_text.dialog[1]
+    add(compltdlgs,act_text.dialog[1])
    end
    act_text.dialog=drop_first_elem(act_text.dialog)
    act_dialogspeakidx=1
@@ -581,7 +581,7 @@ function update_play_map()
  local maplocked={}
  for t in all(triggers) do
   if t.maplocking != nil and t.maplocking == act_mapsidx and not t.complete and (t.depend_on == nil or is_element_in(complete_triggers, t.depend_on)) then
-   maplocked[#maplocked+1]=t.title
+   add(maplocked,t.title)
   end
  end
  for transition in all(map_trans) do
@@ -629,7 +629,7 @@ function update_play_map()
   if not t.complete and (t.depend_on == nil or is_element_in(complete_triggers, t.depend_on)) and t.trig() then
    t.action()
    triggers[i].complete=true
-   complete_triggers[#complete_triggers+1] = i
+   add(complete_triggers,i)
   end
  end
  -- check for talk w/ npcs
@@ -678,7 +678,7 @@ function update_play_map()
   sfx(0)
   act_useitem=act_item
   if act_item==1 then
-   act_wrld_items[#act_wrld_items+1]={spridx=inv_items[act_item].spridx,x=act_x,y=act_y}
+   add(act_wrld_items,{spridx=inv_items[act_item].spridx,x=act_x,y=act_y})
   elseif act_item==2 then
    -- unimpl
   elseif act_item==3 then
@@ -780,7 +780,7 @@ function update_boot()
  if boot_age % 5 == 0 and flr(boot_age / 5) <= #boot_title then
   local idx = flr(boot_age / 5) + 1
   boot_letter_add = sub(boot_title, idx, idx)
-  boot_letters[#boot_letters+1] = {letter = boot_letter_add, x = 10 + (12 * idx), y = 45, age = 0}
+  add(boot_letters,{letter = boot_letter_add, x = 10 + (12 * idx), y = 45, age = 0})
  end
  if #boot_letters == #boot_title and boot_letters[#boot_letters].age > 200 then
   act_stagetype = 'mainmenu'
@@ -976,7 +976,7 @@ function draw_play_map()
     end
     local idtfr=tostr(i)..'|'..tostr(j)
     if not nearforone and not is_element_in(activemap.discvrdtiles, idtfr) then
-     dark[#dark+1]={i,j}
+     add(dark,{i,j})
      local mspr=mget(i+maps[act_mapsidx].cellx, j+maps[act_mapsidx].celly)
      if (is_element_in(split(darkspr.idxs),mspr)) then
       -- draw "dark" sprite
@@ -989,7 +989,7 @@ function draw_play_map()
       end
      else
       if #darkanims==0 and flr(rnd(30000))==0 then
-       darkanims[#darkanims+1]={frmcnt=35,type='eyes',x=i,y=j}
+       add(darkanims,{frmcnt=35,type='eyes',x=i,y=j})
       end
       rectfill(8*i, 8*j,(8*i)+7, (8*j)+7,0)
      end
@@ -1011,7 +1011,7 @@ function draw_play_map()
  for d in all(darkanims) do
   local idtfr=tostr(d.x)..'|'..tostr(d.y)
   if d.frmcnt>0 and not is_element_in(activemap.discvrdtiles, idtfr) then
-   ndas[#ndas+1]=d
+   add(ndas,d)
    if d.type=='eyes' then
     local pcol=7
     if d.frmcnt<8 or d.frmcnt>27 then
@@ -1220,15 +1220,15 @@ function transition_npc_to_map(npc, dest_mapidx, dest_x, dest_y)
   local filtered_npcs={}
   for n in all(m.npcs) do
    if n.charidx != npc.charidx then
-    filtered_npcs[#filtered_npcs+1] = n
+    add(filtered_npcs,n)
    end
   end
   if dest_mapidx == i then
-    filtered_npcs[#filtered_npcs+1] = {
+    add(filtered_npcs,{
      charidx=npc.charidx,
      x=dest_x,
      y=dest_y,
-    }
+    })
   end
   m.npcs = filtered_npcs
  end
@@ -1269,7 +1269,7 @@ function transition_to_map(dest)
     end
    end
   end
-  altsset[#altsset+1]=act_mapsidx
+  add(altsset,act_mapsidx)
  end
  -- add buildings
  for m in all(maps) do
@@ -1303,7 +1303,7 @@ function get_char_idle_dialog(charidx)
  local idle_dialogs={}
  local idles=characters[charidx].idle
  for idle in all(idles) do
-  idle_dialogs[#idle_dialogs+1]={{speakeridx=charidx,text=idle}}
+  add(idle_dialogs,{{speakeridx=charidx,text=idle}})
  end
  return idle_dialogs
 end
@@ -1312,7 +1312,7 @@ function get_chars_w_dialog()
  chars={}
  for char in all(characters) do
   if char.chrsprdailogueidx != -1 then
-   chars[#chars+1] = char
+   add(chars,char)
   end
  end
  return chars
@@ -1335,10 +1335,10 @@ end
 function union_arrs(arr1, arr2)
  local newarr={}
  for i in all(arr1) do
-  newarr[#newarr+1]=i
+  add(newarr,i)
  end
  for i in all(arr2) do
-  newarr[#newarr+1]=i
+  add(newarr,i)
  end
  return newarr
 end
@@ -1444,7 +1444,7 @@ function get_sourceidxs()
  local sources={}
  for altobj in all(alttiles) do
   local srcidx = split(altobj, ';')[1]
-  sources[#sources+1]=srcidx
+  add(sources,srcidx)
  end
  return sources
 end
