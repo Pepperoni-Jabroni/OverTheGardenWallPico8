@@ -40,13 +40,13 @@ local party={}
 local character_list='greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?;1#wirt;1;4;uh, hi...|oh sorry, just thinking;1#beatrice;16;6;yes, i can talk...|lets get out of here!;1#kitty,wirt,wirt jr.,george washington,mr. president,benjamin franklin,doctor cucumber,greg jr.,skipper,ronald,jason funderburker;17;8;ribbit;1#the beast;32;34;;1#the woodsman;33;36;i need more oil|beware these woods;1#the beast?;48;38;;2#dog;49;40;;1#black turtle;64;66;*stares blankly*;1#turkey;65;68;gobble. gobble. gobble.;1#pottsfield citizen;80;98;you\'re too early;1#pottsfield citizen;80;102;are you new here?;1#pottsfield harvest;81;70;thanks for digging me up!;1#pottsfield partier;96;100;let\'s celebrate!;1#enoch;97;72;what a wonderful harvest|you don\'t look like you belong here;2#dog student;10;44;humph...|huh...;1#gorilla;113;12;;1#jimmy brown;11;14;;1#cat student;26;46;humph...|huh...;1#ms langtree;112;104;oh that jimmy brown|i miss him so...;1#the lantern;nil;76;;1#rock fact;nil;78;;1#edelwood;219;192;;1#racoon student;27;194;humph...|huh...;1'
 -- of the form "<mp_one_idx>;<mp_two_idx>;<mp_one_locs>;<mp_two_locs>#"
 local map_trans_list='1;2;15,5|15,4;0,14|0,15#2;3;13,0|14,0|15,0;0,13|0,14|0,15#3;4;0,0|1,0;13,15|14,15|15,15#3;6;7,3;0,5#4;5;7,0|8,0;7,15|8,15#5;7;4,2|5,2;7,15|8,15#5;8;9,0|10,0;6,15|7,15#8;9;7,0|8,0;7,15|8,15#9;10;6,7|7,7;8,15|9,15|11,0#5;11;10,8|11,8;7,12'
+local npc_data = '9,13,7,1#6,6,7,2#11,7,7,7,loop,7|7|10|10#11,7,10,7,loop,7|7|10|10#12,10,7,7,loop,7|7|10|10#12,10,10,7,loop,7|7|10|10#15,8,8,7#20,8,9,10#16,7,11,10#19,9,11,10#24,9,13,10#10,7,6,11'
 local maps={
  {
   type='exterior',
   title='somewhere in the unknown',
   cellx=0,
   celly=16,
-  npcs={{charidx=9,x=13,y=7}},
   discvrdtiles={},
   undisc_cnt=0,
  },
@@ -55,7 +55,6 @@ local maps={
   title='somewhere in the unknown',
   cellx=0,
   celly=0,
-  npcs={{charidx=6,x=6,y=7}},
   discvrdtiles={},
   undisc_cnt=14,
  },
@@ -64,7 +63,6 @@ local maps={
   title='the mill and the river',
   cellx=16,
   celly=0,
-  npcs={},
   discvrdtiles={},
   undisc_cnt=0,
  },
@@ -73,7 +71,6 @@ local maps={
   title='somewhere in the unknown',
   cellx=32,
   celly=0,
-  npcs={},
   discvrdtiles={},
   undisc_cnt=0,
  },
@@ -82,7 +79,6 @@ local maps={
   title='pottsfield',
   cellx=48,
   celly=0,
-  npcs={},
   discvrdtiles={},
   undisc_cnt=0,
  },
@@ -91,7 +87,6 @@ local maps={
   title='the old grist mill',
   cellx=64,
   celly=0,
-  npcs={},
   playmapidx=3,
   playmapspr=226,
   playmaploc={x=7,y=2}
@@ -101,13 +96,6 @@ local maps={
   title='harvest party',
   cellx=80,
   celly=0,
-  npcs={
-   {charidx=11,x=7,y=7,intent="loop",intentdata={tl={x=7,y=7},br={x=10,y=10}}},
-   {charidx=11,x=7,y=10,intent="loop",intentdata={tl={x=7,y=7},br={x=10,y=10}}},
-   {charidx=12,x=10,y=7,intent="loop",intentdata={tl={x=7,y=7},br={x=10,y=10}}},
-   {charidx=12,x=10,y=10,intent="loop",intentdata={tl={x=7,y=7},br={x=10,y=10}}},
-   {charidx=15,x=8,y=8}
-  },
   playmapidx=5,
   playmapspr=224,
   playmaploc={x=4,y=1}
@@ -117,7 +105,6 @@ local maps={
   title='somewhere in the unknown',
   cellx=96,
   celly=0,
-  npcs={},
   discvrdtiles={},
   undisc_cnt=0,
  },
@@ -126,7 +113,6 @@ local maps={
   title='the schoolgrounds',
   cellx=112,
   celly=0,
-  npcs={},
   discvrdtiles={},
   undisc_cnt=0,
  },
@@ -135,12 +121,6 @@ local maps={
   title='schoolhouse',
   cellx=16,
   celly=16,
-  npcs={
-   {charidx=20,x=8,y=9},
-   {charidx=16,x=7,y=11},
-   {charidx=19,x=9,y=11},
-   {charidx=24,x=9,y=13}
-  },
   playmapidx=9,
   playmapspr=228,
   playmaploc={x=6,y=6}
@@ -150,9 +130,6 @@ local maps={
   title='pottsfield home',
   cellx=32,
   celly=16,
-  npcs={
-   {charidx=10,x=7,y=6}
-  },
   playmapidx=5,
   playmapspr=232,
   playmaploc={x=10,y=7}
@@ -168,6 +145,20 @@ local compltdlgs={}
 -- of the form "<dialog_idx>;<speaking_char_idx>;<dialog_text>#"
 local dialog_list="1;4;led through the mist#1;4;by the milk-light of moon#1;4;all that was lost is revealed#1;4;our long bygone burdens#1;4;mere echoes of the spring#1;4;but where have we come?#1;4;and where shall we end?#1;4;if dreams can't come true#1;4;then why not pretend?#1;4;how the gentle wind#1;4;beckons through the leaves#1;4;as autumn colors fall#1;4;dancing in a swirl#1;4;of golden memories#1;4;the loveliest lies of all#2;1;i sure do love my frog!#2;2;greg, please stop...#2;4;4;ribbit.#2;1;haha, yeah!#3;2;i dont like this at all#3;1;its a tree face!#3;23;*howls in the wind*#4;2;is that some sort of deranged lunatic?#4;2;with an ax waiting for victims?#4;6;*swings axe and chops tree*#4;1;we should ask him for help!#5;2;whoa... wait greg...#5;2;... where are we?#5;1;we\'re in the woods!#5;2;no, i mean#5;2;... where are we?!#6;2;we're really lost greg...#6;1;i can leave a trail of candy from my pants!#6;1;candytrail. candytrail. candytrail!#7;3;help! help!#7;2;i think its coming from a bush?#8;3;help me!#8;1;wow, a talking bush!#8;3;i\'m not a talking bush! i\'m a bird!#8;3;and i\'m stuck!#8;1;wow, a talking bird!#8;3;if you help me get unstuck, i\'ll#8;3;grant you a wish#8;1;ohhhh!#8;1;*picks up beatrice out of bush*#8;2;uh-uh! no!#9;6;these woods are a dangerous place#9;6;for 2 kids to be alone#9;2;we... we know, sir#9;1;yeah! i\'ve been leaving a trail#9;1;of candy from my pants#9;6;come inside...#9;3;i don\'t like the look of this#9;4;ribbit.#10;2;oh! terribly sorry to have#10;2;disturbed you sir!#10;10;gobble. gobble. gobble.#11;1;wow, look at this turtle!#11;2;well thats strange#11;1;i bet he wants some candy!#11;9;*stares blankly*#12;7;*glares at you, panting*#12;1;you have beautiful eyes!#12;1;ahhhh!"
 local complete_triggers={}
+function compute_npcs()
+ local cnpcs = {}
+ for n in all(split(npc_data, '#')) do
+  local ns = split(n)
+  local r = {charidx=ns[1],x=ns[2],y=ns[3],mapidx=ns[4]}
+  if #ns > 4 then
+   r.intent = ns[5]
+   r.intentdata = ns[6]
+  end
+  add (cnpcs, r)
+ end
+ return cnpcs
+end
+local npcs = compute_npcs()
 local triggers={
  {
   trig=function(self)
@@ -270,7 +261,7 @@ local triggers={
    if act_charidx == 4 then
     perform_active_party_swap()
    end
-   maps[3].npcs = {{charidx=4,x=11,y=6}}
+   npcs[#npcs+1]={charidx=4,x=11,y=6,mapidx=3}
    local newparty={}
    for p in all(party) do
     if p.charidx != 4 then
@@ -287,7 +278,7 @@ local triggers={
   trig=function(self) return act_mapsidx==3 end,
   action=function(self)
    maps[3].discvrdtiles={}
-   maps[3].npcs[#maps[3].npcs+1] = {charidx=7,x=12,y=6}
+   add(npcs,{charidx=7,x=12,y=6, mapidx=3})
   end,
   complete=false,
   maplocking=3,
@@ -326,11 +317,11 @@ local triggers={
  {
   trig=function(self) return dialog_is_complete(12) end,
   action=function(self)
-   local ns = maps[act_mapsidx].npcs
+   local ns = get_npcs_for_map(3)
    for n in all(ns) do
     n.intent = 'chase_player'
    end
-   maps[act_mapsidx].npcs = ns
+   -- maps[act_mapsidx].npcs = ns
   end,
   complete=false,
   maplocking=3,
@@ -641,10 +632,8 @@ function update_play_map()
    end
   end
  end
- for m in all(maps) do
-  for npc in all(m.npcs) do
-   exec_npc_intent(npc)
-  end
+ for n in all(npcs) do
+  exec_npc_intent(n)
  end
  for p in all(party) do
   exec_npc_intent(p)
@@ -698,17 +687,13 @@ function exec_npc_intent(npc)
  end
  -- do npc movement
  if npc.intent == 'walk' then
-  local npcmapidx=get_mapidx_by_charidx(npc.charidx)
-  local intentdata = npc.intentdata
-  -- goto dest if active map is not npc cur map
-  if npcmapidx != act_mapsidx and npcmapidx!=nil then
-   npc.x=-1
-  end
+  local npcmapidx=npc.mapidx
+  local intentdata = split(npc.intentdata, '|')
   -- do local mvmt
-  if abs(intentdata.destcurmaploc.x-npc.x) > abs(intentdata.destcurmaploc.y-npc.y) then
-   npc.x+=sgn(intentdata.destcurmaploc.x-npc.x)
-  else
-   npc.y+=sgn(intentdata.destcurmaploc.y-npc.y)
+  if abs(intentdata[1]-npc.x) > abs(intentdata[2]-npc.y) and abs(intentdata[1]-npc.x) != 0 then
+   npc.x+=sgn(intentdata[1]-npc.x)
+  elseif abs(intentdata[2]-npc.y) != 0 then
+   npc.y+=sgn(intentdata[2]-npc.y)
   end
   -- do map switch
   if npcmapidx != nil then
@@ -729,21 +714,23 @@ function exec_npc_intent(npc)
        end
       end
      end
-     if to_map_idx != nil  then
-      transition_npc_to_map(npc, to_map_idx, intentdata.destnextmaploc.x, intentdata.destnextmaploc.y)
+     if to_map_idx != nil and #intentdata > 2 then
+      transition_npc_to_map(npc, to_map_idx, intentdata[4], intentdata[5])
+      npc.intent = nil
      end
     end
   end
-  if (npcmapidx==nil and npc.x==intentdata.destcurmaploc.x and npc.y==intentdata.destcurmaploc.y) npc.intent=nil
+  if (npcmapidx==nil and npc.x==intentdata[1] and npc.y==intentdata[2]) npc.intent=nil
  end
  if npc.intent == 'loop' then
-  if npc.x==npc.intentdata.br.x and npc.y!=npc.intentdata.tl.y then
+  local id = split(npc.intentdata, '|')
+  if npc.x==id[3] and npc.y!=id[2] then
    npc.y-=1
-  elseif npc.y==npc.intentdata.tl.y and npc.x!=npc.intentdata.tl.x then
+  elseif npc.y==id[2] and npc.x!=id[1] then
    npc.x-=1
-  elseif npc.x==npc.intentdata.tl.x and npc.y!=npc.intentdata.br.y then
+  elseif npc.x==id[1] and npc.y!=id[4] then
    npc.y+=1
-  elseif npc.y==npc.intentdata.br.y then
+  elseif npc.y==id[4] then
    npc.x+=1
   end
  end
@@ -1091,18 +1078,6 @@ function get_npc_by_charidx(npcs,qcharidx)
  return nil
 end
 
-function get_mapidx_by_charidx(charidx)
- for i=1,#maps do
-  local m=maps[i]
-  for n in all(m.npcs) do
-   if n.charidx==charidx then
-    return i
-   end
-  end
- end
- return nil
-end
-
 function get_first_active_dlg()
  local curprogressdlg=act_text.dialog[1]
  if type(curprogressdlg)=='number' then
@@ -1141,7 +1116,7 @@ function playmap_spr_visible(mapidx, spri)
  end
  local mapspr=sget(act_x+maps[act_mapsidx].cellx,act_y+maps[act_mapsidx].celly)==spri
  local npcspr=false
- for n in all(maps[act_mapsidx].npcs) do
+ for n in all(get_npcs_for_map(act_mapsidx)) do
   local idtfr=n.x..'|'..n.y
   if is_element_in(maps[act_mapsidx].discvrdtiles,idtfr) and characters[n.charidx].mapidx==spri then
    npcspr=true
@@ -1172,11 +1147,9 @@ function maybe_queue_party_move(destx, desty)
 end
 
 function queue_move_npc(charidx,destcurmaploc,destnextmap,destnextmaploc)
- for m in all(maps) do
-  for npc in all(m.npcs) do
-   if npc.charidx == charidx then
-    set_walk_intent(npc,destcurmaploc,destnextmap,destnextmaploc)
-   end
+ for npc in all(npcs) do
+  if npc.charidx == charidx then
+   set_walk_intent(npc,destcurmaploc,destnextmap,destnextmaploc)
   end
  end
  for p in all(party) do
@@ -1188,7 +1161,10 @@ end
 
 function set_walk_intent(npc,destcurmaploc,destnextmap,destnextmaploc)
  npc.intent = "walk"
- npc.intentdata = {charidx=npc.charidx,destcurmaploc=destcurmaploc,destnextmap=destnextmap,destnextmaploc=destnextmaploc}
+ npc.intentdata = tostr(destcurmaploc.x)..'|'..tostr(destcurmaploc.y)
+ if destnextmap != nil then
+  npc.intentdata = npc.intentdata..'|'..tostr(destnextmap)..'|'..tostr(destnextmaploc.x)..'|'..tostr(destnextmaploc.y)
+ end
 end
 
 function transition_to_playmap()
@@ -1208,22 +1184,12 @@ music(-1)
 end
 
 function transition_npc_to_map(npc, dest_mapidx, dest_x, dest_y)
- for i=1,#maps do
-  local m = maps[i]
-  local filtered_npcs={}
-  for n in all(m.npcs) do
-   if n.charidx != npc.charidx then
-    add(filtered_npcs,n)
-   end
+ for n in all(npcs) do
+  if n.charidx == npc.charidx then
+   n.x = dest_x
+   n.y = dest_y
+   n.mapidx = dest_mapidx
   end
-  if dest_mapidx == i then
-    add(filtered_npcs,{
-     charidx=npc.charidx,
-     x=dest_x,
-     y=dest_y,
-    })
-  end
-  m.npcs = filtered_npcs
  end
 end
 
@@ -1322,7 +1288,7 @@ function draw_fancy_text_box(text,x,y,active)
 end
 
 function get_all_npcs()
- return union_arrs(party, maps[act_mapsidx].npcs)
+ return union_arrs(party, get_npcs_for_map(act_mapsidx))
 end
 
 function union_arrs(arr1, arr2)
@@ -1404,6 +1370,16 @@ function drop_first_elem(arr)
   newarr[#newarr + 1]=arr[i]
  end
  return newarr
+end
+
+function get_npcs_for_map(mapidx)
+ local r = {}
+ for n in all(npcs) do
+  if n.mapidx == mapidx then
+   add(r,n)
+  end
+ end
+ return r
 end
 
 function draw_fancy_box(x,y,w,h,fg,otlntl,otlnbr)
