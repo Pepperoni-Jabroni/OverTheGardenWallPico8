@@ -30,7 +30,7 @@ local act_dialogspeakidx=1
 local act_mapsid=nil
 local party={}
 -- of the form "<name>;<map_spr_idx>;<speak_spr_idx>;<idle_txts>;<scaling>#"
-local character_list='greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?;1#wirt;1;4;uh, hi...|oh sorry, just thinking;1#beatrice;16;6;yes, i can talk...|lets get out of here!;1#kitty,wirt,wirt jr.,george washington,mr. president,benjamin franklin,doctor cucumber,greg jr.,skipper,ronald,jason funderburker;17;8;ribbit;1#the beast;32;34;;1#the woodsman;33;36;i need more oil|beware these woods;1#the beast?;48;38;;2#dog;49;40;;1#black turtle;64;66;*stares blankly*;1#turkey;65;68;gobble. gobble. gobble.;1#pottsfield citizen;80;98;you\'re too early;1#pottsfield citizen;80;102;are you new here?;1#pottsfield harvest;81;70;thanks for digging me up!;1#pottsfield partier;96;100;let\'s celebrate!;1#enoch;97;72;what a wonderful harvest|you don\'t look like you belong here;2#dog student;10;44;humph...|huh...;1#gorilla;113;12;;1#jimmy brown;11;14;;1#cat student;26;46;humph...|huh...;1#ms langtree;112;104;oh that jimmy brown|i miss him so...;1#the lantern;nil;76;;1#rock fact;nil;78;;1#edelwood;219;192;;1#racoon student;27;194;humph...|huh...;1'
+local character_list='greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?;1#wirt;1;4;uh, hi...|oh sorry, just thinking;1#beatrice;16;6;yes, i can talk...|lets get out of here!;1#kitty,wirt,wirt jr.,george washington,mr. president,benjamin franklin,doctor cucumber,greg jr.,skipper,ronald,jason funderburker;17;8;ribbit;1#the beast;32;34;;1#the woodsman;33;36;i need more oil|beware these woods;1#the beast?;48;38;*glares at you hungrily*;2#dog;49;40;;1#black turtle;64;66;*stares blankly*;1#turkey;65;68;gobble. gobble. gobble.;1#pottsfield citizen 1;80;98;you\'re too early;1#pottsfield citizen 2;80;102;are you new here?;1#pottsfield harvest;81;70;thanks for digging me up!;1#pottsfield partier;96;100;let\'s celebrate!;1#enoch;97;72;what a wonderful harvest|you don\'t look like you belong here;2#dog student;10;44;humph...|huh...;1#gorilla;113;12;;1#jimmy brown;11;14;;1#cat student;26;46;humph...|huh...;1#ms langtree;112;104;oh that jimmy brown|i miss him so...;1#the lantern;nil;76;;1#rock fact;nil;78;;1#edelwood;219;192;;1#racoon student;27;194;humph...|huh...;1'
 -- of the form "<mp_one_idx>;<mp_two_idx>;<mp_one_locs>;<mp_two_locs>#"
 local map_trans_list='woods1;woods2;15,5|15,4;0,14|0,15#woods2;millandriver;13,0|14,0|15,0;0,13|0,14|0,15#millandriver;woods3;0,0|1,0;13,15|14,15|15,15#millandriver;mill;7,3;0,5#woods3;pottsfield;7,0|8,0;7,15|8,15#pottsfield;barn;4,2|5,2;7,15|8,15#pottsfield;woods4;9,0|10,0;6,15|7,15#woods4;grounds;7,0|8,0;7,15|8,15#grounds;school;6,7|7,7;8,15|9,15|11,0#pottsfield;home;10,8|11,8;7,12'
 local npc_data = 'black turtle,13,7,woods1#the woodsman,6,7,woods2#pottsfield citizen 1,7,7,barn,loop,7|7|10|10#pottsfield citizen 1,7,10,barn,loop,7|7|10|10#pottsfield citizen 2,10,7,barn,loop,7|7|10|10#pottsfield citizen 2,10,10,barn,loop,7|7|10|10#enoch,8,8,barn#ms langtree,8,9,school#dog student,7,11,school#cat student,9,11,school#racoon student,9,13,school#turkey,7,6,home'
@@ -39,7 +39,7 @@ local darkspr_list='174,204,218,219,235,236,251#2,3,4,8,9,10,11#0,0,1,1,0,1,1'
 local darkanims={}
 local nonrptdialog={x=nil,y=nil}
 local compltdlgs={}
-local dialog_list="1;kitty;led through the mist#1;kitty;by the milk-light of moon#1;kitty;all that was lost is revealed#1;kitty;our long bygone burdens#1;kitty;mere echoes of the spring#1;kitty;but where have we come?#1;kitty;and where shall we end?#1;kitty;if dreams can't come true#1;kitty;then why not pretend?#1;kitty;how the gentle wind#1;kitty;beckons through the leaves#1;kitty;as autumn colors fall#1;kitty;dancing in a swirl#1;kitty;of golden memories#1;kitty;the loveliest lies of all#2;greg;i sure do love my frog!#2;wirt;greg, please stop...#2;kitty;4;ribbit.#2;greg;haha, yeah!#3;wirt;i dont like this at all#3;greg;its a tree face!#3;edelwood;*howls in the wind*#4;wirt;is that some sort of deranged lunatic?#4;wirt;with an axe waiting for victims?#4;the woodsman;*swings axe and chops tree*#4;greg;we should ask him for help!#5;wirt;whoa... wait greg...#5;wirt;... where are we?#5;greg;we\'re in the woods!#5;wirt;no, i mean#5;wirt;... where are we?!#6;wirt;we're really lost greg...#6;greg;i leave trails of candy from my pants!#6;greg;candytrail. candytrail. candytrail!#7;beatrice;help! help!#7;wirt;i think its coming from a bush?#8;beatrice;help me!#8;greg;wow, a talking bush!#8;beatrice;i\'m not a talking bush! i\'m a bird!#8;beatrice;and i\'m stuck!#8;greg;wow, a talking bird!#8;beatrice;if you help me get unstuck, i\'ll#8;beatrice;owe you one#8;greg;ohhhh! you'll grant me a wish?!#8;greg;*picks up beatrice out of bush*#8;wirt;uh-uh! no!#9;the woodsman;these woods are a dangerous place#9;the woodsman;for two kids to be alone#9;wirt;we... we know, sir#9;greg;yeah! i\'ve been leaving a trail#9;greg;of candy from my pants!#9;the woodsman;please come inside...#9;beatrice;i don\'t like the look of this#9;kitty;ribbit.#10;wirt;oh! terribly sorry to have#10;wirt;disturbed you sir!#10;10;gobble. gobble. gobble.#11;greg;wow, look at this turtle!#11;wirt;well thats strange#11;greg;i bet he wants some candy!#11;black turtle;*stares blankly*#12;the beast?;*glares at you, panting*#12;greg;you have beautiful eyes!#12;greg;ahhhh!#13;wirt;wow this place is dingey#13;beatrice;yeah this guy gives me the creeps#13;wirt;we should find a way to take him out#13;wirt;before he gets a chance to hurt us#13;greg;i can handle it!#14;wirt;i dont think we should#14;wirt;go back the way we came#15;the woodsman;whats the rucus out here?#15;wirt;oh nothing sir!#15;greg;nows my chance!#16;the woodsman;i work as a woodsman in these woods#16;the lantern;keeping the light in this lantern lit#16;the woodsman;by processing oil of the edelwood trees#16;the woodsman;you boys are welcome to stay here#16;the woodsman;ill be in the workshop#16;greg;okey dokey!#17;greg;this bird art sculpture is perfect!#18;greg;there! this little guy wanted a snack#18;black turtle;*stares blankly*#19;the woodsman;ow! *falls onto ground*#19;greg;haha yeah, i did it!#19;wirt; greg! what have you done!#19;beatrice;oh this is just great!#19;kitty;ribbit."
+local dialog_list="1;kitty;led through the mist#1;kitty;by the milk-light of moon#1;kitty;all that was lost is revealed#1;kitty;our long bygone burdens#1;kitty;mere echoes of the spring#1;kitty;but where have we come?#1;kitty;and where shall we end?#1;kitty;if dreams can't come true#1;kitty;then why not pretend?#1;kitty;how the gentle wind#1;kitty;beckons through the leaves#1;kitty;as autumn colors fall#1;kitty;dancing in a swirl#1;kitty;of golden memories#1;kitty;the loveliest lies of all#2;greg;i sure do love my frog!#2;wirt;greg, please stop...#2;kitty;4;ribbit.#2;greg;haha, yeah!#3;wirt;i dont like this at all#3;greg;its a tree face!#3;edelwood;*howls in the wind*#4;wirt;is that some sort of deranged lunatic?#4;wirt;with an axe waiting for victims?#4;the woodsman;*swings axe and chops tree*#4;greg;we should ask him for help!#5;wirt;whoa... wait greg...#5;wirt;... where are we?#5;greg;we\'re in the woods!#5;wirt;no, i mean#5;wirt;... where are we?!#6;wirt;we're really lost greg...#6;greg;i leave trails of candy from my pants!#6;greg;candytrail. candytrail. candytrail!#7;beatrice;help! help!#7;wirt;i think its coming from a bush?#8;beatrice;help me!#8;greg;wow, a talking bush!#8;beatrice;i\'m not a talking bush! i\'m a bird!#8;beatrice;and i\'m stuck!#8;greg;wow, a talking bird!#8;beatrice;if you help me get unstuck, i\'ll#8;beatrice;owe you one#8;greg;ohhhh! you'll grant me a wish?!#8;greg;*picks up beatrice out of bush*#8;wirt;uh-uh! no!#9;the woodsman;these woods are a dangerous place#9;the woodsman;for two kids to be alone#9;wirt;we... we know, sir#9;greg;yeah! i\'ve been leaving a trail#9;greg;of candy from my pants!#9;the woodsman;please come inside...#9;beatrice;i don\'t like the look of this#9;kitty;ribbit.#10;wirt;oh! terribly sorry to have#10;wirt;disturbed you sir!#10;turkey;gobble. gobble. gobble.#11;greg;wow, look at this turtle!#11;wirt;well thats strange#11;greg;i bet he wants some candy!#11;black turtle;*stares blankly*#12;the beast?;*glares at you, panting*#12;greg;you have beautiful eyes!#12;greg;ahhhh!#13;wirt;wow this place is dingey#13;beatrice;yeah this guy gives me the creeps#13;wirt;we should find a way to take him out#13;wirt;before he gets a chance to hurt us#13;greg;i can handle it!#14;wirt;i dont think we should#14;wirt;go back the way we came#15;the woodsman;whats the rucus out here?#15;wirt;oh nothing sir!#15;greg;nows my chance!#16;the woodsman;i work as a woodsman in these woods#16;the lantern;keeping the light in this lantern lit#16;the woodsman;by processing oil of the edelwood trees#16;the woodsman;you boys are welcome to stay here#16;the woodsman;ill be in the workshop#16;greg;okey dokey!#17;greg;this bird art sculpture is perfect!#18;greg;there! this little guy wanted a snack#18;black turtle;*stares blankly*#19;the woodsman;ow! *falls onto ground*#19;greg;haha yeah, i did it!#19;wirt; greg! what have you done!#19;beatrice;oh this is just great!#19;wirt;hey greg... where did your frog go?#19;greg;where is that frog o mine?"
 local npcs={}
 local triggers={
  {
@@ -116,7 +116,7 @@ local triggers={
   maplocking='millandriver'
  },
  {
-  trig=function(self) return act_mapsid=='mill' end,
+  trig=function(self) return act_mapsid=='mill' and #party==3 end,
   action=function(self)
    act_item = nil 
    if act_charid == 'kitty' then
@@ -164,12 +164,25 @@ local triggers={
  {
   trig=function(self) return dialog_is_complete(12) end,
   action=function(self)
-   local ns = get_npcs_for_map('millandriver')
-   for n in all(ns) do
-    n.intent = 'chase_player'
+   get_npc_by_charid('the beast?').intent = 'chase_player'
+   add(party,get_npc_by_charid('kitty'))
+   for n in all(npcs) do
+    if (n.charid == 'kitty') del(npcs, n)
    end
   end,
   maplocking='millandriver',
+ },
+ {
+  trig=function(self) return act_mapsid=='mill' and #party==1 end,
+  action=function(self)
+   add(party,get_npc_by_charid('wirt'))
+   add(party,get_npc_by_charid('beatrice'))
+   for n in all(npcs) do
+    if (n.charid=='wirt' or n.charid=='beatrice') del(npcs, n)
+   end
+  end,
+  maplocking='millandriver',
+  title='run back to your brother!'
  },
  {
   trig=function(self)
@@ -197,8 +210,15 @@ local triggers={
  },
  {
   trig=function(self) return dialog_is_complete(19) end,
-  action=function(self) act_item=nil end,
- },
+  action=function(self) 
+   act_item=nil
+   party={}
+   add(npcs,{charid='wirt',x=7,y=2,mapid='mill'})
+   add(npcs,{charid='beatrice',x=6,y=3,mapid='mill'})
+  end,
+  maplocking='mill',
+  title='use the club!'
+ }
 }
 local menuchars={}
 local stagetypes={
