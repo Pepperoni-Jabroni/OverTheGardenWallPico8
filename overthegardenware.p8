@@ -5,329 +5,200 @@ __lua__
 -- configs, state vars & core fns
 local walkable="43,185,106,191,202,203,205,207,222,223,238,239,240,241,242,244,245,246,247,248,249"
 -- of the form "<src_sprite_idx>;<dst_sprite_idxs>"
-local alttiles={
- "206;206,221,237",
- "238;222,238",
- "207;207,223,239",
- "235;235,251,218",
- "205;202,203,205",
- "236;204,236"
-}
+local alttiles_list="206;206,221,237#238;222,238#207;207,223,239#235;235,251,218#205;202,203,205#236;204,236"
 local altsset={}
 -- of the form "<obj_sprite_idxs>;<obj_text>#"
 local objdescript_list="122,123,138,139;what a nice old wagon#124,125,140,141;the poor old mill...#158;look at these pumpkins!#159;it says pottsfield \148#174;looks like its harvest time!#190;this pumpkin is missing#204,236;its just a bush...#218,235,251;this tree sure is tall#220;a stump of some weird tree?#219;a creepy tree with a face on it#224,225,240,241;pottsfield old barn#226,227,242,243;the old grist mill#228,229,244,245;the animal schoolhouse#232,233,248,249;pottsfield old church#108;a rickety old fence#109;a scarecrow of sorts#110;the ground is higher here#127;a deep hole in the ground#42;what a nice view out this window#43;this is the door#58;its a large cabinet#59;its a comfortable chair#74;its a small desk#75;its a school desk#90;its a lounge chair#91;its a bundle of logs#106;its a ladder (i swear)#107;its a railing#143;its a piano!#177;its the mill\'s grinder!#178;its a jar of thick oil#179;its a broken jar of oil#200;its a chalk board#216;its warm by the fireplace#217;a bundle of black oily sticks#180,181;a cafeteria bench and table#230,231,246,247;the town gazebo#232,233,248,249;pottsfield home"
-local objdescripts=split(objdescript_list,'#')
 local inv_items={
- {spridx=255,name='candy',charidxs={1}},
- {spridx=254,name='old cat',charidxs={1,4}},
- {spridx=253,name='shovel',charidxs={1,2}}
+ {spridx=255,name='candy',charids={'greg'}},
+ {spridx=214,name='bird art',charids={'greg'}},
+ {spridx=253,name='shovel',charids={'greg', 'wirt', 'beatrice'}},
+ {spridx=254,name='old cat',charids={'greg', 'kitty'}}
 }
-local last_mapidx_mov=nil
+local last_mapid_mov=nil
 local act_item=nil
 local act_useitem=nil
 local act_wrld_items={}
 local act_x=0
 local act_y=0
-local act_charidx=nil
+local act_charid=nil
 local act_lookingdir=nil
-local act_flipv=false
+local act_fliph=false
 local act_text={maptitle=nil,dialog={},charsel=nil}
 local act_stagetype="boot"
 local act_dialogspeakidx=1
-local act_mapsidx=nil
+local act_mapsid=nil
 local party={}
 -- of the form "<name>;<map_spr_idx>;<speak_spr_idx>;<idle_txts>;<scaling>#"
 local character_list='greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?;1#wirt;1;4;uh, hi...|oh sorry, just thinking;1#beatrice;16;6;yes, i can talk...|lets get out of here!;1#kitty,wirt,wirt jr.,george washington,mr. president,benjamin franklin,doctor cucumber,greg jr.,skipper,ronald,jason funderburker;17;8;ribbit;1#the beast;32;34;;1#the woodsman;33;36;i need more oil|beware these woods;1#the beast?;48;38;;2#dog;49;40;;1#black turtle;64;66;*stares blankly*;1#turkey;65;68;gobble. gobble. gobble.;1#pottsfield citizen;80;98;you\'re too early;1#pottsfield citizen;80;102;are you new here?;1#pottsfield harvest;81;70;thanks for digging me up!;1#pottsfield partier;96;100;let\'s celebrate!;1#enoch;97;72;what a wonderful harvest|you don\'t look like you belong here;2#dog student;10;44;humph...|huh...;1#gorilla;113;12;;1#jimmy brown;11;14;;1#cat student;26;46;humph...|huh...;1#ms langtree;112;104;oh that jimmy brown|i miss him so...;1#the lantern;nil;76;;1#rock fact;nil;78;;1#edelwood;219;192;;1#racoon student;27;194;humph...|huh...;1'
 -- of the form "<mp_one_idx>;<mp_two_idx>;<mp_one_locs>;<mp_two_locs>#"
-local map_trans_list='1;2;15,5|15,4;0,14|0,15#2;3;13,0|14,0|15,0;0,13|0,14|0,15#3;4;0,0|1,0;13,15|14,15|15,15#3;6;7,3;0,5#4;5;7,0|8,0;7,15|8,15#5;7;4,2|5,2;7,15|8,15#5;8;9,0|10,0;6,15|7,15#8;9;7,0|8,0;7,15|8,15#9;10;6,7|7,7;8,15|9,15|11,0#5;11;10,8|11,8;7,12'
-local npc_data = '9,13,7,1#6,6,7,2#11,7,7,7,loop,7|7|10|10#11,7,10,7,loop,7|7|10|10#12,10,7,7,loop,7|7|10|10#12,10,10,7,loop,7|7|10|10#15,8,8,7#20,8,9,10#16,7,11,10#19,9,11,10#24,9,13,10#10,7,6,11'
-local maps={
- {
-  type='exterior',
-  title='somewhere in the unknown',
-  cellx=0,
-  celly=16,
-  discvrdtiles={},
-  undisc_cnt=0,
- },
- {
-  type='exterior',
-  title='somewhere in the unknown',
-  cellx=0,
-  celly=0,
-  discvrdtiles={},
-  undisc_cnt=14,
- },
- {
-  type='exterior',
-  title='the mill and the river',
-  cellx=16,
-  celly=0,
-  discvrdtiles={},
-  undisc_cnt=0,
- },
- {
-  type='exterior',
-  title='somewhere in the unknown',
-  cellx=32,
-  celly=0,
-  discvrdtiles={},
-  undisc_cnt=0,
- },
- {
-  type='exterior',
-  title='pottsfield',
-  cellx=48,
-  celly=0,
-  discvrdtiles={},
-  undisc_cnt=0,
- },
- {
-  type='interior',
-  title='the old grist mill',
-  cellx=64,
-  celly=0,
-  playmapidx=3,
-  playmapspr=226,
-  playmaploc={x=7,y=2}
- },
- {
-  type='interior',
-  title='harvest party',
-  cellx=80,
-  celly=0,
-  playmapidx=5,
-  playmapspr=224,
-  playmaploc={x=4,y=1}
- },
- {
-  type='exterior',
-  title='somewhere in the unknown',
-  cellx=96,
-  celly=0,
-  discvrdtiles={},
-  undisc_cnt=0,
- },
- {
-  type='exterior',
-  title='the schoolgrounds',
-  cellx=112,
-  celly=0,
-  discvrdtiles={},
-  undisc_cnt=0,
- },
- {
-  type='interior',
-  title='schoolhouse',
-  cellx=16,
-  celly=16,
-  playmapidx=9,
-  playmapspr=228,
-  playmaploc={x=6,y=6}
- },
- {
-  type='interior',
-  title='pottsfield home',
-  cellx=32,
-  celly=16,
-  playmapidx=5,
-  playmapspr=232,
-  playmaploc={x=10,y=7}
- }
-}
-local darkspr={
- idxs="174,204,218,219,235,236,251",
- clrmp={{s=2,d=0},{s=3,d=0},{s=4,d=1},{s=8,d=1},{s=9,d=0},{s=10,d=1},{s=11,d=1}}
-}
+local map_trans_list='woods1;woods2;15,5|15,4;0,14|0,15#woods2;millandriver;13,0|14,0|15,0;0,13|0,14|0,15#millandriver;woods3;0,0|1,0;13,15|14,15|15,15#millandriver;mill;7,3;0,5#woods3;pottsfield;7,0|8,0;7,15|8,15#pottsfield;barn;4,2|5,2;7,15|8,15#pottsfield;woods4;9,0|10,0;6,15|7,15#woods4;grounds;7,0|8,0;7,15|8,15#grounds;school;6,7|7,7;8,15|9,15|11,0#pottsfield;home;10,8|11,8;7,12'
+local npc_data = 'black turtle,13,7,woods1#the woodsman,6,7,woods2#pottsfield citizen 1,7,7,barn,loop,7|7|10|10#pottsfield citizen 1,7,10,barn,loop,7|7|10|10#pottsfield citizen 2,10,7,barn,loop,7|7|10|10#pottsfield citizen 2,10,10,barn,loop,7|7|10|10#enoch,8,8,barn#ms langtree,8,9,school#dog student,7,11,school#cat student,9,11,school#racoon student,9,13,school#turkey,7,6,home'
+local map_list="exterior,woods1,somewhere in the unknown,0,16,0#exterior,woods2,somewhere in the unknown,0,0,14#interior,mill,the old grist mill,64,0,millandriver,226,7,2#exterior,millandriver,the mill and the river,16,0,0#exterior,woods3,somewhere in the unknown,32,0,0#interior,barn,harvest party,80,0,pottsfield,224,1,4#interior,home,pottsfield home,32,16,pottsfield,232,10,7#exterior,pottsfield,pottsfield,48,0,0#exterior,woods4,somewhere in the unknown,96,0,0#interior,school,schoolhouse,16,16,grounds,228,6,6#exterior,grounds,the schoolgrounds,112,0,0"
+local darkspr_list='174,204,218,219,235,236,251#2,3,4,8,9,10,11#0,0,1,1,0,1,1'
 local darkanims={}
 local nonrptdialog={x=nil,y=nil}
 local compltdlgs={}
--- of the form "<dialog_idx>;<speaking_char_idx>;<dialog_text>#"
-local dialog_list="1;4;led through the mist#1;4;by the milk-light of moon#1;4;all that was lost is revealed#1;4;our long bygone burdens#1;4;mere echoes of the spring#1;4;but where have we come?#1;4;and where shall we end?#1;4;if dreams can't come true#1;4;then why not pretend?#1;4;how the gentle wind#1;4;beckons through the leaves#1;4;as autumn colors fall#1;4;dancing in a swirl#1;4;of golden memories#1;4;the loveliest lies of all#2;1;i sure do love my frog!#2;2;greg, please stop...#2;4;4;ribbit.#2;1;haha, yeah!#3;2;i dont like this at all#3;1;its a tree face!#3;23;*howls in the wind*#4;2;is that some sort of deranged lunatic?#4;2;with an ax waiting for victims?#4;6;*swings axe and chops tree*#4;1;we should ask him for help!#5;2;whoa... wait greg...#5;2;... where are we?#5;1;we\'re in the woods!#5;2;no, i mean#5;2;... where are we?!#6;2;we're really lost greg...#6;1;i can leave a trail of candy from my pants!#6;1;candytrail. candytrail. candytrail!#7;3;help! help!#7;2;i think its coming from a bush?#8;3;help me!#8;1;wow, a talking bush!#8;3;i\'m not a talking bush! i\'m a bird!#8;3;and i\'m stuck!#8;1;wow, a talking bird!#8;3;if you help me get unstuck, i\'ll#8;3;grant you a wish#8;1;ohhhh!#8;1;*picks up beatrice out of bush*#8;2;uh-uh! no!#9;6;these woods are a dangerous place#9;6;for 2 kids to be alone#9;2;we... we know, sir#9;1;yeah! i\'ve been leaving a trail#9;1;of candy from my pants#9;6;come inside...#9;3;i don\'t like the look of this#9;4;ribbit.#10;2;oh! terribly sorry to have#10;2;disturbed you sir!#10;10;gobble. gobble. gobble.#11;1;wow, look at this turtle!#11;2;well thats strange#11;1;i bet he wants some candy!#11;9;*stares blankly*#12;7;*glares at you, panting*#12;1;you have beautiful eyes!#12;1;ahhhh!"
-local complete_triggers={}
-function compute_npcs()
- local cnpcs = {}
- for n in all(split(npc_data, '#')) do
-  local ns = split(n)
-  local r = {charidx=ns[1],x=ns[2],y=ns[3],mapidx=ns[4]}
-  if #ns > 4 then
-   r.intent = ns[5]
-   r.intentdata = ns[6]
-  end
-  add (cnpcs, r)
- end
- return cnpcs
-end
-local npcs = compute_npcs()
+local dialog_list="1;kitty;led through the mist#1;kitty;by the milk-light of moon#1;kitty;all that was lost is revealed#1;kitty;our long bygone burdens#1;kitty;mere echoes of the spring#1;kitty;but where have we come?#1;kitty;and where shall we end?#1;kitty;if dreams can't come true#1;kitty;then why not pretend?#1;kitty;how the gentle wind#1;kitty;beckons through the leaves#1;kitty;as autumn colors fall#1;kitty;dancing in a swirl#1;kitty;of golden memories#1;kitty;the loveliest lies of all#2;greg;i sure do love my frog!#2;wirt;greg, please stop...#2;kitty;4;ribbit.#2;greg;haha, yeah!#3;wirt;i dont like this at all#3;greg;its a tree face!#3;edelwood;*howls in the wind*#4;wirt;is that some sort of deranged lunatic?#4;wirt;with an axe waiting for victims?#4;the woodsman;*swings axe and chops tree*#4;greg;we should ask him for help!#5;wirt;whoa... wait greg...#5;wirt;... where are we?#5;greg;we\'re in the woods!#5;wirt;no, i mean#5;wirt;... where are we?!#6;wirt;we're really lost greg...#6;greg;i leave trails of candy from my pants!#6;greg;candytrail. candytrail. candytrail!#7;beatrice;help! help!#7;wirt;i think its coming from a bush?#8;beatrice;help me!#8;greg;wow, a talking bush!#8;beatrice;i\'m not a talking bush! i\'m a bird!#8;beatrice;and i\'m stuck!#8;greg;wow, a talking bird!#8;beatrice;if you help me get unstuck, i\'ll#8;beatrice;owe you one#8;greg;ohhhh! you'll grant me a wish?!#8;greg;*picks up beatrice out of bush*#8;wirt;uh-uh! no!#9;the woodsman;these woods are a dangerous place#9;the woodsman;for two kids to be alone#9;wirt;we... we know, sir#9;greg;yeah! i\'ve been leaving a trail#9;greg;of candy from my pants!#9;the woodsman;please come inside...#9;beatrice;i don\'t like the look of this#9;kitty;ribbit.#10;wirt;oh! terribly sorry to have#10;wirt;disturbed you sir!#10;10;gobble. gobble. gobble.#11;greg;wow, look at this turtle!#11;wirt;well thats strange#11;greg;i bet he wants some candy!#11;black turtle;*stares blankly*#12;the beast?;*glares at you, panting*#12;greg;you have beautiful eyes!#12;greg;ahhhh!#13;wirt;wow this place is dingey#13;beatrice;yeah this guy gives me the creeps#13;wirt;we should find a way to take him out#13;wirt;before he gets a chance to hurt us#13;greg;i can handle it!#14;wirt;i dont think we should#14;wirt;go back the way we came#15;the woodsman;whats the rucus out here?#15;wirt;oh nothing sir!#15;greg;nows my chance!#16;the woodsman;i work as a woodsman in these woods#16;the lantern;keeping the light in this lantern lit#16;the woodsman;by processing oil of the edelwood trees#16;the woodsman;you boys are welcome to stay here#16;the woodsman;ill be in the workshop#16;greg;okey dokey!#17;greg;this bird art sculpture is perfect!#18;greg;there! this little guy wanted a snack#18;black turtle;*stares blankly*#19;the woodsman;ow! *falls onto ground*#19;greg;haha yeah, i did it!#19;wirt; greg! what have you done!#19;beatrice;oh this is just great!#19;kitty;ribbit."
+local npcs={}
 local triggers={
  {
   trig=function(self)
-   return act_mapsidx==1 and (act_x!=8 or act_y!=8)
+   return act_mapsid=='woods1' and (act_x!=8 or act_y!=8)
   end,
   action=function(self)queue_dialog(5)end,
-  complete=false,
-  maplocking=1,
-  title="introduce ourselves",
+  maplocking='woods1',
  },
  {
-  trig=function(self)return player_use_item(1,1)end,
+  trig=function(self)return player_use_item(1,'woods1') and (act_x!=8 or act_y!=8) end,
   action=function(self)queue_dialog(6)end,
-  complete=false,
-  maplocking=1,
+  maplocking='woods1',
   title="leave a trail of candy",
  },
  {
-  trig=function(self)return player_use_item(1,1,13,7)end,
-  action=function(self)end,
-  complete=false,
-  maplocking=1,
+  trig=function(self)return player_use_item(1,'woods1',13,7)end,
+  action=function(self) queue_dialog(18) end,
+  maplocking='woods1',
   title="give the turtle a candy",
  },
  {
-  trig=function(self)return player_use_item(1,2)end,
+  trig=function(self)return player_use_item(1,'woods2')end,
   action=function(self)end,
-  complete=false,
-  maplocking=2,
+  maplocking='woods2',
   title="leave a trail of candy",
  },
  {
   trig=function(self)return player_sel_location({x=5,y=7})end,
   action=function(self)queue_dialog(3)end,
-  complete=false,
-  maplocking=2,
-  title="look at the tree with the face",
+  maplocking='woods2',
+  title="inspect the strange tree",
  },
  {
-  trig=function(self)return playmap_spr_visible(2, 33)end,
+  trig=function(self)return playmap_spr_visible('woods2', 33)end,
   action=function(self)queue_dialog(4)end,
-  complete=false,
-  maplocking=2,
+  maplocking='woods2',
   title="meet someone new"
  },
  {
   trig=function(self)return dialog_is_complete(4)end,
-  action=function(self)queue_move_npc(6,{x=16,y=-1},3,{x=7,y=7})end,
-  complete=false,
-  maplocking=2,
-  title="finish the conversation"
+  action=function(self)queue_move_npc('the woodsman',{x=16,y=-1},'millandriver',{x=7,y=7})end,
+  maplocking='woods2'
  },
  {
-  trig=function(self)return player_on_location({x=10,y=4}) or player_on_location({x=11,y=4})end,
-  action=function(self)
-   if not is_element_in(complete_triggers, 10) then
-    queue_dialog(7)
-   end
-  end,
-  complete=false,
-  maplocking=2,
+  trig=function(self)return act_mapsid=='woods2' and #party==2 and (player_on_location({x=10,y=4}) or player_on_location({x=11,y=4}))end,
+  action=function(self) queue_dialog(7) end,
   title="find a friend"
  },
  {
   trig=function(self)return player_sel_location({x=8,y=4})end,
   action=function(self)queue_dialog(8)end,
-  complete=false,
-  maplocking=2,
+  maplocking='woods2',
   title="search the bushes"
  },
  {
   trig=function(self)return dialog_is_complete(8)end,
   action=function(self)
-   add(party,{charidx=3,x=act_x-1,y=act_y+1})
+   add(party,{charid='beatrice',x=act_x-1,y=act_y+1})
   end,
-  complete=false,
-  maplocking=2,
-  title="join a new friend"
+  maplocking='woods2'
  },
  {
-  trig=function(self)return playmap_spr_visible(3, 33)end,
+  trig=function(self)return playmap_spr_visible('millandriver', 33)end,
   action=function(self)queue_dialog(9)end,
-  complete=false,
-  maplocking=3,
+  maplocking='millandriver',
   title="talk with the woodsman"
  },
  {
   trig=function(self)return dialog_is_complete(9)end,
   action=function(self)
-   queue_move_npc(6,{x=7,y=3},6,{x=7,y=4})
+   queue_move_npc('the woodsman',{x=7,y=3},'mill',{x=7,y=4})
   end,
-  complete=false,
-  maplocking=3,
-  title="finish talking with the woodsman"
+  maplocking='millandriver'
  },
  {
-  trig=function(self) return act_mapsidx==6 end,
+  trig=function(self) return act_mapsid=='mill' end,
   action=function(self)
    act_item = nil 
-   if act_charidx == 4 then
+   if act_charid == 'kitty' then
     perform_active_party_swap()
    end
-   npcs[#npcs+1]={charidx=4,x=11,y=6,mapidx=3}
+   add(npcs,{charid='kitty',x=11,y=6,mapid='millandriver'})
    local newparty={}
    for p in all(party) do
-    if p.charidx != 4 then
+    if p.charid != 'kitty' then
      add(newparty,p)
     end
    end
    party=newparty
+   get_map_by_id('millandriver').discvrdtiles={}
+   add(npcs,{charid='the beast?',x=12,y=6, mapid='millandriver'})
+   queue_dialog(16)
+   add(act_wrld_items,{spridx=inv_items[2].spridx,x=4,y=5})
   end,
-  complete=false,
-  maplocking=nil,
+  maplocking='millandriver',
   title="enter the mill",
  },
  {
-  trig=function(self) return act_mapsidx==3 end,
-  action=function(self)
-   maps[3].discvrdtiles={}
-   add(npcs,{charidx=7,x=12,y=6, mapidx=3})
-  end,
-  complete=false,
-  maplocking=3,
-  title="encounter a stranger",
-  depend_on=13,
- },
- {
-  trig=function(self) return playmap_spr_visible(3, 48) end,
+  trig=function(self) return playmap_spr_visible('millandriver', 48) end,
   action=function(self)
    queue_dialog(12)
-   local dt = maps[act_mapsidx].discvrdtiles
+   local dt = get_map_by_id(act_mapsid).discvrdtiles
    add(dt, '12|6')
    add(dt, '12|7')
    add(dt, '13|6')
    add(dt, '13|7')
   end,
-  complete=false,
-  maplocking=3,
+  maplocking='millandriver',
   title="find the frog!",
-  depend_on=13,
  },
  {
-  trig=function(self) return act_mapsidx==11 end,
+  trig=function(self) return act_mapsid=='home' end,
   action=function(self)queue_dialog(10) end,
-  complete=false,
-  maplocking=nil,
-  title="find the turkey",
  },
  {
-  trig=function(self)return playmap_spr_visible(1, 64) end,
+  trig=function(self)return playmap_spr_visible('woods1', 64) end,
   action=function(self)queue_dialog(11)end,
-  complete=false,
-  maplocking=1,
+  maplocking='woods1',
   title="spot the turtle",
  },
  {
   trig=function(self) return dialog_is_complete(12) end,
   action=function(self)
-   local ns = get_npcs_for_map(3)
+   local ns = get_npcs_for_map('millandriver')
    for n in all(ns) do
     n.intent = 'chase_player'
    end
-   -- maps[act_mapsidx].npcs = ns
   end,
-  complete=false,
-  maplocking=3,
-  title="get chased!",
-  depend_on=13,
- }
+  maplocking='millandriver',
+ },
+ {
+  trig=function(self)
+   return act_mapsid=='woods1' and (player_on_location({x=0,y=7}) or player_on_location({x=0,y=8}))
+  end,
+  action=function(self)queue_dialog(14)end,
+ },
+ {
+  trig=function(self)
+   return act_mapsid=='mill' and (player_on_location({x=4,y=5}) or player_on_location({x=4,y=6}))
+  end,
+  action=function(self)queue_dialog(13)end,
+ },
+ {
+  trig=function(self)
+   return act_mapsid=='mill' and player_sel_location({x=4,y=5})
+  end,
+  action=function(self)
+   act_item=2
+   act_wrld_items={}
+   queue_dialog(17)
+  end,
+  maplocking='mill',
+  title='find a club'
+ },
+ {
+  trig=function(self) return dialog_is_complete(19) end,
+  action=function(self) act_item=nil end,
+ },
 }
 local menuchars={}
 local stagetypes={
@@ -360,6 +231,101 @@ local stagetypes={
 local title_line_data='128#129#130#131#132#132,true#131,true#130,true#129,true#128,true#144#0#133#134#135#136#137#145#0#144,true#144#0#146#147#148#149#150#151#0#144,true#144#0#152#153#160#161#162#163#0#144,true#144#0#0#164#165#166#167#0#0#144,true#168#169#176#176#176#176#176#176#169,true#168,true'
 
 -- base functions
+function is_element_in(array, k)
+ local match = false
+ for elem in all(array) do
+  if k == elem then
+   match = true
+   break
+  end
+ end
+ return match
+end
+
+function compute_characters()
+ local cchar={}
+ for c in all(split(character_list, '#')) do
+  local cdata = split(c, ';')
+  local mapspridx=cdata[2]
+  if mapspridx == 'nil' then
+   mapspridx=nil
+  else
+   mapspridx=tonum(mapspridx)
+  end
+  add(cchar,{
+   name=split(cdata[1]), 
+   mapspridx=mapspridx,
+   chrsprdailogueidx=tonum(cdata[3]),
+   idle=split(cdata[4],'|'),
+   scaling=tonum(cdata[5])
+  })
+ end
+ return cchar
+end
+local characters = compute_characters()
+function get_char_by_name(name)
+ for c in all(characters) do
+  if (is_element_in(c.name, name)) return c
+ end
+end
+
+function compute_darkspr()
+ local dsdata = split(darkspr_list, '#')
+ return {
+  idxs=split(dsdata[1]),
+  clrmp_s=split(dsdata[2]),
+  clrmp_d=split(dsdata[3]),
+ }
+end
+local darkspr = compute_darkspr()
+
+function compute_maps()
+ local cmaps={}
+ for m in all(split(map_list, '#')) do
+  local mdata = split(m)
+  local entry = {
+   type=mdata[1],
+   id=mdata[2],
+   title=mdata[3],
+   cellx=mdata[4],
+   celly=mdata[5]
+  }
+  if mdata[1] == 'interior' then
+   entry.playmapid=mdata[6]
+   entry.playmapspr=mdata[7]
+   entry.playmaploc={x=mdata[8],y=mdata[9]}
+  end
+  add(cmaps, entry)
+ end
+ return cmaps
+end
+local maps=compute_maps()
+function get_map_by_id(id)
+ for m in all(maps) do
+  if (m.id == id) return m
+ end
+end
+function get_mapidx_by_id(id)
+ for i=1,#maps do
+  if (maps[i].id == id) return i
+ end
+end
+
+function compute_npcs()
+ local cnpcs = {}
+ for n in all(split(npc_data, '#')) do
+  local ns = split(n)
+  local r = {charid=ns[1],x=ns[2],y=ns[3],mapid=ns[4]}
+  if #ns > 4 then
+   r.intent = ns[5]
+   r.intentdata = ns[6]
+  end
+  add (cnpcs, r)
+ end
+ return cnpcs
+end
+npcs = compute_npcs()
+
 function compute_map_trans()
  local cmaptrans = {}
  for m in all(split(map_trans_list, '#')) do
@@ -370,22 +336,6 @@ function compute_map_trans()
 end
 local map_trans = compute_map_trans()
 
-function compute_characters()
- local cchar={}
- for c in all(split(character_list, '#')) do
-  local cdata = split(c, ';')
-  local mapidx=cdata[2]
-  if mapidx == 'nil' then
-   mapidx=nil
-  else
-   mapidx=tonum(mapidx)
-  end
-  add(cchar,{name=split(cdata[1]), mapidx=mapidx,chrsprdailogueidx=tonum(cdata[3]), idle=split(cdata[4],'|'), scaling=tonum(cdata[5])})
- end
- return cchar
-end
-local characters = compute_characters()
-
 function compute_dialogs()
  local cdialogs = {}
  for d in all(split(dialog_list,'#')) do
@@ -395,9 +345,9 @@ function compute_dialogs()
    cdialogs[n] = {}
   end
   if #s == 3 then
-   cdialogs[n][#cdialogs[n] + 1] = {speakeridx=tonum(s[2]), text=s[3]}
+   cdialogs[n][#cdialogs[n] + 1] = {speakerid=s[2], text=s[3]}
   else
-   cdialogs[n][#cdialogs[n] + 1] = {speakeridx=tonum(s[2]), nameidx=tonum(s[3]), text=s[4]}
+   cdialogs[n][#cdialogs[n] + 1] = {speakerid=s[2], nameidx=tonum(s[3]), text=s[4]}
   end
  end
  return cdialogs
@@ -509,33 +459,34 @@ function update_play_map()
  end
  -- check active movement
  if act_lookingdir == nil and #act_text.dialog == 0 then
-  local ax,ay,mdx=act_x,act_y,act_mapsidx
+  local ax,ay,mdx=act_x,act_y,act_mapsid
+  local m=get_map_by_id(act_mapsid)
   for i=0,3 do
    if btnp(i) then
     maybe_queue_party_move(act_x, act_y)
     break
    end
   end
-  if btnp(2) and ay > 0 and is_element_in(split(walkable), mget(ax+maps[mdx].cellx, ay - 1+maps[mdx].celly)) then
+  if btnp(2) and ay > 0 and is_element_in(split(walkable), mget(ax+m.cellx, ay - 1+m.celly)) then
    act_y = ay - 1
-   last_mapidx_mov=act_mapsidx
-  elseif btnp(1) and ax < 15 and is_element_in(split(walkable), mget(ax + 1+maps[mdx].cellx, ay+maps[mdx].celly)) then
+   last_mapid_mov=act_mapsid
+  elseif btnp(1) and ax < 15 and is_element_in(split(walkable), mget(ax + 1+m.cellx, ay+m.celly)) then
    act_x = ax + 1
-   act_flipv=false
-   last_mapidx_mov=act_mapsidx
-  elseif btnp(3) and ay < 15 and is_element_in(split(walkable), mget(ax+maps[mdx].cellx, ay + 1+maps[mdx].celly)) then
+   act_fliph=false
+   last_mapid_mov=act_mapsid
+  elseif btnp(3) and ay < 15 and is_element_in(split(walkable), mget(ax+m.cellx, ay + 1+m.celly)) then
    act_y = ay + 1
-   last_mapidx_mov=act_mapsidx
-  elseif btnp(0) and ax > 0 and is_element_in(split(walkable), mget(ax - 1+maps[mdx].cellx, ay+maps[mdx].celly)) then
+   last_mapid_mov=act_mapsid
+  elseif btnp(0) and ax > 0 and is_element_in(split(walkable), mget(ax - 1+m.cellx, ay+m.celly)) then
    act_x = ax - 1
-   act_flipv=true
-   last_mapidx_mov=act_mapsidx
+   act_fliph=true
+   last_mapid_mov=act_mapsid
   end
  end
  -- check for player switch
  if btnp(4) and #act_text.dialog == 0 then
   perform_active_party_swap()
-  local charname = tostr(characters[act_charidx].get_name_at_idx(characters[act_charidx],1))
+  local charname = tostr(get_char_by_name(act_charid).get_name_at_idx(get_char_by_name(act_charid),1))
   act_text.charsel={txt=charname,frmcnt=32}
  end
  -- check for dialog progress
@@ -560,70 +511,96 @@ function update_play_map()
   end
  end
  -- check for map switch
- local activemap = maps[act_mapsidx]
- local initmapidx = act_mapsidx
+ local activemap = get_map_by_id(act_mapsid)
+ local initmapid = act_mapsid
  local maplocked={}
  for t in all(triggers) do
-  if t.maplocking != nil and t.maplocking == act_mapsidx and not t.complete and (t.depend_on == nil or is_element_in(complete_triggers, t.depend_on)) then
-   add(maplocked,t.title)
+  if t.maplocking == act_mapsid and not t.complete then
+   add(maplocked,t)
   end
  end
  for transition in all(map_trans) do
-  local to_map_idx,to_map_loc = nil,nil
-  if transition.mp_one == act_mapsidx and last_mapidx_mov == act_mapsidx then
+  local to_map_id,to_map_loc = nil,nil
+  if transition.mp_one == act_mapsid and last_mapid_mov == act_mapsid then
    for loc in all(transition.mp_one_locs) do
     loc = split(loc)
     if loc[1] == act_x and loc[2] == act_y then
-     to_map_idx = transition.mp_two
+     to_map_id = transition.mp_two
      to_map_loc = split(transition.mp_two_locs[1])
     end
    end
-  elseif transition.mp_two == act_mapsidx and last_mapidx_mov == act_mapsidx then
+  elseif transition.mp_two == act_mapsid and last_mapid_mov == act_mapsid then
    for loc in all(transition.mp_two_locs) do
     loc = split(loc)
     if loc[1] == act_x and loc[2] == act_y then
-     to_map_idx = transition.mp_one
+     to_map_id = transition.mp_one
      to_map_loc = split(transition.mp_one_locs[1])
     end
    end
   end
-  if to_map_idx != nil and to_map_loc != nil then
+  if to_map_id != nil and to_map_loc != nil then
+   local to_map_idx = get_mapidx_by_id(to_map_id)
+   local act_mapsidx = get_mapidx_by_id(act_mapsid)
    if to_map_idx<act_mapsidx then
-    transition_to_map({mp=to_map_idx,loc={x=to_map_loc[1],y=to_map_loc[2]}})
+    transition_to_map({mp=to_map_id,loc={x=to_map_loc[1],y=to_map_loc[2]}})
    elseif #maplocked > 0  then
     if #act_text.dialog == 0 and not (nonrptdialog.x==act_x and nonrptdialog.y==act_y) then
-     add(act_text.dialog,{{speakeridx=act_charidx,text="we aren't done here yet... we should"}})
+     add(act_text.dialog,{{speakerid=act_charid,text="we aren't done here yet... we should"}})
      for m in all(maplocked) do
-      add(act_text.dialog,{{speakeridx=act_charidx,text=m}})
+      if m.title then
+       add(act_text.dialog,{{speakerid=act_charid,text=m.title}})
+      end
      end
      nonrptdialog={x=act_x,y=act_y}
     end
    else
-    transition_to_map({mp=to_map_idx,loc={x=to_map_loc[1],y=to_map_loc[2]}})
+    transition_to_map({mp=to_map_id,loc={x=to_map_loc[1],y=to_map_loc[2]}})
    end
    break
   end
-  if act_mapsidx != initmapidx then
+  if act_mapsid != initmapid then
    break
   end
  end
  -- check for triggers
  for i=1,#triggers do
   local t = triggers[i]
-  if not t.complete and (t.depend_on == nil or is_element_in(complete_triggers, t.depend_on)) and t.trig() then
+  if not t.complete and t.trig() then
    t.action()
    triggers[i].complete=true
    add(complete_triggers,i)
   end
  end
+ -- check for item usage
+ if btnp(5) and act_item!=nil and is_element_in(inv_items[act_item].charids,act_charid) and not x_consumed then
+  sfx(0)
+  act_useitem=act_item
+  x_consumed=true
+  -- candy
+  if act_item==1 then
+   add(act_wrld_items,{spridx=inv_items[act_item].spridx,x=act_x,y=act_y})
+  -- bird art
+  elseif act_item==2 then
+   local wmnpc = get_npc_by_charid('the woodsman')
+   if distance(act_x, act_y, wmnpc.x, wmnpc.y) < 2.0 and not dialog_is_complete(19) then
+    queue_dialog(19)
+    wmnpc.flipv=true
+   end
+  -- old cat
+  elseif act_item==3 then
+   -- unimpl
+  end
+ else
+  act_useitem=nil
+ end
  -- check for talk w/ npcs
- if #act_text.dialog == 0 then
+ if #act_text.dialog == 0 and not x_consumed then
   for npc in all(get_all_npcs()) do
    for i=-1,1 do
     for j=-1,1 do
      if i!=j and npc.x+i==act_x and npc.y+j==act_y then
       if player_sel_location({x=npc.x,y=npc.y}) then
-       local idles=get_char_idle_dialog(npc.charidx)
+       local idles=get_char_idle_dialog(npc.charid)
        add(act_text.dialog,idles[get_rand_idx(idles)])
        x_consumed=true
       end
@@ -643,31 +620,17 @@ function update_play_map()
   for j=-1,1 do
    local x=act_x+i
    local y=act_y+j
-   if player_sel_location({x=x,y=y}) then
-    for descpt in all(objdescripts) do
+   if player_sel_location({x=x,y=y}) and not x_consumed then
+    for descpt in all(split(objdescript_list,'#')) do
      local splt = split(descpt, ';')
-     if is_element_in(split(splt[1]),mget(x+maps[act_mapsidx].cellx,y+maps[act_mapsidx].celly)) and #act_text.dialog==0 then
-      add(act_text.dialog,{{speakeridx=act_charidx,text=splt[2]}})
+     if is_element_in(split(splt[1]),mget(x+get_map_by_id(act_mapsid).cellx,y+get_map_by_id(act_mapsid).celly)) and #act_text.dialog==0 then
+      add(act_text.dialog,{{speakerid=act_charid,text=splt[2]}})
       x_consumed=true
       break
      end
     end
    end
   end
- end
- -- check for item usage
- if btnp(5) and act_item!=nil and is_element_in(inv_items[act_item].charidxs,act_charidx) and not x_consumed then
-  sfx(0)
-  act_useitem=act_item
-  if act_item==1 then
-   add(act_wrld_items,{spridx=inv_items[act_item].spridx,x=act_x,y=act_y})
-  elseif act_item==2 then
-   -- unimpl
-  elseif act_item==3 then
-   -- unimpl
-  end
- else
-  act_useitem=nil
  end
  -- play sound if new dialog triggered
  if #act_text.dialog>initialdialoglen or act_lookingdir!= nil then
@@ -687,7 +650,7 @@ function exec_npc_intent(npc)
  end
  -- do npc movement
  if npc.intent == 'walk' then
-  local npcmapidx=npc.mapidx
+  local npcmapid=npc.mapid
   local intentdata = split(npc.intentdata, '|')
   -- do local mvmt
   if abs(intentdata[1]-npc.x) > abs(intentdata[2]-npc.y) and abs(intentdata[1]-npc.x) != 0 then
@@ -696,31 +659,31 @@ function exec_npc_intent(npc)
    npc.y+=sgn(intentdata[2]-npc.y)
   end
   -- do map switch
-  if npcmapidx != nil then
+  if npcmapid != nil then
     for transition in all(map_trans) do
-     local to_map_idx = nil
-     if transition.mp_one == act_mapsidx and last_mapidx_mov == act_mapsidx then
+     local to_map_id = nil
+     if transition.mp_one == act_mapsid and last_mapid_mov == act_mapsid then
       for loc in all(transition.mp_one_locs) do
        loc = split(loc)
        if loc[1] == npc.x and loc[2] == npc.y then
-        to_map_idx = transition.mp_two
+        to_map_id = transition.mp_two
        end
       end
-     elseif transition.mp_two == act_mapsidx and last_mapidx_mov == act_mapsidx then
+     elseif transition.mp_two == act_mapsid and last_mapid_mov == act_mapsid then
       for loc in all(transition.mp_two_locs) do
        loc = split(loc)
        if loc[1] == npc.x and loc[2] == npc.y then
-        to_map_idx = transition.mp_one
+        to_map_id = transition.mp_one
        end
       end
      end
-     if to_map_idx != nil and #intentdata > 2 then
-      transition_npc_to_map(npc, to_map_idx, intentdata[4], intentdata[5])
+     if to_map_id != nil and #intentdata > 2 then
+      transition_npc_to_map(npc, to_map_id, intentdata[4], intentdata[5])
       npc.intent = nil
      end
     end
   end
-  if (npcmapidx==nil and npc.x==intentdata[1] and npc.y==intentdata[2]) npc.intent=nil
+  if (npcmapid==nil and npc.x==intentdata[1] and npc.y==intentdata[2]) npc.intent=nil
  end
  if npc.intent == 'loop' then
   local id = split(npc.intentdata, '|')
@@ -735,6 +698,9 @@ function exec_npc_intent(npc)
   end
  end
  if npc.intent == 'chase_player' then
+  if npc.mapid != act_mapsid then
+   npc.mapid = act_mapsid
+  end
   if npc.x != act_x then
    npc.x += sgn(act_x-npc.x)
   end
@@ -745,8 +711,8 @@ function exec_npc_intent(npc)
 end
 
 function perform_active_party_swap()
- add(party,{charidx=act_charidx,x=act_x,y=act_y})
- act_charidx = party[1].charidx
+ add(party,{charid=act_charid,x=act_x,y=act_y})
+ act_charid = party[1].charid
  act_x = party[1].x
  act_y = party[1].y
  party=drop_first_elem(party)
@@ -909,7 +875,7 @@ function draw_dialog_if_needed()
 end
 
 function draw_play_map()
- local activemap=maps[act_mapsidx]
+ local activemap=get_map_by_id(act_mapsid)
  -- color handling
  palt(0,false)
  palt(13,true)
@@ -932,7 +898,7 @@ function draw_play_map()
   spr(i.spridx,i.x*8,i.y*8)
  end
  -- draw player
- draw_spr_w_outline(0, characters[act_charidx].mapidx, act_x, act_y)
+ draw_spr_w_outline(0, get_char_by_name(act_charid).mapspridx, act_x, act_y, 1, act_fliph, false)
  -- draw npcs
  draw_chars_from_array(get_all_npcs())
  -- draw selection direction
@@ -955,17 +921,20 @@ function draw_play_map()
      end
     end
     local idtfr=tostr(i)..'|'..tostr(j)
+    if not activemap.discvrdtiles then
+     activemap.discvrdtiles={}
+    end
     if not nearforone and not is_element_in(activemap.discvrdtiles, idtfr) then
      add(dark,{i,j})
-     local mspr=mget(i+maps[act_mapsidx].cellx, j+maps[act_mapsidx].celly)
-     if (is_element_in(split(darkspr.idxs),mspr)) then
+     local mspr=mget(i+get_map_by_id(act_mapsid).cellx, j+get_map_by_id(act_mapsid).celly)
+     if (is_element_in(darkspr.idxs,mspr)) then
       -- draw "dark" sprite
-      for e in all(darkspr.clrmp) do
-       pal(e.s,e.d)
+      for i=1,#darkspr.clrmp_s do
+       pal(darkspr.clrmp_s[i],darkspr.clrmp_d[i])
       end
       spr(mspr,8*i, 8*j)
-      for e in all(darkspr.clrmp) do
-       pal(e.s,e.s)
+      for i=1,#darkspr.clrmp_s do
+       pal(darkspr.clrmp_s[i],darkspr.clrmp_s[i])
       end
      else
       if #darkanims==0 and flr(rnd(30000))==0 then
@@ -976,13 +945,6 @@ function draw_play_map()
     elseif not is_element_in(activemap.discvrdtiles, idtfr) then
      add(activemap.discvrdtiles,idtfr)
     end
-   end
-  end
-  -- discover all undiscoverable tiles
-  if #dark==activemap.undisc_cnt then
-   for d in all(dark) do
-    add(activemap.discvrdtiles,tostr(d[1])..'|'..tostr(d[2]))
-    sfx(2)
    end
   end
  end
@@ -1014,7 +976,7 @@ function draw_play_map()
  end
  darkanims=ndas
  -- draw active item hud
- if act_item!=nil and is_element_in(inv_items[act_item].charidxs,act_charidx) then
+ if act_item!=nil and is_element_in(inv_items[act_item].charids,act_charid) then
   draw_fancy_box(115,115,11,11,4,10,9)
   spr(inv_items[act_item].spridx,117,117)
  end
@@ -1035,7 +997,7 @@ function draw_play_map()
  else
   draw_fancy_box(xanchor,1,11,11,4,10,9)
  end
- spr(characters[act_charidx].mapidx, xanchor+2, 3)
+ spr(get_char_by_name(act_charid).mapspridx, xanchor+2, 3)
  -- draw map title
  txtobj=act_text.maptitle
  if txtobj != nil and txtobj.frmcnt > 0 then
@@ -1051,27 +1013,26 @@ end
 
 -->8
 -- utilities
-function draw_spr_w_outline(outline_color, spr_idx, x, y, scaling, dim)
- dim = dim or 1
- dim *= 8
+function draw_spr_w_outline(outline_color, spr_idx, x, y, scaling, fliph, flipv)
+ dim = 8
  local sx,sy=(spr_idx%16)*8,(spr_idx\16)*8
  for i=0,15 do
   pal(i, outline_color)
  end
  scaling = scaling or 1
  scaling *= dim
- sspr(sx,sy,dim,dim,x*8,y*8+1,scaling,scaling,act_flipv,false)
- sspr(sx,sy,dim,dim,x*8+1,y*8,scaling,scaling,act_flipv,false)
- sspr(sx,sy,dim,dim,x*8+1,y*8+1,scaling,scaling,act_flipv,false)
+ sspr(sx,sy,dim,dim,x*8,y*8+1,scaling,scaling,fliph,flipv)
+ sspr(sx,sy,dim,dim,x*8+1,y*8,scaling,scaling,fliph,flipv)
+ sspr(sx,sy,dim,dim,x*8+1,y*8+1,scaling,scaling,fliph,flipv)
  for i=0,15 do
   pal(i, i)
  end
- sspr(sx,sy,dim,dim,x*8,y*8,scaling,scaling,act_flipv,false)
+ sspr(sx,sy,dim,dim,x*8,y*8,scaling,scaling,fliph,flipv)
 end
 
-function get_npc_by_charidx(npcs,qcharidx)
- for n in all(npcs) do
-  if n.charidx==qcharidx then
+function get_npc_by_charid(qcharid)
+ for n in all(get_all_npcs()) do
+  if n.charid==qcharid then
    return n
   end
  end
@@ -1087,7 +1048,7 @@ function get_first_active_dlg()
 end
 
 function player_on_location(loc)
- return act_x+maps[act_mapsidx].cellx==loc.x and act_y+maps[act_mapsidx].celly==loc.y
+ return act_x==loc.x and act_y==loc.y
 end
 
 function player_sel_location(loc)
@@ -1099,26 +1060,25 @@ function player_sel_location(loc)
  return act_x+sel.x == loc.x and act_y+sel.y == loc.y
 end
 
-function player_use_item(itemidx,mapidx,x_idx,y_idx)
- if act_useitem==itemidx and act_mapsidx==mapidx then
+function player_use_item(itemidx,mapid,x_idx,y_idx)
+ if act_useitem==itemidx and act_mapsid==mapid then
   if x_idx != nil and (x_idx != act_x or y_idx != act_y) then
    return false
   end 
-  act_useitem=nil
   return true
  end
  return false
 end
 
-function playmap_spr_visible(mapidx, spri)
- if act_mapsidx != mapidx then
+function playmap_spr_visible(mapid, spri)
+ if act_mapsid != mapid then
   return false
  end
- local mapspr=sget(act_x+maps[act_mapsidx].cellx,act_y+maps[act_mapsidx].celly)==spri
+ local mapspr=sget(act_x+get_map_by_id(act_mapsid).cellx,act_y+get_map_by_id(act_mapsid).celly)==spri
  local npcspr=false
- for n in all(get_npcs_for_map(act_mapsidx)) do
+ for n in all(get_npcs_for_map(act_mapsid)) do
   local idtfr=n.x..'|'..n.y
-  if is_element_in(maps[act_mapsidx].discvrdtiles,idtfr) and characters[n.charidx].mapidx==spri then
+  if is_element_in(get_map_by_id(act_mapsid).discvrdtiles,idtfr) and get_char_by_name(n.charid).mapspridx==spri then
    npcspr=true
    break
   end
@@ -1141,19 +1101,19 @@ end
 function maybe_queue_party_move(destx, desty)
  for p in all(party) do
   if flr(rnd(2)) == 0 and p.intent==nil then
-   queue_move_npc(p.charidx,{x=destx,y=desty},nil,nil)
+   queue_move_npc(p.charid,{x=destx,y=desty},nil,nil)
   end
  end
 end
 
-function queue_move_npc(charidx,destcurmaploc,destnextmap,destnextmaploc)
+function queue_move_npc(charid,destcurmaploc,destnextmap,destnextmaploc)
  for npc in all(npcs) do
-  if npc.charidx == charidx then
+  if npc.charid == charid then
    set_walk_intent(npc,destcurmaploc,destnextmap,destnextmaploc)
   end
  end
  for p in all(party) do
-  if p.charidx == charidx then
+  if p.charid == charid then
    set_walk_intent(p,destcurmaploc,destnextmap,destnextmaploc)
   end
  end
@@ -1170,12 +1130,12 @@ end
 function transition_to_playmap()
 music(-1)
  act_stagetype = "playmap"
- act_charidx=1
+ act_charid='greg'
  act_dialogspeakidx=1
  act_item=1
  act_text.dialog = {}
- party={{charidx=2,x=nil,y=nil},{charidx=4,x=nil,y=nil}}
- transition_to_map({mp=1,loc={x=8, y=8}})
+ party={{charid='wirt',x=nil,y=nil},{charid='kitty',x=nil,y=nil}}
+ transition_to_map({mp='woods1',loc={x=8, y=8}})
  pal(14,14,1)
  pal(5,5,1)
  pal(12,12,1)
@@ -1183,18 +1143,18 @@ music(-1)
  pal(13,13,1)
 end
 
-function transition_npc_to_map(npc, dest_mapidx, dest_x, dest_y)
+function transition_npc_to_map(npc, dest_mapid, dest_x, dest_y)
  for n in all(npcs) do
-  if n.charidx == npc.charidx then
+  if n.charid == npc.charid then
    n.x = dest_x
    n.y = dest_y
-   n.mapidx = dest_mapidx
+   n.mapid = dest_mapid
   end
  end
 end
 
 function transition_to_map(dest)
- act_mapsidx = dest.mp
+ act_mapsid = dest.mp
  act_x = dest.loc.x
  act_y = dest.loc.y
  act_wrld_items={}
@@ -1203,7 +1163,7 @@ function transition_to_map(dest)
   repeat
    x=act_x + flr(rnd(3)) - 1
    y=act_y + flr(rnd(3)) - 1
-   if is_element_in(split(walkable), mget(x+maps[act_mapsidx].cellx, y+maps[act_mapsidx].celly)) then
+   if is_element_in(split(walkable), mget(x+get_map_by_id(act_mapsid).cellx, y+get_map_by_id(act_mapsid).celly)) then
     didadd = true
     party[i].x=x
     party[i].y=y
@@ -1212,27 +1172,28 @@ function transition_to_map(dest)
    end
   until didadd
  end
- local titlex=63-(2*#maps[act_mapsidx].title)
- act_text.maptitle={x=titlex,y=56,txt=maps[act_mapsidx].title,frmcnt=20}
+ local m = get_map_by_id(act_mapsid)
+ local titlex=63-(2*#m.title)
+ act_text.maptitle={x=titlex,y=56,txt=m.title,frmcnt=20}
  -- check alt tiles
- local amcx,amcy=maps[act_mapsidx].cellx,maps[act_mapsidx].celly
- if not is_element_in(altsset, act_mapsidx) then
+ local amcx,amcy=m.cellx,m.celly
+ if not is_element_in(altsset, act_mapsid) then
   local srctiles=get_sourceidxs()
   for i=0,15 do
    for j=0,15 do
     local tilspr=mget(i+amcx, j+amcy)
     if (is_element_in(srctiles,tilspr)) then
-     local dsts=split(get_dsts_by_source(tilspr))
+     local dsts=get_dsts_by_source(tilspr)
      local randsel=get_rand_idx(dsts)
      mset(i+amcx, j+amcy, dsts[randsel])
     end
    end
   end
-  add(altsset,act_mapsidx)
+  add(altsset,act_mapsid)
  end
  -- add buildings
  for m in all(maps) do
-  if m.type=='interior' and m.playmapidx==act_mapsidx then
+  if m.type=='interior' and m.playmapid==act_mapsid then
    mset(m.playmaploc.x+amcx,m.playmaploc.y+amcy,m.playmapspr)
    mset(m.playmaploc.x+amcx+1,m.playmaploc.y+amcy,m.playmapspr+1)
    mset(m.playmaploc.x+amcx,m.playmaploc.y+1+amcy,m.playmapspr+16)
@@ -1258,11 +1219,11 @@ function get_rand_idx(arr)
  return flr(rnd(#arr))+1
 end
 
-function get_char_idle_dialog(charidx)
+function get_char_idle_dialog(charid)
  local idle_dialogs={}
- local idles=characters[charidx].idle
+ local idles=get_char_by_name(charid).idle
  for idle in all(idles) do
-  add(idle_dialogs,{{speakeridx=charidx,text=idle}})
+  add(idle_dialogs,{{speakerid=charid,text=idle}})
  end
  return idle_dialogs
 end
@@ -1288,7 +1249,7 @@ function draw_fancy_text_box(text,x,y,active)
 end
 
 function get_all_npcs()
- return union_arrs(party, get_npcs_for_map(act_mapsidx))
+ return union_arrs(party, get_npcs_for_map(act_mapsid))
 end
 
 function union_arrs(arr1, arr2)
@@ -1305,12 +1266,14 @@ end
 function draw_chars_from_array(npcs)
  for npc in all(npcs) do
   if npc.x != nil and npc.y != nil then
-   local sp=characters[npc.charidx].mapidx
+   local c=get_char_by_name(npc.charid)
    local scaling=1.0
-   if characters[npc.charidx].scaling != nil then
-    scaling=characters[npc.charidx].scaling
-   end
-   draw_spr_w_outline(0, sp, npc.x, npc.y, scaling)
+   if (c.scaling != nil) scaling=c.scaling
+   local flipv=false
+   if (npc.flipv) flipv=true
+   local fliph=false
+   if (act_x < npc.x and not flipv) fliph=true
+   draw_spr_w_outline(0, c.mapspridx, npc.x, npc.y, scaling, fliph, flipv)
   end
  end
 end
@@ -1324,8 +1287,9 @@ function draw_character_dialog_box(dialogobj)
   nameidx=dialogobj.nameidx
  end
  draw_fancy_box(8,100,112,24,4,10,9)
- print(characters[dialogobj.speakeridx].get_name_at_idx(characters[dialogobj.speakeridx],nameidx), 30, 104, 2)
- print(characters[dialogobj.speakeridx].get_name_at_idx(characters[dialogobj.speakeridx],nameidx), 29, 103, 9)
+ local c = get_char_by_name(dialogobj.speakerid)
+ print(c.get_name_at_idx(c,nameidx), 30, 104, 2)
+ print(c.get_name_at_idx(c,nameidx), 29, 103, 9)
  local fulltext,partial = dialogobj.text,dialogobj.text
  if dialogobj.time < #fulltext then
   partial=sub(fulltext,1,dialogobj.time)
@@ -1344,7 +1308,7 @@ function draw_character_dialog_box(dialogobj)
   printsp(sub(partial,1,chi).."\n"..sub(partial,chi+1), 29, 110, 0)
  end
  draw_fancy_box(10,103,17,17,0,6,5)
- spr(characters[dialogobj.speakeridx].chrsprdailogueidx, 11, 104, 2, 2)
+ spr(c.chrsprdailogueidx, 11, 104, 2, 2)
  print("\151",105,118,0)
  palt(5,true)
  pal(12,0)
@@ -1372,10 +1336,10 @@ function drop_first_elem(arr)
  return newarr
 end
 
-function get_npcs_for_map(mapidx)
+function get_npcs_for_map(mapid)
  local r = {}
  for n in all(npcs) do
-  if n.mapidx == mapidx then
+  if n.mapid == mapid then
    add(r,n)
   end
  end
@@ -1399,11 +1363,12 @@ function draw_two_colored(s,x,y)
  print(st[2],x+(#st[1]*8),y,7)
 end
 
+local alttiles = split(alttiles_list, '#')
 function get_dsts_by_source(source)
  for altstr in all(alttiles) do
   local alt = split(altstr, ';')
   if source==alt[1] then
-   return alt[2]
+   return split(alt[2])
   end
  end
  return nil
@@ -1416,17 +1381,6 @@ function get_sourceidxs()
   add(sources,srcidx)
  end
  return sources
-end
-
-function is_element_in(array, k)
- local match = false
- for elem in all(array) do
-  if k == elem then
-   match = true
-   break
-  end
- end
- return match
 end
 
 function string_n_inst(hs, n, inst)
@@ -1632,14 +1586,14 @@ d44449904099444ddddddddddddddddd8888888888888888dddfffeefffffddd4237732400000000
 dd24000292000944d75dccc1ccccd57d8888888888888888d00f6ffffff6f00d427733242020002033b3333333333b333bbbbbb333333333cccccccc44444444
 ddd4002904200042d75c11111111c57d88888888888888880555ffffffff5550425555240220202033333333333333333bbbbbb333333333cccccccc44444444
 04d420400440204dd755c11ccccc557d88888888888888880005555500055000424444242000200033333333333333333333333333333333cccccccc44444444
-d24404499444440dd5555cc11115555d888888888888888888888888000000004288682444444444333333330343433033333333ccc7cc7ccccc7ccc44464446
-ddd044900994040ddd7007700077007d8888888888888888888888880000000042666824444424444332483434334444333333337ccc7cc7c56667cc45646564
-dd4499000009444ddd7076070760707d888888888888888888888888000000002288662244425524343443430433442333333333c7cc7cc75666667c44544454
-dd4900022000944ddd7070070700707d888888888888888888888888000000004222222444655254243423433343040333333333c7cc7c7c5666667c44446464
-dd4000244000042dd77007700577007788888888888888888888888800000000442aa244425625543844443233344423333333337cc7cccc5666667c44644654
-dd420244042024ddddd70000500507dd888888888888888888888888000000004429924440526522332243333333002333333333ccccc7ccc566667c44644464
-d4404444044404dddd7777775007777d888888888888888888888888000000004429824445252644334443333330420333344233cccccc7cc56667cc56545664
-d4004440444042dddddc1c55055555dd888888888888888888888888000000004222222440504444344422333044222330442243ccccc7cccccc7ccc45444554
+d24404499444440dd5555cc11115555d8888888888888888dddd4ccc000000004288682444444444333333330343433033333333ccc7cc7ccccc7ccc44464446
+ddd044900994040ddd7007700077007d8888888888888888dcdd47c70000000042666824444424444332483434334444333333337ccc7cc7c56667cc45646564
+dd4499000009444ddd7076070760707d8888888888888888cccd4474000000002288662244425524343443430433442333333333c7cc7cc75666667c44544454
+dd4900022000944ddd7070070700707d88888888888888887c744442000000004222222444655254243423433343040333333333c7cc7c7c5666667c44446464
+dd4000244000042dd7700770057700778888888888888888d744422400000000442aa244425625543844443233344423333333337cc7cccc5666667c44644654
+dd420244042024ddddd70000500507dd8888888888888888dd442dcc000000004429924440526522332243333333002333333333ccccc7ccc566667c44644464
+d4404444044404dddd7777775007777d8888888888888888d442dd7c000000004429824445252644334443333330420333344233cccccc7cc56667cc56545664
+d4004440444042dddddc1c55055555dd8888888888888888442dddd7000000004222222440504444344422333044222330442243ccccc7cccccc7ccc45444554
 333333333333333333333333333333333333333663333333335777777777753333333332233333335555555533399933333333337ccccccccccccccc44444466
 333333355000333333355533333333333333336aa6553333677777777777777633333388883333335c55c55533999a9333333333c7ccc7cccccc7ccc46454454
 3333335445000333355555553333333333333379a75553335756733333576575333333377333333355c55c55399aa999333333337ccccc7cccc657cc45456644
