@@ -8,7 +8,7 @@ local walkable="43,185,106,191,202,203,205,207,222,223,238,239,240,241,242,244,2
 local alttiles_list="206;206,221,237#238;222,238#207;207,223,239#235;235,251,218#205;202,203,205#236;204,236"
 local altsset={}
 -- of the form "<obj_sprite_idxs>;<obj_text>#"
-local objdescript_list="122,123,138,139;what a nice old wagon#124,125,140,141;the poor old mill...#158;look at these pumpkins!#159;it says pottsfield \148#174;looks like its harvest time!#190;this pumpkin is missing#204,236;its just a bush...#218,235,251;this tree sure is tall#220;a stump of some weird tree?#219;a creepy tree with a face on it#224,225,240,241;pottsfield old barn#226,227,242,243;the old grist mill#228,229,244,245;the animal schoolhouse#232,233,248,249;pottsfield old church#108;a rickety old fence#109;a scarecrow of sorts#110;the ground is higher here#127;a deep hole in the ground#42;what a nice view out this window#43;this is the door#58;its a large cabinet#59;its a comfortable chair#74;its a small desk#75;its a school desk#90;its a lounge chair#91;its a bundle of logs#106;its a ladder (i swear)#107;its a railing#143;its a piano!#177;its the mill\'s grinder!#178;its a jar of thick oil#179;its a broken jar of oil#200;its a chalk board#216;its warm by the fireplace#217;a bundle of black oily sticks#180,181;a cafeteria bench and table#230,231,246,247;the town gazebo#232,233,248,249;pottsfield home"
+local objdescript_list="122,123,138,139;what a nice old wagon#124,125,140,141;the poor old mill...#158;look at these pumpkins!#159;it says pottsfield \148#174;looks like its harvest time!#190;this pumpkin is missing#204,236;its just a bush...#218,235,251;this tree sure is tall#220;a stump of some weird tree?#219;a creepy tree with a face on it#224,225,240,241;pottsfield old barn#226,227,242,243;the old grist mill#228,229,244,245;the animal schoolhouse#232,233,248,249;pottsfield old church#108;a rickety old fence#109;a scarecrow of sorts#110;the ground is higher here#127;a deep hole in the ground#42;what a nice view out this window#43;this is the door#58;its a large cabinet#59;its a comfortable chair#74;its a small desk#75;its a school desk#90;its a lounge chair#91;its a bundle of logs#106;its a ladder (i swear)#107;its a railing#143;its a piano!#177;its the mill\'s grinder!#178;its a jar of thick oil#179;its a broken jar of oil#200;its a chalk board#215;i found a rock fact!#216;its warm by the fireplace#217;a bundle of black oily sticks#180,181;a cafeteria bench and table#230,231,246,247;the town gazebo#232,233,248,249;pottsfield home"
 local inv_items={
  {spridx=255,name='candy',charids={'greg'}},
  {spridx=214,name='bird art',charids={'greg'}},
@@ -28,9 +28,10 @@ local act_text={maptitle=nil,dialog={},charsel=nil}
 local act_stagetype="boot"
 local act_dialogspeakidx=1
 local act_mapsid=nil
+local edelwood_sels,rockfact_sels={},{}
 local party={}
 -- of the form "<name>;<map_spr_idx>;<speak_spr_idx>;<idle_txts>;<scaling>#"
-local character_list='greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?;1#wirt;1;4;uh, hi...|oh sorry, just thinking;1#beatrice;16;6;yes, i can talk...|lets get out of here!;1#kitty,wirt,wirt jr.,george washington,mr. president,benjamin franklin,doctor cucumber,greg jr.,skipper,ronald,jason funderburker;17;8;ribbit;1#the beast;32;34;;1#the woodsman;33;36;i need more oil|beware these woods;1#the beast?;48;38;*glares at you hungrily*;2#dog;49;40;;1#black turtle;64;66;*stares blankly*;1#turkey;65;68;gobble. gobble. gobble.;1#pottsfield citizen 1;80;98;you\'re too early;1#pottsfield citizen 2;80;102;are you new here?;1#pottsfield harvest;81;70;thanks for digging me up!;1#pottsfield partier;96;100;let\'s celebrate!;1#enoch;97;72;what a wonderful harvest|you don\'t look like you belong here;2#dog student;10;44;humph...|huh...;1#gorilla;113;12;;1#jimmy brown;11;14;;1#cat student;26;46;humph...|huh...;1#ms langtree;112;104;oh that jimmy brown|i miss him so...;1#the lantern;nil;76;;1#rock fact;nil;78;;1#edelwood;219;192;;1#racoon student;27;194;humph...|huh...;1'
+local character_list='greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?;1#wirt;1;4;uh, hi...|oh sorry, just thinking;1#beatrice;16;6;yes, i can talk...|lets get out of here!;1#kitty,wirt,wirt jr.,george washington,mr. president,benjamin franklin,doctor cucumber,greg jr.,skipper,ronald,jason funderburker;17;8;ribbit;1#the beast;32;34;;1#the woodsman;33;36;i need more oil|beware these woods;1#the beast?;48;38;;2#dog;49;40;;1#black turtle;64;66;*stares blankly*;1#turkey;65;68;gobble. gobble. gobble.;1#pottsfield citizen 1;80;98;you\'re too early;1#pottsfield citizen 2;80;102;are you new here?;1#pottsfield harvest;81;70;thanks for digging me up!;1#pottsfield partier;96;100;let\'s celebrate!;1#enoch;97;72;what a wonderful harvest|you don\'t look like you belong here;2#dog student;10;44;humph...|huh...;1#gorilla;113;12;;1#jimmy brown;11;14;;1#cat student;26;46;humph...|huh...;1#ms langtree;112;104;oh that jimmy brown|i miss him so...;1#the lantern;nil;76;;1#rock fact;nil;78;;1#edelwood;219;192;;1#racoon student;27;194;humph...|huh...;1#achievement get!;nil;196;;1'
 -- of the form "<mp_one_idx>;<mp_two_idx>;<mp_one_locs>;<mp_two_locs>#"
 local map_trans_list='woods1;woods2;15,5|15,4;0,14|0,15#woods2;millandriver;13,0|14,0|15,0;0,13|0,14|0,15#millandriver;woods3;0,0|1,0;13,15|14,15|15,15#millandriver;mill;7,3;0,5#woods3;pottsfield;7,0|8,0;7,15|8,15#pottsfield;barn;4,2|5,2;7,15|8,15#pottsfield;woods4;9,0|10,0;6,15|7,15#woods4;grounds;7,0|8,0;7,15|8,15#grounds;school;6,7|7,7;8,15|9,15|11,0#pottsfield;home;10,8|11,8;7,12'
 local npc_data = 'black turtle,13,7,woods1#the woodsman,6,7,woods2#pottsfield citizen 1,7,7,barn,loop,7|7|10|10#pottsfield citizen 1,7,10,barn,loop,7|7|10|10#pottsfield citizen 2,10,7,barn,loop,7|7|10|10#pottsfield citizen 2,10,10,barn,loop,7|7|10|10#enoch,8,8,barn#ms langtree,8,9,school#dog student,7,11,school#cat student,9,11,school#racoon student,9,13,school#turkey,7,6,home'
@@ -39,7 +40,7 @@ local darkspr_list='174,204,218,219,235,236,251#2,3,4,8,9,10,11#0,0,1,1,0,1,1'
 local darkanims={}
 local nonrptdialog={x=nil,y=nil}
 local compltdlgs={}
-local dialog_list="1;kitty;led through the mist#1;kitty;by the milk-light of moon#1;kitty;all that was lost is revealed#1;kitty;our long bygone burdens#1;kitty;mere echoes of the spring#1;kitty;but where have we come?#1;kitty;and where shall we end?#1;kitty;if dreams can't come true#1;kitty;then why not pretend?#1;kitty;how the gentle wind#1;kitty;beckons through the leaves#1;kitty;as autumn colors fall#1;kitty;dancing in a swirl#1;kitty;of golden memories#1;kitty;the loveliest lies of all#2;greg;i sure do love my frog!#2;wirt;greg, please stop...#2;kitty;4;ribbit.#2;greg;haha, yeah!#3;wirt;i dont like this at all#3;greg;its a tree face!#3;edelwood;*howls in the wind*#4;wirt;is that some sort of deranged lunatic?#4;wirt;with an axe waiting for victims?#4;the woodsman;*swings axe and chops tree*#4;greg;we should ask him for help!#5;wirt;whoa... wait greg...#5;wirt;... where are we?#5;greg;we\'re in the woods!#5;wirt;no, i mean#5;wirt;... where are we?!#6;wirt;we're really lost greg...#6;greg;i leave trails of candy from my pants!#6;greg;candytrail. candytrail. candytrail!#7;beatrice;help! help!#7;wirt;i think its coming from a bush?#8;beatrice;help me!#8;greg;wow, a talking bush!#8;beatrice;i\'m not a talking bush! i\'m a bird!#8;beatrice;and i\'m stuck!#8;greg;wow, a talking bird!#8;beatrice;if you help me get unstuck, i\'ll#8;beatrice;owe you one#8;greg;ohhhh! you'll grant me a wish?!#8;greg;*picks up beatrice out of bush*#8;wirt;uh-uh! no!#9;the woodsman;these woods are a dangerous place#9;the woodsman;for two kids to be alone#9;wirt;we... we know, sir#9;greg;yeah! i\'ve been leaving a trail#9;greg;of candy from my pants!#9;the woodsman;please come inside...#9;beatrice;i don\'t like the look of this#9;kitty;ribbit.#10;wirt;oh! terribly sorry to have#10;wirt;disturbed you sir!#10;turkey;gobble. gobble. gobble.#11;greg;wow, look at this turtle!#11;wirt;well thats strange#11;greg;i bet he wants some candy!#11;black turtle;*stares blankly*#12;the beast?;*glares at you, panting*#12;greg;you have beautiful eyes!#12;greg;ahhhh!#13;wirt;wow this place is dingey#13;beatrice;yeah this guy gives me the creeps#13;wirt;we should find a way to take him out#13;wirt;before he gets a chance to hurt us#13;greg;i can handle it!#14;wirt;i dont think we should#14;wirt;go back the way we came#15;the woodsman;whats the rucus out here?#15;wirt;oh nothing sir!#15;greg;nows my chance!#16;the woodsman;i work as a woodsman in these woods#16;the lantern;keeping the light in this lantern lit#16;the woodsman;by processing oil of the edelwood trees#16;the woodsman;you boys are welcome to stay here#16;the woodsman;ill be in the workshop#16;greg;okey dokey!#17;greg;this bird art sculpture is perfect!#18;greg;there! this little guy wanted a snack#18;black turtle;*stares blankly*#19;the woodsman;ow! *falls onto ground*#19;greg;haha yeah, i did it!#19;wirt; greg! what have you done!#19;beatrice;oh this is just great!#19;wirt;hey greg... where did your frog go?#19;greg;where is that frog o mine?"
+local dialog_list="1;kitty;led through the mist#1;kitty;by the milk-light of moon#1;kitty;all that was lost is revealed#1;kitty;our long bygone burdens#1;kitty;mere echoes of the spring#1;kitty;but where have we come?#1;kitty;and where shall we end?#1;kitty;if dreams can't come true#1;kitty;then why not pretend?#1;kitty;how the gentle wind#1;kitty;beckons through the leaves#1;kitty;as autumn colors fall#1;kitty;dancing in a swirl#1;kitty;of golden memories#1;kitty;the loveliest lies of all#2;greg;i sure do love my frog!#2;wirt;greg, please stop...#2;kitty;4;ribbit.#2;greg;haha, yeah!#3;wirt;i dont like this at all#3;greg;its a tree face!#3;edelwood;*howls in the wind*#4;wirt;is that some sort of deranged lunatic?#4;wirt;with an axe waiting for victims?#4;the woodsman;*swings axe and chops tree*#4;greg;we should ask him for help!#5;wirt;whoa... wait greg...#5;wirt;... where are we?#5;greg;we\'re in the woods!#5;wirt;no, i mean#5;wirt;... where are we?!#6;wirt;we're really lost greg...#6;greg;i leave trails of candy from my#6;greg;pants! candytrail. candytrail. candytrail!#7;beatrice;help! help!#7;wirt;i think its coming from a bush?#8;beatrice;help me!#8;greg;wow, a talking bush!#8;beatrice;i\'m not a talking bush! i\'m a bird!#8;beatrice;and i\'m stuck!#8;greg;wow, a talking bird!#8;beatrice;if you help me get unstuck, i\'ll#8;beatrice;owe you one#8;greg;ohhhh! you'll grant me a wish?!#8;greg;*picks up beatrice out of bush*#8;wirt;uh-uh! no!#9;the woodsman;these woods are a dangerous place#9;the woodsman;for two kids to be alone#9;wirt;we... we know, sir#9;greg;yeah! i\'ve been leaving a trail#9;greg;of candy from my pants!#9;the woodsman;please come inside...#9;beatrice;i don\'t like the look of this#9;kitty;ribbit.#10;wirt;oh! terribly sorry to have#10;wirt;disturbed you sir!#10;turkey;gobble. gobble. gobble.#11;greg;wow, look at this turtle!#11;wirt;well thats strange#11;greg;i bet he wants some candy!#11;black turtle;*stares blankly*#12;the beast?;*glares at you, panting*#12;greg;you have beautiful eyes!#12;greg;ahhhh!#13;wirt;wow this place is dingey#13;beatrice;yeah this guy gives me the creeps#13;wirt;we should find a way to take him out#13;wirt;before he gets a chance to hurt us#13;greg;i can handle it!#14;wirt;i dont think we should#14;wirt;go back the way we came#15;the woodsman;whats the rucus out here?#15;wirt;oh nothing sir!#15;greg;nows my chance!#16;the woodsman;i work as a woodsman in these woods#16;the lantern;keeping the light in this lantern lit#16;the woodsman;by processing oil of the edelwood trees#16;the woodsman;you boys are welcome to stay here#16;the woodsman;ill be in the workshop#16;greg;okey dokey!#17;greg;this bird art sculpture is perfect!#18;greg;there! this little guy wanted a snack#18;black turtle;*stares blankly*#19;the woodsman;ow! *falls onto ground*#19;greg;haha yeah, i did it!#19;wirt;greg! what have you done!#19;beatrice;oh this is just great!#19;wirt;hey greg... where did your frog go?#19;greg;where is that frog o mine?#20;greg;ahhh! the beast!#20;wirt;quick, greg, to the workshop!#20;wirt;we should be able to make it#20;wirt;out through a window!#20;beatrice;hurry!#21;greg;we made it!#21;wirt;hopefully hes stuck there!#21;the beast?;*gets stuck in the window*#21;the beast?;*spits out a candy*#21;dog;*looks at you happily*#21;greg;look! hes my best friend now!#22;the woodsman;what have you boys done?!#22;the woodsman;the mill is destroyed#22;wirt;but we solved your beast problem!#22;the woodsman;you silly boys#22;the woodsman;that silly dog was not the beast#22;the woodsman;go now and continue your journey#22;wirt;we\'re sorry sir#22;the woodsman;beware the beast!"
 local npcs={}
 local triggers={
  {
@@ -69,7 +70,10 @@ local triggers={
  },
  {
   trig=function(self)return player_sel_location({x=5,y=7})end,
-  action=function(self)queue_dialog(3)end,
+  action=function(self)
+   queue_dialog(3)
+   do_edelwood_select()
+  end,
   maplocking='woods2',
   title="inspect the strange tree",
  },
@@ -211,7 +215,7 @@ local triggers={
  {
   trig=function(self) return dialog_is_complete(19) end,
   action=function(self) 
-   act_item=nil
+   act_item=1
    party={}
    add(npcs,{charid='wirt',x=7,y=2,mapid='mill'})
    add(npcs,{charid='beatrice',x=6,y=3,mapid='mill'})
@@ -252,14 +256,10 @@ local title_line_data='128#129#130#131#132#132,true#131,true#130,true#129,true#1
 
 -- base functions
 function is_element_in(array, k)
- local match = false
  for elem in all(array) do
-  if k == elem then
-   match = true
-   break
-  end
+  if (k == elem) return true
  end
- return match
+ return false
 end
 
 function compute_characters()
@@ -595,7 +595,6 @@ function update_play_map()
  if btnp(5) and act_item!=nil and is_element_in(inv_items[act_item].charids,act_charid) and not x_consumed then
   sfx(0)
   act_useitem=act_item
-  x_consumed=true
   -- candy
   if act_item==1 then
    add(act_wrld_items,{spridx=inv_items[act_item].spridx,x=act_x,y=act_y})
@@ -643,9 +642,17 @@ function update_play_map()
    if player_sel_location({x=x,y=y}) and not x_consumed then
     for descpt in all(split(objdescript_list,'#')) do
      local splt = split(descpt, ';')
-     if is_element_in(split(splt[1]),mget(x+get_map_by_id(act_mapsid).cellx,y+get_map_by_id(act_mapsid).celly)) and #act_text.dialog==0 then
+     local selspr=mget(x+get_map_by_id(act_mapsid).cellx,y+get_map_by_id(act_mapsid).celly)
+     if is_element_in(split(splt[1]),selspr) and #act_text.dialog==0 then
       add(act_text.dialog,{{speakerid=act_charid,text=splt[2]}})
       x_consumed=true
+      if (selspr==219) do_edelwood_select()
+      if selspr==215 then
+       if(not is_element_in(rockfact_sels, act_mapsid)) add(rockfact_sels, act_mapsid)
+       add(act_text.dialog,{{speakerid='rock fact',text=split('put raisins in grape juice to get grapes!,test2,test3')[#rockfact_sels]},{speakerid='rock fact',text=#rockfact_sels..' of 3 rock facts collected!'}})
+       mset(x+get_map_by_id(act_mapsid).cellx,y+get_map_by_id(act_mapsid).celly,202)
+       if (#rockfact_sels==1) add(act_text.dialog,{{speakerid='achievement get!',text='you found all the rock facts! congrats!'}})
+      end
       break
      end
     end
@@ -656,6 +663,11 @@ function update_play_map()
  if #act_text.dialog>initialdialoglen or act_lookingdir!= nil then
   sfx(2)
  end
+end
+
+function do_edelwood_select()
+ if(not is_element_in(edelwood_sels, act_mapsid)) add(edelwood_sels, act_mapsid)
+ add(act_text.dialog,{{speakerid='edelwood',text='*eerily howls in the cool fall wind*'},{speakerid='edelwood',text=#edelwood_sels..' of 5 edelwoods found!'}})
 end
 
 function exec_npc_intent(npc)
@@ -1329,12 +1341,7 @@ function draw_character_dialog_box(dialogobj)
  end
  draw_fancy_box(10,103,17,17,0,6,5)
  spr(c.chrsprdailogueidx, 11, 104, 2, 2)
- print("\151",105,118,0)
- palt(5,true)
- pal(12,0)
- spr(234, 112, 116)
- palt(5,false)
- pal(12,12)
+ print("\151",112,118,0)
 end
 
 function get_sel_info_btn(lkdrbtn)
@@ -1351,7 +1358,7 @@ end
 function drop_first_elem(arr)
  newarr={}
  for i=2,#arr do
-  newarr[#newarr + 1]=arr[i]
+  add(newarr, arr[i])
  end
  return newarr
 end
@@ -1367,14 +1374,18 @@ function get_npcs_for_map(mapid)
 end
 
 function draw_fancy_box(x,y,w,h,fg,otlntl,otlnbr)
- rectfill(x+1,y+1,x+w-1,y+h-1,fg)
- line(x+1,y,x+w-1,y,otlntl) -- top line
- line(x+1,y+h,x+w-1,y+h,otlnbr) -- bottom line
- line(x,y+1,x,y+h-1,otlntl) -- left line
- line(x+w,y+1,x+w,y+h-1,otlnbr) -- right line
- pset(x,y+h,0) -- left black dot
- pset(x+w,y+h,0) -- right black dot
- line(x+1,y+h+1,x+w-1,y+h+1,0) -- bottom black line
+local xone=x+1
+local yone=y+1
+local xwid=x+w
+local yhei=y+h
+ rectfill(xone,yone,xwid-1,yhei-1,fg)
+ line(xone,y,xwid-1,y,otlntl) -- top line
+ line(xone,yhei,xwid-1,yhei,otlnbr) -- bottom line
+ line(x,yone,x,yhei-1,otlntl) -- left line
+ line(xwid,yone,xwid,yhei-1,otlnbr) -- right line
+ pset(x,yhei,0) -- left black dot
+ pset(xwid,yhei,0) -- right black dot
+ line(xone,yhei+1,xwid-1,yhei+1,0) -- bottom black line
 end
 
 function draw_two_colored(s,x,y)
@@ -1403,41 +1414,10 @@ function get_sourceidxs()
  return sources
 end
 
-function string_n_inst(hs, n, inst)
- local match = nil
- local mcount = 0
- for i=1,#hs do
-  if sub(hs,i,i) == n then
-   mcount = mcount + 1
-   if mcount == inst then
-    match = i
-    break
-   end
-  end
- end
- return match
-end
-
 -->8 from our friends
 -- print small and pretty
 function printsp(s,...)
  print(smallcaps('^'..s),...)
-end
-
--- thanks http://lua-users.org/wiki/copytable
-function deepcopy(orig)
- local orig_type = type(orig)
- local copy
- if orig_type == 'table' then
-  copy = {}
-  for orig_key, orig_value in next, orig, nil do
-   copy[deepcopy(orig_key)] = deepcopy(orig_value)
-  end
-  setmetatable(copy, deepcopy(getmetatable(orig)))
- else -- number, string, boolean, etc
-  copy = orig
- end
- return copy
 end
 
 -- thanks felice of lexaloffle.com
@@ -1598,22 +1578,22 @@ aa00a9aa000a000a0a00000a0a0a0000000a00aa00a00a00a00a00000a0000000009040009000000
 900220097662266544500054454244440000000044667744ddf0555555550fddd000000d42144114000000000104001000000000000000004244324442244444
 009009004656565444500054450005045444544444466444ddff00000000ffddd000000d44441444000000000104001000000000000000004244424444444444
 990000994442244444455544445550000540054044444444df0ffffffffff0fddd5dd5dd11111111000000000000000000000000000000004444424411111111
-d4444444444444d0dddddddddddddddd8888888888888888dff0777007770ffd444444442020202033333333333333333333333333333333cccccccc44444444
-d2444444444444d4dddddddddddddddd8888888888888888dff5777f5777fffd4222222402002022333333333b3b33333333333333333333cccccccc44444444
-dd44444949444442dddddddddddddddd8888888888888888ddd5777e5777fddd42333324000000003333333333b33333333bbb3333333333cccccccc44444444
-d44449904099444ddddddddddddddddd8888888888888888dddfffeefffffddd4237732400000000333333333333333333bbbbb333333333cccccccc44444444
-0244900040009444d5dddddc1ddddd5d8888888888888888dddff666666ffddd42333324000002003b3b33333333b3b33bbbbbb333333333cccccccc44444444
-dd24000292000944d75dccc1ccccd57d8888888888888888d00f6ffffff6f00d427733242020002033b3333333333b333bbbbbb333333333cccccccc44444444
-ddd4002904200042d75c11111111c57d88888888888888880555ffffffff5550425555240220202033333333333333333bbbbbb333333333cccccccc44444444
-04d420400440204dd755c11ccccc557d88888888888888880005555500055000424444242000200033333333333333333333333333333333cccccccc44444444
-d24404499444440dd5555cc11115555d8888888888888888dddd4ccc000000004288682444444444333333330343433033333333ccc7cc7ccccc7ccc44464446
-ddd044900994040ddd7007700077007d8888888888888888dcdd47c70000000042666824444424444332483434334444333333337ccc7cc7c56667cc45646564
-dd4499000009444ddd7076070760707d8888888888888888cccd4474000000002288662244425524343443430433442333333333c7cc7cc75666667c44544454
-dd4900022000944ddd7070070700707d88888888888888887c744442000000004222222444655254243423433343040333333333c7cc7c7c5666667c44446464
-dd4000244000042dd7700770057700778888888888888888d744422400000000442aa244425625543844443233344423333333337cc7cccc5666667c44644654
-dd420244042024ddddd70000500507dd8888888888888888dd442dcc000000004429924440526522332243333333002333333333ccccc7ccc566667c44644464
-d4404444044404dddd7777775007777d8888888888888888d442dd7c000000004429824445252644334443333330420333344233cccccc7cc56667cc56545664
-d4004440444042dddddc1c55055555dd8888888888888888442dddd7000000004222222440504444344422333044222330442243ccccc7cccccc7ccc45444554
+d4444444444444d0dddddddddddddddddddddddddddddddddff0777007770ffd444444442020202033333333333333333333333333333333cccccccc44444444
+d2444444444444d4dddddddddddddddddddddddddddddddddff5777f5777fffd4222222402002022333333333b3b33333333333333333333cccccccc44444444
+dd44444949444442ddddddddddddddddddddaaaaaaaaddddddd5777e5777fddd42333324000000003333333333b33333333bbb3333333333cccccccc44444444
+d44449904099444dddddddddddddddddddda99999999addddddfffeefffffddd4237732400000000333333333333333333bbbbb333333333cccccccc44444444
+0244900040009444d5dddddc1ddddd5ddda4999999994adddddff666666ffddd42333324000002003b3b33333333b3b33bbbbbb333333333cccccccc44444444
+dd24000292000944d75dccc1ccccd57ddd9a44444444a9ddd00f6ffffff6f00d427733242020002033b3333333333b333bbbbbb333333333cccccccc44444444
+ddd4002904200042d75c11111111c57ddda9aaaaaaaa9add0555ffffffff5550425555240220202033333333333333333bbbbbb333333333cccccccc44444444
+04d420400440204dd755c11ccccc557ddaaa99999999aaad0005555500055000424444242000200033333333333333333333333333333333cccccccc44444444
+d24404499444440dd5555cc11115555daddaaaaaaaaaaddadddd4ccc333333334288682444444444333333330343433033333333ccc7cc7ccccc7ccc44464446
+ddd044900994040ddd7007700077007dadddaa4999aadddadcdd47c73366663342666824444424444332483434334444333333337ccc7cc7c56667cc45646564
+dd4499000009444ddd7076070760707ddadda49a9a9addadcccd4474360767032288662244425524343443430433442333333333c7cc7cc75666667c44544454
+dd4900022000944ddd7070070700707dddada499a99adadd7c744442366666634222222444655254243423433343040333333333c7cc7c7c5666667c44446464
+dd4000244000042dd770077005770077dddaa49a9a9aadddd7444224366aaa63442aa244425625543844443233344423333333337cc7cccc5666667c44644654
+dd420244042024ddddd70000500507ddddddda4999addddddd442dcc356686534429924440526522332243333333002333333333ccccc7ccc566667c44644464
+d4404444044404dddd7777775007777dddddddaaaaddddddd442dd7c335555334429824445252644334443333330420333344233cccccc7cc56667cc56545664
+d4004440444042dddddc1c55055555ddddddddaaaadddddd442dddd7333333334222222440504444344422333044222330442243ccccc7cccccc7ccc45444554
 333333333333333333333333333333333333333663333333335777777777753333333332233333335555555533399933333333337ccccccccccccccc44444466
 333333355000333333355533333333333333336aa6553333677777777777777633333388883333335c55c55533999a9333333333c7ccc7cccccc7ccc46454454
 3333335445000333355555553333333333333379a75553335756733333576575333333377333333355c55c55399aa999333333337ccccc7cccc657cc45456644
@@ -1632,15 +1612,15 @@ d4004440444042dddddc1c55055555dd8888888888888888442dddd7000000004222222440504444
 334424424424442344744474477667733332222222222333335777777777753333377666666776335555555594444229da9999add4ddddddddddd5ddd2dddddd
 __map__
 ebebebebebebebebebebebebebcfcfcfcfcfcfebcececeebebebebebebebebebcdecececcdcdcfcfecececcdcdcdcdebebebebebebebebebebcfcfcfebebebeb7e8e8e8e8e8e8e8e8e8e8e8e8e7e8e7e7e8e8e8e8e8e8e8e8e8e8e8e8e8e8e7eebebebebebebebcfcfebebebebebebebebebebebebebebebebebebebebebebeb
-ebcdebcdebdccdeccdcdcdebcdcfcfcfcfcfcfecebcececdcdecebebebebebebcdcdcdcdcdcdcfcfececcdcdcdcdceceebebebcdcdcdcdcdcdcfcfcdcdcdcdebafbfbfd9d9d9bfbfbfd85bbfbfafbfafafbfbfbfbf4abfbfbfbfbfbfbfbfbfafebcdcdcdcdcdcdcfcfcdcdcdcdcdcdebebebebebebebebebcdcdcdebebebebeb
-ebcdeccdcdeccdcdcdcdececcfcfcfcfebcfcfcfcecececdcdcdcdebebebebebcdcdebcdcdcdcfcfeccdcdcdebcececeebebcd6ccdcdcdcdcdcfcfcdbe9ecddc2abfbfbfbfbfbf5abfbfbf3bbfafbf2aafbfbfbfbfbfbfbfbfbfbfbfb9b9bfafebcdcdeccdcdcdcfcfcdcdcdeccdcdebebebebebcdcdcdcdcdcdcdcdcdebebeb
-ebcdcdebcdcdcdebcdeccfcfcfcfcfebebebcfcfeecececdcdcdcdcdcdebebebcdebebcdebcdcfcfcdcdcdcdcecececdebcd6ccfcfcfcf6ccfcfcfcd9e9ecdebafbfbfbfbfbfbfbfbf3bbfbfbfafbfaf2abfbfbfbfbfbfbfbfbfbfbfbfbfbf2aebcdcdcdcdcdcdcfcfcdebcdcdcdcdebebebebcdcdcdcdcdcdcdcdcdcdcdebeb
-ebcdcdcdecececececcfcfcfcfcfcdebebebceceeeeecfcfcfebececcddcebebcdcdcdcdebcdcfcfcdcdececcececdebeb6ccfcfcfcfcfcfcfcfcd6d9e9ecdebafbfbfbfbfbfbfbfbfbfbfbfbfafbfafafbfb9b9bfbfbfbfbfbfbfbfbfbfbfafebcdcdcdcdcd6ccfcfcdebebcdcdcdebebebebcdcdcdcdcdcdcdcdcdcdcdcdeb
+ebcdebcdebdccdeccdcdcdebcdcfcfcfcfcfcfecebcececdcdecebebebebebebcdcdcdcdcdcdcfcfececcdcdcdcdceceebebebcdcdcdcdcdcdcfcfcdcdcdcdebafbfbfd9d9d9bfbfbfd85bbfbfafbfafafbfbfbfbf4abfbfbfbfbfbfbfbfbfafebebd7cdcdcdcdcfcfcdcdcdcdcdcdebebebebebebebebebcdcdcdebebebebeb
+ebcdeccdcdeccdcdcdcdececcfcfcfcfebcfcfcfcecececdcdcdcdebebebebebcdcdebcdcdcdcfcfeccdcdcdebcececeebebcd6ccdcdcdcdcdcfcfcdbe9ecddc2abfbfbfbfbfbf5abfbfbf3bbfafbf2aafbfbfbfbfbfbfbfbfbfbfbfb9b9bfafebcdcdeccdebcdcfcfcdcdcdeccdcdebebebebebcdcdcdcdcdcdcdcdcdebebeb
+ebcdcdebcdcdcdebcdeccfcfcfcfcfebebebcfcfeecececdcdcdcdcdcdebebebcdebebcdebcdcfcfcdcdcdcdcecececdebcd6ccfcfcfcf6ccfcfcfcd9e9ecdebafbfbfbfbfbfbfbfbf3bbfbfbfafbfaf2abfbfbfbfbfbfbfbfbfbfbfbfbfbf2aebebcdcdcdcdcdcfcfcdebcdcdcdcdebebebebcdcdcdcdcdcdcdcdcdcdcdebeb
+ebcdcdcdecececececcfcfcfcfcfcdebebebceceeeeecfcfcfebececcddcebebcdcdcdcdebcdcfcfcdcdececcececdebeb6ccfcfcfcfcfcfcfcfcd6d9e9ecdebafbfbfbfbfbfbfbfbfbfbfbfbfafbfafafbfb9b9bfbfbfbfbfbfbfbfbfbfbfafebcdcdebcdcd6ccfcfcdebebcdcdcdebebebebcdcdcdcdcdcdcdcdcdcdcdcdeb
 ebebcdeccfcfcfcfcfcfcfcfeccdcdebcecececeeecfcfcfcfcfcfcfcfcdebebcdebebcdebcdcfcf9fcdcdecceceebcdebcdcdcdcdcfcfcfcfcfcd9ebe9ecdeb2bbfbfbfbfbfbfbfbfbfbfbfbf2bbf2aafbfbfbfbfbfbfbfbfbfbfbfbfbf5bafebcdeccdcdebcfcfcfcdebcdcdcdcdebebcdcdcdcdcdcdcdcdcdcdcdcdcdcdeb
 ebcdcdcfcfcfcfcfcfcfcfcfeccdebebcececeebcfcfcfcfcfcfcfcfcfcfebebcdcdcdcdcdcdcfcfcfcdcdcdcecececdebebececcdcfcfcfcfcfcdcdbe9ecdebafbfbfbf4abfbfbfbf3abfbfbfafbfafafbfbfbfbfbfbfbfbfbfbfbfbfbf5bafebcdcdcdebcdcfcfcdebcdcdcdeccdebebcdcdcdeccdcdcdcdcdcdcdcdcdcdeb
 ebcdcdcfcddbcdcfcfcfececcdcdecebceceebebebcfcfcfcfcfcfcfcfcfebebebcdcdcdcdeccfcfcfcfcdcdcdcececeebcdcdcdcd6dcfcfcfcfcdcdececcdcd7e8e8e8e8e8e8e8e8e8e8e8e8e7ebfafafbfbfbfbfbfbfbfbfbfbfbfbfbf5bafebcdcdcdebcdcfcfeccdebcdcdcdcdebebcdcdcdeccdcdcdcdcdcdcdcdcdcdeb
 ebebcdcfcdcdcfcfcfeccdcdcdcdcdebebebebebeb6ccfcfcfcfcfcfcfcdebebcdcdebebcdcdeccfcfcfcdcdcdcdceceebcd9ebe9ecdcdcfcfcfcdcdcdcdcdaeafd9d96bbfbf4ab2bfbf3abfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfb9b9bfafebcdcdcdcdebcfcfcfecebebcdcdcdebebcdcdcdeccdcdcdcfcdcde6e7cdcdeb
-ebcddccfcfcfcfcfeccdebcdcdebcdebebebebeb6ccfcfcfcfcfcfebeccdebebcdebcdcdcdcdeccfcfcfcfcdcdcdcdcdebcd9e9e9ebecdcdcfcfcfcdcdaeaeaeafbfbf6bbfbfbfbfbfbfbfbfbfbfbfafaf5bbfbfbfbfbfbfbfbfbfbfbfbfbfafebcdcdcdcdcdcdcfcfcdebcdcdcdcdebebcdcdcdeccdcdcfcfcdcdf6f7cdcdeb
+ebcddccfcfcfcfcfeccdebcdcdebcdebebebebeb6ccfcfcfcfcfcfebeccdebebd7ebcdcdcdcdeccfcfcfcfcdcdcdcdcdebcd9e9e9ebecdcdcfcfcfcdcdaeaeaeafbfbf6bbfbfbfbfbfbfbfbfbfbfbfafaf5bbfbfbfbfbfbfbfbfbfbfbfbfbfafebcdcdcdcdcdcdcfcfcdebcdcdcdcdebebcdcdcdeccdcdcfcfcdcdf6f7cdcdeb
 ebcdcdcfcfcfcfeccdcdcdcdeccdebebebebeb6ccfcfcfcfcfebebebcdcdebebcdcdcdcdebcdcdeccfcfcfcfcdcdebebebcdbe9ebe9e6e6ecfcfeccdaeaeaeae2abfbf6bbfbfbfbfbfbfbfbfbfbfbfafaf5bbfbfbfbfbfbfbfbfbfbfbfbfbfafebcdcdcdcdcdcdcfcfcdcdcdcdcddbebebcdcdeccdcdcdcfcfcfcfcfcdcdcdeb
 ebcdcfcfcfcfeccdcdcdcdcdcdcdebebebeb6ccfcfcfcfebebebebebcdcdebebebcdcdcdebebcdcdeccfcfcfcfcdcdebebcd9e9ebecdcd6ccfcfeccdaeaeaeaeafbfbf6bbfbfbfbfbfbfbfbfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfbfbfbfafebcdeccdcdcdcdcfcfcdebcdcdcdcdebebcdcdcdcdcdcdcfcfcfcfcdcdcdcdeb
 ebcfcfcfcfcdcdcdcdeccdebcdcdebebeb6ccfcfcfcdcdcdcdebdbeccdcdebebebcdcddccdebcdcdcdcdcfcfcfcfcdebebcdcdcdcdcdcfcfcfcfeccdaeaeaeae2abfbf6bbfbfbfbfbfbfbfbfbfbfbfaf2abfbfbfbfbfbfbfbfbfbfbfbfbfbf2aebcdcdcdcdcdeccfcfcdebcdcdcd9eebebebebcdcdcdcfcfcfcdcdcdcdecebeb
@@ -1650,7 +1630,7 @@ cfcfebebebebebebebebebebebebebebcfcfcfebebebebebebebebebebebebebebebebebebebebeb
 ebebebebebebebebebebebebebebebeb7e8e8e8e8e8e8e8e8e8e8e2b8e8e8e7ed7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d70000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 ebcdcdcdcdcdcdcdcdcdcdcdebebebebafbfbfbfbfbfbfbfbfbfbfbfbfbfbfafd7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d70000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 ebcdcdcdebcdcdcdcdcdcdcdcdcdebeb2abfbfb5b5b5b5b5b5bfbfbfbfbfbf2ad7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d70000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdcdebebcdebcdcdcdebebcdcdebebafbfbfb4b4b4b4b4b4bfbfb5b5b5bfafd7d7d77e8e8e8e8e8e8e8e8e7ed7d7d70000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ebcdcdebebd7ebcdcdcdebebcdcdebebafbfbfb4b4b4b4b4b4bfbfb5b5b5bfafd7d7d77e8e8e8e8e8e8e8e8e7ed7d7d70000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 ebcdebebecebebcdebcdecebebcdebcfafbfbfbfbfbfbfbfbfbfbfb4b4b4bfafd7d7d7afbfbfbfbfbfbfbfbfafd7d7d70000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 ebcdebeccdebcdcdebebcdcdebcdcfcf2abfbfbfbfbfbfbfbfbfbfbfbfbfbf2ad7d7d7afbfbfbfbfbfbfbfbfafd7d7d70000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 ebcdcdcdcdcfcfcfcfcfcfcdcdcdcfcfafbfbf8fbfbfbfbfbfbfbfbfbfbfbfafd7d7d7afbfbfbfbfbfbfbfbfafd7d7d70000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
@@ -1661,8 +1641,8 @@ ebcdcdcdcdcfcfcfcfcfcfcdcdcdcdeb2a4abf4abf4bbf4bbf4bbf4bbfbfbf2ad7d7d7afbfbfbfbf
 ebcdcdebeccdcdcdcdcdcdcdcdcdcdebaf4abf4abfbfbfbfbfbfbfbfbfbfbfafd7d7d7afbfbfbfbfbfbfbfbfafd7d7d70000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 ebcdcdebebebcdcdcdebebcdcdebebeb2abfbfbfbf4bbf4bbf4bbf4bbfbfbf2ad7d7d77e8e8e8e2b8e8e8e8e7ed7d7d70000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 ebebebcdcdcdcdcdcdcdecebebebebebafbf4abfbfbfbfbfbfbfbfbfbfbfbfafd7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d70000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebebebebcdcdcdcdcdebebebcdcdebebafbfbfbfbfbfbfbfbfbfbfbfbfbfbfafd7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d70000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebebebebebcdcdcdcdcdcdcdcdcddbeb7e8e8e8e8e8e8e8e2b2b8e8e8e8e8e7ed7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d70000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ebebebebcdcdcdcdcdebebebcddbebebafbfbfbfbfbfbfbfbfbfbfbfbfbfbfafd7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d70000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ebebebebebcdcdcdcdcdcdcdcdcdebeb7e8e8e8e8e8e8e8e2b2b8e8e8e8e8e7ed7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d70000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __sfx__
 000200001a7201b7201d7201f72000700007000070000700007000070000700007000070000700007000070000700007000070000700007000070000700007000070000700007000070000700007000070000700
 9114000020552205522355221552205521e552205522c552245522a5522d5522c5522a5522c5522c5522a5522a5521c5521c5521c55230552305522a5001c5000050200502005020050200002000020000000000
