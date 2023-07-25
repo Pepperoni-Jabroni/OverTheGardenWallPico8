@@ -47,18 +47,18 @@ local triggers={
   trig=function()
    return act_mapsid=='woods1' and (act_x!=8 or act_y!=8)
   end,
-  action=function()queue_dialog(5)end,
+  action=function()queue_dialog_by_idx(5)end,
   maplocking='woods1',
  },
  {
   trig=function()return player_use_item(1,'woods1') and (act_x!=8 or act_y!=8) end,
-  action=function()queue_dialog(6)end,
+  action=function()queue_dialog_by_idx(6)end,
   maplocking='woods1',
   title="leave a trail of candy",
  },
  {
   trig=function()return player_use_item(1,'woods1',13,7)end,
-  action=function() queue_dialog(18) end,
+  action=function() queue_dialog_by_idx(18) end,
   maplocking='woods1',
   title="give the turtle a candy",
  },
@@ -71,7 +71,7 @@ local triggers={
  {
   trig=function()return player_sel_location({x=5,y=7})end,
   action=function()
-   queue_dialog(3)
+   queue_dialog_by_idx(3)
    do_edelwood_select()
   end,
   maplocking='woods2',
@@ -79,7 +79,7 @@ local triggers={
  },
  {
   trig=function()return playmap_spr_visible('woods2', 33)end,
-  action=function()queue_dialog(4)end,
+  action=function()queue_dialog_by_idx(4)end,
   maplocking='woods2',
   title="meet someone new"
  },
@@ -90,12 +90,12 @@ local triggers={
  },
  {
   trig=function()return act_mapsid=='woods2' and #party==2 and (player_on_location({x=10,y=4}) or player_on_location({x=11,y=4}))end,
-  action=function() queue_dialog(7) end,
+  action=function() queue_dialog_by_idx(7) end,
   title="find a friend"
  },
  {
   trig=function()return player_sel_location({x=8,y=4})end,
-  action=function()queue_dialog(8)end,
+  action=function()queue_dialog_by_idx(8)end,
   maplocking='woods2',
   title="search the bushes"
  },
@@ -108,7 +108,7 @@ local triggers={
  },
  {
   trig=function()return playmap_spr_visible('millandriver', 33)end,
-  action=function()queue_dialog(9)end,
+  action=function()queue_dialog_by_idx(9)end,
   maplocking='millandriver',
   title="talk with the woodsman"
  },
@@ -136,7 +136,7 @@ local triggers={
    party=newparty
    get_map_by_id('millandriver').discvrdtiles={}
    add(npcs,{charid='the beast?',x=12,y=6, mapid='millandriver'})
-   queue_dialog(16)
+   queue_dialog_by_idx(16)
    add(act_wrld_items,{spridx=inv_items[2].spridx,x=4,y=5,mapid=act_mapsid})
   end,
   maplocking='millandriver',
@@ -145,7 +145,7 @@ local triggers={
  {
   trig=function() return playmap_spr_visible('millandriver', 48) end,
   action=function()
-   queue_dialog(12)
+   queue_dialog_by_idx(12)
    local dt = get_map_by_id(act_mapsid).discvrdtiles
    add(dt, '12|6')
    add(dt, '12|7')
@@ -157,11 +157,11 @@ local triggers={
  },
  {
   trig=function() return act_mapsid=='home' end,
-  action=function()queue_dialog(10) end,
+  action=function()queue_dialog_by_idx(10) end,
  },
  {
   trig=function()return playmap_spr_visible('woods1', 64) end,
-  action=function()queue_dialog(11)end,
+  action=function()queue_dialog_by_idx(11)end,
   maplocking='woods1',
   title="spot the turtle",
  },
@@ -192,13 +192,13 @@ local triggers={
   trig=function()
    return act_mapsid=='woods1' and (player_on_location({x=0,y=7}) or player_on_location({x=0,y=8}))
   end,
-  action=function()queue_dialog(14)end,
+  action=function()queue_dialog_by_idx(14)end,
  },
  {
   trig=function()
    return act_mapsid=='mill' and (player_on_location({x=4,y=5}) or player_on_location({x=4,y=6}))
   end,
-  action=function()queue_dialog(13)end,
+  action=function()queue_dialog_by_idx(13)end,
  },
  {
   trig=function()
@@ -211,7 +211,7 @@ local triggers={
     if (i.spridx != inv_items[2].spridx) add(noartitems, i)
    end
    act_wrld_items=noartitems
-   queue_dialog(17)
+   queue_dialog_by_idx(17)
   end,
   maplocking='mill',
   title='find a club'
@@ -434,7 +434,8 @@ function update_main_menu()
  if btnp(4) or btnp(5) then
   if act_y==0 then
    act_stagetype="intro"
-   add(act_text.dialog,1)
+   queue_dialog_by_idx(1)
+   music(0)
   elseif act_y==1 then
    act_stagetype="controls"
   else
@@ -443,12 +444,7 @@ function update_main_menu()
  end
 end
 
-local firstrun=true
 function update_intro()
- if firstrun then
-  music(0)
-  firstrun=false
- end
  if btnp(5) then
   local curprogressdlg=get_first_active_dlg()[act_dialogspeakidx]
   if curprogressdlg != nil then
@@ -498,7 +494,7 @@ function update_play_map()
   act_lookingdir=nil
  end
  -- check active movement
- if act_lookingdir == nil and #act_text.dialog == 0 then
+ if act_lookingdir == nil and initialdialoglen == 0 then
   local m=get_map_by_id(act_mapsid)
   for i=0,3 do
    if btnp(i) then
@@ -523,14 +519,14 @@ function update_play_map()
   end
  end
  -- check for player switch
- if btnp(4) and #act_text.dialog == 0 then
+ if btnp(4) and initialdialoglen == 0 then
   perform_active_party_swap()
   local charname = tostr(get_char_by_name(act_charid).get_name_at_idx(get_char_by_name(act_charid),1))
   act_text.charsel={txt=charname,frmcnt=32}
  end
  -- check for dialog progress
  local x_consumed=false
- if btnp(5) and #act_text.dialog > 0 then
+ if btnp(5) and initialdialoglen > 0 then
   x_consumed=true
   sfx(0)
   local curprogressdlg=get_first_active_dlg()[act_dialogspeakidx]
@@ -583,11 +579,11 @@ function update_play_map()
    if to_map_idx<act_mapsidx then
     transition_to_map({mp=to_map_id,loc={x=to_map_loc[1],y=to_map_loc[2]}})
    elseif #maplocked > 0  then
-    if #act_text.dialog == 0 and not (nonrptdialog.x==act_x and nonrptdialog.y==act_y) then
-     add(act_text.dialog,{{speakerid=act_charid,text="we aren't done here yet... we should"}})
+    if initialdialoglen == 0 and not (nonrptdialog.x==act_x and nonrptdialog.y==act_y) then
+     queue_dialog_by_txt("we aren't done here yet... we should")
      for m in all(maplocked) do
       if m.title then
-       add(act_text.dialog,{{speakerid=act_charid,text=m.title}})
+       queue_dialog_by_txt(m.title)
       end
      end
      nonrptdialog={x=act_x,y=act_y}
@@ -620,7 +616,7 @@ function update_play_map()
   elseif act_item==2 then
    local wmnpc = get_npc_by_charid('the woodsman')
    if distance(act_x, act_y, wmnpc.x, wmnpc.y) < 2.0 and not dialog_is_complete(19) then
-    queue_dialog(19)
+    queue_dialog_by_idx(19)
     wmnpc.flipv=true
    end
   -- old cat
@@ -631,14 +627,14 @@ function update_play_map()
   act_useitem=nil
  end
  -- check for talk w/ npcs
- if #act_text.dialog == 0 and not x_consumed then
+ if initialdialoglen == 0 and not x_consumed then
   for npc in all(get_all_npcs()) do
    for i=-1,1 do
     for j=-1,1 do
      if i!=j and npc.x+i==act_x and npc.y+j==act_y then
       if player_sel_location({x=npc.x,y=npc.y}) then
-       local idles=get_char_idle_dialog(npc.charid)
-       add(act_text.dialog,idles[get_rand_idx(idles)])
+       local idles=get_char_by_name(npc.charid).idle
+       queue_dialog_by_txt(idles[get_rand_idx(idles)],npc.charid)
        x_consumed=true
       end
      end
@@ -661,15 +657,16 @@ function update_play_map()
     for descpt in all(split(objdescript_list,'#')) do
      local splt = split(descpt, ';')
      local selspr=mget(x+get_map_by_id(act_mapsid).cellx,y+get_map_by_id(act_mapsid).celly)
-     if is_element_in(split(splt[1]),selspr) and #act_text.dialog==0 then
-      add(act_text.dialog,{{speakerid=act_charid,text=splt[2]}})
+     if is_element_in(split(splt[1]),selspr) and initialdialoglen==0 then
+      queue_dialog_by_txt(splt[2])
       x_consumed=true
       if (selspr==219) do_edelwood_select()
       if selspr==215 then
        if(not is_element_in(rockfact_sels, act_mapsid)) add(rockfact_sels, act_mapsid)
-       add(act_text.dialog,{{speakerid='rock fact',text=split('put raisins in grape juice to get grapes!,test2,test3')[#rockfact_sels]},{speakerid='rock fact',text=#rockfact_sels..' of 3 rock facts collected!'}})
+       queue_dialog_by_txt(split('put raisins in grape juice to get grapes!,test2,test3')[#rockfact_sels], 'rock fact')
+       queue_dialog_by_txt(#rockfact_sels..' of 3 rock facts collected!', 'rock fact')
        mset(x+get_map_by_id(act_mapsid).cellx,y+get_map_by_id(act_mapsid).celly,202)
-       if (#rockfact_sels==3) add(act_text.dialog,{{speakerid='achievement get!',text='you found all 3 rock facts! well done!'}})
+       if (#rockfact_sels==3) queue_dialog_by_txt('you found all 3 rock facts! well done!','achievement get!')
       end
       break
      end
@@ -685,7 +682,13 @@ end
 
 function do_edelwood_select()
  if(not is_element_in(edelwood_sels, act_mapsid)) add(edelwood_sels, act_mapsid)
- add(act_text.dialog,{{speakerid='edelwood',text='*eerily howls in the cool fall wind*'},{speakerid='edelwood',text=#edelwood_sels..' of 5 edelwoods found!'}})
+ queue_dialog_by_txt('*eerily howls in the cool fall wind*', 'edelwood')
+ queue_dialog_by_txt(#edelwood_sels..' of 5 edelwoods found!', 'edelwood')
+ 
+end
+
+function queue_dialog_by_txt(text,speakerid)
+  add(act_text.dialog,{{speakerid=speakerid or act_charid,text=text}})
 end
 
 function exec_npc_intent(npc)
@@ -1150,7 +1153,7 @@ function trigger_complete(trigi)
  return triggers[trigi].complete
 end
 
-function queue_dialog(dialogi)
+function queue_dialog_by_idx(dialogi)
  add(act_text.dialog,dialogi)
 end
 
@@ -1279,15 +1282,6 @@ end
 
 function get_rand_idx(arr)
  return flr(rnd(#arr))+1
-end
-
-function get_char_idle_dialog(charid)
- local idle_dialogs={}
- local idles=get_char_by_name(charid).idle
- for idle in all(idles) do
-  add(idle_dialogs,{{speakerid=charid,text=idle}})
- end
- return idle_dialogs
 end
 
 function get_chars_w_dialog()
