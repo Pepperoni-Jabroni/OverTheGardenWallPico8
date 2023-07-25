@@ -44,33 +44,33 @@ local dialog_list="1;kitty;led through the mist#1;kitty;by the milk-light of moo
 local npcs={}
 local triggers={
  {
-  trig=function(self)
+  trig=function()
    return act_mapsid=='woods1' and (act_x!=8 or act_y!=8)
   end,
-  action=function(self)queue_dialog(5)end,
+  action=function()queue_dialog(5)end,
   maplocking='woods1',
  },
  {
-  trig=function(self)return player_use_item(1,'woods1') and (act_x!=8 or act_y!=8) end,
-  action=function(self)queue_dialog(6)end,
+  trig=function()return player_use_item(1,'woods1') and (act_x!=8 or act_y!=8) end,
+  action=function()queue_dialog(6)end,
   maplocking='woods1',
   title="leave a trail of candy",
  },
  {
-  trig=function(self)return player_use_item(1,'woods1',13,7)end,
-  action=function(self) queue_dialog(18) end,
+  trig=function()return player_use_item(1,'woods1',13,7)end,
+  action=function() queue_dialog(18) end,
   maplocking='woods1',
   title="give the turtle a candy",
  },
  {
-  trig=function(self)return player_use_item(1,'woods2')end,
-  action=function(self)end,
+  trig=function()return player_use_item(1,'woods2')end,
+  action=function()end,
   maplocking='woods2',
   title="leave a trail of candy",
  },
  {
-  trig=function(self)return player_sel_location({x=5,y=7})end,
-  action=function(self)
+  trig=function()return player_sel_location({x=5,y=7})end,
+  action=function()
    queue_dialog(3)
    do_edelwood_select()
   end,
@@ -78,50 +78,50 @@ local triggers={
   title="inspect the strange tree",
  },
  {
-  trig=function(self)return playmap_spr_visible('woods2', 33)end,
-  action=function(self)queue_dialog(4)end,
+  trig=function()return playmap_spr_visible('woods2', 33)end,
+  action=function()queue_dialog(4)end,
   maplocking='woods2',
   title="meet someone new"
  },
  {
-  trig=function(self)return dialog_is_complete(4)end,
-  action=function(self)queue_move_npc('the woodsman',{x=15,y=0},'millandriver',{x=7,y=7})end,
+  trig=function()return dialog_is_complete(4)end,
+  action=function()queue_move_npc('the woodsman',{x=15,y=0},'millandriver',{x=7,y=7})end,
   maplocking='woods2'
  },
  {
-  trig=function(self)return act_mapsid=='woods2' and #party==2 and (player_on_location({x=10,y=4}) or player_on_location({x=11,y=4}))end,
-  action=function(self) queue_dialog(7) end,
+  trig=function()return act_mapsid=='woods2' and #party==2 and (player_on_location({x=10,y=4}) or player_on_location({x=11,y=4}))end,
+  action=function() queue_dialog(7) end,
   title="find a friend"
  },
  {
-  trig=function(self)return player_sel_location({x=8,y=4})end,
-  action=function(self)queue_dialog(8)end,
+  trig=function()return player_sel_location({x=8,y=4})end,
+  action=function()queue_dialog(8)end,
   maplocking='woods2',
   title="search the bushes"
  },
  {
-  trig=function(self)return dialog_is_complete(8)end,
-  action=function(self)
+  trig=function()return dialog_is_complete(8)end,
+  action=function()
    add(party,{charid='beatrice',x=act_x-1,y=act_y+1,mapid=act_mapsid})
   end,
   maplocking='woods2'
  },
  {
-  trig=function(self)return playmap_spr_visible('millandriver', 33)end,
-  action=function(self)queue_dialog(9)end,
+  trig=function()return playmap_spr_visible('millandriver', 33)end,
+  action=function()queue_dialog(9)end,
   maplocking='millandriver',
   title="talk with the woodsman"
  },
  {
-  trig=function(self)return dialog_is_complete(9)end,
-  action=function(self)
+  trig=function()return dialog_is_complete(9)end,
+  action=function()
    queue_move_npc('the woodsman',{x=7,y=3},'mill',{x=7,y=4})
   end,
   maplocking='millandriver'
  },
  {
-  trig=function(self) return act_mapsid=='mill' and #party==3 end,
-  action=function(self)
+  trig=function() return act_mapsid=='mill' and #party==3 end,
+  action=function()
    act_item = nil 
    if act_charid == 'kitty' then
     perform_active_party_swap()
@@ -143,8 +143,8 @@ local triggers={
   title="enter the mill",
  },
  {
-  trig=function(self) return playmap_spr_visible('millandriver', 48) end,
-  action=function(self)
+  trig=function() return playmap_spr_visible('millandriver', 48) end,
+  action=function()
    queue_dialog(12)
    local dt = get_map_by_id(act_mapsid).discvrdtiles
    add(dt, '12|6')
@@ -156,18 +156,18 @@ local triggers={
   title="find the frog!",
  },
  {
-  trig=function(self) return act_mapsid=='home' end,
-  action=function(self)queue_dialog(10) end,
+  trig=function() return act_mapsid=='home' end,
+  action=function()queue_dialog(10) end,
  },
  {
-  trig=function(self)return playmap_spr_visible('woods1', 64) end,
-  action=function(self)queue_dialog(11)end,
+  trig=function()return playmap_spr_visible('woods1', 64) end,
+  action=function()queue_dialog(11)end,
   maplocking='woods1',
   title="spot the turtle",
  },
  {
-  trig=function(self) return dialog_is_complete(12) end,
-  action=function(self)
+  trig=function() return dialog_is_complete(12) end,
+  action=function()
    get_npc_by_charid('the beast?').intent = 'chase_player'
    add(party,get_npc_by_charid('kitty'))
    for n in all(npcs) do
@@ -177,8 +177,8 @@ local triggers={
   maplocking='millandriver',
  },
  {
-  trig=function(self) return act_mapsid=='mill' and #party==1 end,
-  action=function(self)
+  trig=function() return act_mapsid=='mill' and #party==1 end,
+  action=function()
    add(party,get_npc_by_charid('wirt'))
    add(party,get_npc_by_charid('beatrice'))
    for n in all(npcs) do
@@ -189,22 +189,22 @@ local triggers={
   title='run back to your brother!'
  },
  {
-  trig=function(self)
+  trig=function()
    return act_mapsid=='woods1' and (player_on_location({x=0,y=7}) or player_on_location({x=0,y=8}))
   end,
-  action=function(self)queue_dialog(14)end,
+  action=function()queue_dialog(14)end,
  },
  {
-  trig=function(self)
+  trig=function()
    return act_mapsid=='mill' and (player_on_location({x=4,y=5}) or player_on_location({x=4,y=6}))
   end,
-  action=function(self)queue_dialog(13)end,
+  action=function()queue_dialog(13)end,
  },
  {
-  trig=function(self)
+  trig=function()
    return act_mapsid=='mill' and player_sel_location({x=4,y=5})
   end,
-  action=function(self)
+  action=function()
    act_item=2
    local noartitems = {}
    for i in all(act_wrld_items) do 
@@ -217,8 +217,8 @@ local triggers={
   title='find a club'
  },
  {
-  trig=function(self) return dialog_is_complete(19) end,
-  action=function(self) 
+  trig=function() return dialog_is_complete(19) end,
+  action=function() 
    act_item=1
    party={}
    add(npcs,{charid='wirt',x=7,y=2,mapid='mill'})
@@ -232,28 +232,28 @@ local menuchars={}
 local stagetypes={
  {
   title="boot",
-  update=function(self)update_boot()end,
-  draw=function(self)draw_boot()end
+  update=function()update_boot()end,
+  draw=function()draw_boot()end
  },
  {
   title="mainmenu",
-  update=function(self)update_main_menu()end,
-  draw=function(self)draw_main_menu()end
+  update=function()update_main_menu()end,
+  draw=function()draw_main_menu()end
  },
  {
   title="controls",
-  update=function(self)update_controls()end,
-  draw=function(self)draw_controls()end
+  update=function()update_controls()end,
+  draw=function()draw_controls()end
  },
  {
   title="intro",
-  update=function(self)update_intro()end,
-  draw=function(self)draw_introduction()end
+  update=function()update_intro()end,
+  draw=function()draw_introduction()end
  },
  {
   title="playmap",
-  update=function(self)update_play_map()end,
-  draw=function(self)draw_play_map()end
+  update=function()update_play_map()end,
+  draw=function()draw_play_map()end
  }
 }
 local title_line_data='128#129#130#131#132#132,true#131,true#130,true#129,true#128,true#144#0#133#134#135#136#137#145#0#144,true#144#0#146#147#148#149#150#151#0#144,true#144#0#152#153#160#161#162#163#0#144,true#144#0#0#164#165#166#167#0#0#144,true#168#169#176#176#176#176#176#176#169,true#168,true'
