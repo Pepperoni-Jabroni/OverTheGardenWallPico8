@@ -1,9 +1,9 @@
 pico-8 cartridge // http://www.pico-8.com
-version 33
+version 41
 __lua__
 
 -- configs, state vars & core fns
-local walkable="43,185,106,191,202,203,205,207,222,223,238,239,240,241,242,244,245,246,247,248,249"
+local walkable=split("43,185,106,191,202,203,205,207,222,223,238,239,240,241,242,244,245,246,247,248,249")
 -- of the form "<src_sprite_idx>;<dst_sprite_idxs>"
 local alttiles_list="206;206,221,237#238;222,238#207;207,223,239#235;235,251,218#205;202,203,205#236;204,236"
 local altsset={}
@@ -40,7 +40,7 @@ local darkspr_list='174,204,218,219,235,236,251#2,3,4,8,9,10,11#0,0,1,1,0,1,1'
 local darkanims={}
 local nonrptdialog={x=nil,y=nil}
 local compltdlgs={}
-local dialog_list="1;kitty;led through the mist#1;kitty;by the milk-light of moon#1;kitty;all that was lost is revealed#1;kitty;our long bygone burdens#1;kitty;mere echoes of the spring#1;kitty;but where have we come?#1;kitty;and where shall we end?#1;kitty;if dreams can't come true#1;kitty;then why not pretend?#1;kitty;how the gentle wind#1;kitty;beckons through the leaves#1;kitty;as autumn colors fall#1;kitty;dancing in a swirl#1;kitty;of golden memories#1;kitty;the loveliest lies of all#2;greg;i sure do love my frog!#2;wirt;greg, please stop...#2;kitty;4;ribbit.#2;greg;haha, yeah!#3;wirt;i dont like this at all#3;greg;its a tree face!#3;edelwood;*howls in the wind*#4;wirt;is that some sort of deranged lunatic?#4;wirt;with an axe waiting for victims?#4;the woodsman;*swings axe and chops tree*#4;greg;we should ask him for help!#5;wirt;whoa... wait greg...#5;wirt;... where are we?#5;greg;we\'re in the woods!#5;wirt;no, i mean#5;wirt;... where are we?!#6;wirt;we're really lost greg...#6;greg;i leave trails of candy from my#6;greg;pants! candytrail. candytrail. candytrail!#7;beatrice;help! help!#7;wirt;i think its coming from a bush?#8;beatrice;help me!#8;greg;wow, a talking bush!#8;beatrice;i\'m not a talking bush! i\'m a bird!#8;beatrice;and i\'m stuck!#8;greg;wow, a talking bird!#8;beatrice;if you help me get unstuck, i\'ll#8;beatrice;owe you one#8;greg;ohhhh! you'll grant me a wish?!#8;greg;*picks up beatrice out of bush*#8;wirt;uh-uh! no!#9;the woodsman;these woods are a dangerous place#9;the woodsman;for two kids to be alone#9;wirt;we... we know, sir#9;greg;yeah! i\'ve been leaving a trail#9;greg;of candy from my pants!#9;the woodsman;please come inside...#9;beatrice;i don\'t like the look of this#9;kitty;ribbit.#10;wirt;oh! terribly sorry to have#10;wirt;disturbed you sir!#10;turkey;gobble. gobble. gobble.#11;greg;wow, look at this turtle!#11;wirt;well thats strange#11;greg;i bet he wants some candy!#11;black turtle;*stares blankly*#12;the beast?;*glares at you, panting*#12;greg;you have beautiful eyes!#12;greg;ahhhh!#13;wirt;wow this place is dingey#13;beatrice;yeah this guy gives me the creeps#13;wirt;we should find a way to take him out#13;wirt;before he gets a chance to hurt us#13;greg;i can handle it!#14;wirt;i dont think we should#14;wirt;go back the way we came#15;the woodsman;whats the rucus out here?#15;wirt;oh nothing sir!#15;greg;nows my chance!#16;the woodsman;i work as a woodsman in these woods#16;the lantern;keeping the light in this lantern lit#16;the woodsman;by processing oil of the edelwood trees#16;the woodsman;you boys are welcome to stay here#16;the woodsman;ill be in the workshop#16;greg;okey dokey!#17;greg;this bird art sculpture is perfect!#18;greg;there! this little guy wanted a snack#18;black turtle;*stares blankly*#19;the woodsman;ow! *falls onto ground*#19;greg;haha yeah, i did it!#19;wirt;greg! what have you done!#19;beatrice;oh this is just great!#19;wirt;hey greg... where did your frog go?#19;greg;where is that frog o mine?#20;greg;ahhh! the beast!#20;wirt;quick, greg, to the workshop!#20;wirt;we should be able to make it#20;wirt;out through a window!#20;beatrice;hurry!#21;greg;we made it!#21;wirt;hopefully hes stuck there!#21;the beast?;*gets stuck in the window*#21;the beast?;*spits out a candy*#21;dog;*looks at you happily*#21;greg;look! hes my best friend now!#22;the woodsman;what have you boys done?!#22;the woodsman;the mill is destroyed#22;wirt;but we solved your beast problem!#22;the woodsman;you silly boys#22;the woodsman;that silly dog was not the beast#22;the woodsman;go now and continue your journey#22;wirt;we\'re sorry sir#22;the woodsman;beware the beast!"
+local dialog_list="1;kitty;led through the mist#1;kitty;by the milk-light of moon#1;kitty;all that was lost is revealed#1;kitty;our long bygone burdens#1;kitty;mere echoes of the spring#1;kitty;but where have we come?#1;kitty;and where shall we end?#1;kitty;if dreams can't come true#1;kitty;then why not pretend?#1;kitty;how the gentle wind#1;kitty;beckons through the leaves#1;kitty;as autumn colors fall#1;kitty;dancing in a swirl#1;kitty;of golden memories#1;kitty;the loveliest lies of all#2;greg;i sure do love my frog!#2;wirt;greg, please stop...#2;kitty;4;ribbit.#2;greg;haha, yeah!#3;wirt;i dont like this at all#3;greg;its a tree face!#4;wirt;is that some sort of deranged lunatic?#4;wirt;with an axe waiting for victims?#4;the woodsman;*swings axe and chops tree*#4;wirt;what is that strange tree?#4;greg;we should ask him for help!#5;wirt;whoa... wait greg...#5;wirt;... where are we?#5;greg;we\'re in the woods!#5;wirt;no, i mean#5;wirt;... where are we?!#6;wirt;we're really lost greg...#6;greg;i leave trails of candy from my pants!#6;greg;candytrail. candytrail. candytrail!#7;beatrice;help! help!#7;wirt;i think its coming from a bush?#8;beatrice;help me!#8;greg;wow, a talking bush!#8;beatrice;i\'m not a talking bush! i\'m a bird!#8;beatrice;and i\'m stuck!#8;greg;wow, a talking bird!#8;beatrice;if you help me get unstuck, i\'ll#8;beatrice;owe you one#8;greg;ohhhh! you'll grant me a wish?!#8;greg;*picks up beatrice out of bush*#8;wirt;uh-uh! no!#9;the woodsman;these woods are a dangerous place#9;the woodsman;for two kids to be alone#9;wirt;we... we know, sir#9;greg;yeah! i\'ve been leaving a trail#9;greg;of candy from my pants!#9;the woodsman;please come inside...#9;beatrice;i don\'t like the look of this#9;kitty;ribbit.#10;wirt;oh! terribly sorry to have#10;wirt;disturbed you sir!#10;turkey;gobble. gobble. gobble.#11;greg;wow, look at this turtle!#11;wirt;well thats strange#11;greg;i bet he wants some candy!#11;black turtle;*stares blankly*#12;the beast?;*glares at you, panting*#12;greg;you have beautiful eyes!#12;greg;ahhhh!#13;wirt;wow this place is dingey#13;beatrice;yeah this guy gives me the creeps#13;wirt;we should find a way to take him out#13;wirt;before he gets a chance to hurt us#13;greg;i can handle it!#14;wirt;i dont think we should#14;wirt;go back the way we came#15;the woodsman;whats the rucus out here?#15;wirt;oh nothing sir!#15;greg;nows my chance!#16;the woodsman;i work as a woodsman in these woods#16;the lantern;keeping the light in this lantern lit#16;the woodsman;by processing oil of the edelwood trees#16;the woodsman;you boys are welcome to stay here#16;the woodsman;ill be in the workshop#16;greg;okey dokey!#17;greg;this bird art sculpture is perfect!#18;greg;there! this little guy wanted a snack#18;black turtle;*stares blankly*#19;the woodsman;ow! *falls onto ground*#19;greg;haha yeah, i did it!#19;wirt;greg! what have you done!#19;beatrice;oh this is just great!#19;wirt;hey greg... where did your frog go?#19;greg;where is that frog o mine?#20;greg;ahhh! the beast!#20;wirt;quick, greg, to the workshop!#20;wirt;we should be able to make it#20;wirt;out through a window!#20;beatrice;hurry!#21;greg;we made it!#21;wirt;hopefully hes stuck there!#21;the beast?;*gets stuck in the window*#21;the beast?;*spits out a candy*#21;dog;*looks at you happily*#21;greg;look! hes my best friend now!#22;the woodsman;what have you boys done?!#22;the woodsman;the mill is destroyed#22;wirt;but we solved your beast problem!#22;the woodsman;you silly boys#22;the woodsman;that silly dog was not the beast#22;the woodsman;go now and continue your journey#22;wirt;we\'re sorry sir#22;the woodsman;beware the beast!"
 local npcs={}
 local triggers={
  {
@@ -85,7 +85,7 @@ local triggers={
  },
  {
   trig=function(self)return dialog_is_complete(4)end,
-  action=function(self)queue_move_npc('the woodsman',{x=16,y=-1},'millandriver',{x=7,y=7})end,
+  action=function(self)queue_move_npc('the woodsman',{x=15,y=0},'millandriver',{x=7,y=7})end,
   maplocking='woods2'
  },
  {
@@ -102,7 +102,7 @@ local triggers={
  {
   trig=function(self)return dialog_is_complete(8)end,
   action=function(self)
-   add(party,{charid='beatrice',x=act_x-1,y=act_y+1})
+   add(party,{charid='beatrice',x=act_x-1,y=act_y+1,mapid=act_mapsid})
   end,
   maplocking='woods2'
  },
@@ -137,7 +137,7 @@ local triggers={
    get_map_by_id('millandriver').discvrdtiles={}
    add(npcs,{charid='the beast?',x=12,y=6, mapid='millandriver'})
    queue_dialog(16)
-   add(act_wrld_items,{spridx=inv_items[2].spridx,x=4,y=5})
+   add(act_wrld_items,{spridx=inv_items[2].spridx,x=4,y=5,mapid=act_mapsid})
   end,
   maplocking='millandriver',
   title="enter the mill",
@@ -206,7 +206,11 @@ local triggers={
   end,
   action=function(self)
    act_item=2
-   act_wrld_items={}
+   local noartitems = {}
+   for i in all(act_wrld_items) do 
+    if (i.spridx != inv_items[2].spridx) add(noartitems, i)
+   end
+   act_wrld_items=noartitems
    queue_dialog(17)
   end,
   maplocking='mill',
@@ -461,6 +465,22 @@ function update_intro()
  end
 end
 
+function is_loc_available(mapid, x, y, qcharid)
+ for n in all(get_all_npcs()) do
+  if (n.charid != qcharid and n.mapid == mapid and n.x == x and n.y == y) return false
+ end
+ return is_walkable(mapid, x, y) and not (act_mapsid == mapid and x == act_x and y == act_y)
+end
+
+function get_available_loc(mapid, x, y, qcharid)
+ for i=-1,1 do 
+  for j=-1,1 do 
+   if (is_loc_available(mapid, x+i, y+j, qcharid)) return x+i, y+j
+  end
+ end
+ return x,y
+end
+
 function update_play_map()
  local initialdialoglen=#act_text.dialog
  -- check selection direction
@@ -479,7 +499,6 @@ function update_play_map()
  end
  -- check active movement
  if act_lookingdir == nil and #act_text.dialog == 0 then
-  local ax,ay,mdx=act_x,act_y,act_mapsid
   local m=get_map_by_id(act_mapsid)
   for i=0,3 do
    if btnp(i) then
@@ -487,18 +506,18 @@ function update_play_map()
     break
    end
   end
-  if btnp(2) and ay > 0 and is_element_in(split(walkable), mget(ax+m.cellx, ay - 1+m.celly)) then
-   act_y = ay - 1
+  if btnp(2) and act_y > 0 and is_walkable(act_mapsid, act_x, act_y-1) then
+   act_y = act_y - 1
    last_mapid_mov=act_mapsid
-  elseif btnp(1) and ax < 15 and is_element_in(split(walkable), mget(ax + 1+m.cellx, ay+m.celly)) then
-   act_x = ax + 1
+  elseif btnp(1) and act_x < 15 and is_walkable(act_mapsid, act_x+1, act_y) then
+   act_x = act_x + 1
    act_fliph=false
    last_mapid_mov=act_mapsid
-  elseif btnp(3) and ay < 15 and is_element_in(split(walkable), mget(ax+m.cellx, ay + 1+m.celly)) then
-   act_y = ay + 1
+  elseif btnp(3) and act_y < 15 and is_walkable(act_mapsid, act_x, act_y+1) then
+   act_y = act_y + 1
    last_mapid_mov=act_mapsid
-  elseif btnp(0) and ax > 0 and is_element_in(split(walkable), mget(ax - 1+m.cellx, ay+m.celly)) then
-   act_x = ax - 1
+  elseif btnp(0) and act_x > 0 and is_walkable(act_mapsid, act_x-1, act_y) then
+   act_x = act_x - 1
    act_fliph=true
    last_mapid_mov=act_mapsid
   end
@@ -588,7 +607,6 @@ function update_play_map()
   if not t.complete and t.trig() then
    t.action()
    triggers[i].complete=true
-   add(complete_triggers,i)
   end
  end
  -- check for item usage
@@ -597,7 +615,7 @@ function update_play_map()
   act_useitem=act_item
   -- candy
   if act_item==1 then
-   add(act_wrld_items,{spridx=inv_items[act_item].spridx,x=act_x,y=act_y})
+   add(act_wrld_items,{spridx=inv_items[act_item].spridx,x=act_x,y=act_y,mapid=act_mapsid})
   -- bird art
   elseif act_item==2 then
    local wmnpc = get_npc_by_charid('the woodsman')
@@ -651,7 +669,7 @@ function update_play_map()
        if(not is_element_in(rockfact_sels, act_mapsid)) add(rockfact_sels, act_mapsid)
        add(act_text.dialog,{{speakerid='rock fact',text=split('put raisins in grape juice to get grapes!,test2,test3')[#rockfact_sels]},{speakerid='rock fact',text=#rockfact_sels..' of 3 rock facts collected!'}})
        mset(x+get_map_by_id(act_mapsid).cellx,y+get_map_by_id(act_mapsid).celly,202)
-       if (#rockfact_sels==1) add(act_text.dialog,{{speakerid='achievement get!',text='you found all the rock facts! congrats!'}})
+       if (#rockfact_sels==3) add(act_text.dialog,{{speakerid='achievement get!',text='you found all 3 rock facts! well done!'}})
       end
       break
      end
@@ -671,6 +689,12 @@ function do_edelwood_select()
 end
 
 function exec_npc_intent(npc)
+ -- move npcs off others/player
+ for p in all(party) do 
+   if p.charid == npc.charid and p.intent == nil and not is_loc_available(p.mapid, p.x, p.y, p.charid) then 
+    npc.x,npc.y=get_available_loc(p.mapid, p.x, p.y, p.charid)
+   end
+ end
  if npc.cldwn == nil then
   npc.cldwn=1
  end
@@ -685,9 +709,9 @@ function exec_npc_intent(npc)
   local npcmapid=npc.mapid
   local intentdata = split(npc.intentdata, '|')
   -- do local mvmt
-  if abs(intentdata[1]-npc.x) > abs(intentdata[2]-npc.y) and abs(intentdata[1]-npc.x) != 0 then
+  if intentdata[1]-npc.x != 0 then
    npc.x+=sgn(intentdata[1]-npc.x)
-  elseif abs(intentdata[2]-npc.y) != 0 then
+  elseif intentdata[2]-npc.y != 0 then
    npc.y+=sgn(intentdata[2]-npc.y)
   end
   -- do map switch
@@ -715,7 +739,7 @@ function exec_npc_intent(npc)
      end
     end
   end
-  if (npcmapid==nil and npc.x==intentdata[1] and npc.y==intentdata[2]) npc.intent=nil
+  if (npc.x==intentdata[1] and npc.y==intentdata[2] and (npcmapid==nil or npcmapid==intentdata[3])) npc.intent=nil
  end
  if npc.intent == 'loop' then
   local id = split(npc.intentdata, '|')
@@ -743,7 +767,7 @@ function exec_npc_intent(npc)
 end
 
 function perform_active_party_swap()
- add(party,{charid=act_charid,x=act_x,y=act_y})
+ add(party,{charid=act_charid,x=act_x,y=act_y,mapid=act_mapsid})
  act_charid = party[1].charid
  act_x = party[1].x
  act_y = party[1].y
@@ -927,7 +951,7 @@ function draw_play_map()
  end
  -- draw items
  for i in all(act_wrld_items) do
-  spr(i.spridx,i.x*8,i.y*8)
+  if (i.mapid==act_mapsid) draw_spr_w_outline(0, i.spridx, i.x,i.y, 1, false, false)
  end
  -- draw player
  draw_spr_w_outline(0, get_char_by_name(act_charid).mapspridx, act_x, act_y, 1, act_fliph, false)
@@ -1139,16 +1163,7 @@ function maybe_queue_party_move(destx, desty)
 end
 
 function queue_move_npc(charid,destcurmaploc,destnextmap,destnextmaploc)
- for npc in all(npcs) do
-  if npc.charid == charid then
-   set_walk_intent(npc,destcurmaploc,destnextmap,destnextmaploc)
-  end
- end
- for p in all(party) do
-  if p.charid == charid then
-   set_walk_intent(p,destcurmaploc,destnextmap,destnextmaploc)
-  end
- end
+ set_walk_intent(get_npc_by_charid(charid),destcurmaploc,destnextmap,destnextmaploc)
 end
 
 function set_walk_intent(npc,destcurmaploc,destnextmap,destnextmaploc)
@@ -1166,8 +1181,8 @@ music(-1)
  act_dialogspeakidx=1
  act_item=1
  act_text.dialog = {}
- party={{charid='wirt',x=nil,y=nil},{charid='kitty',x=nil,y=nil}}
  transition_to_map({mp='woods1',loc={x=8, y=8}})
+ party={{charid='wirt',mapid='woods1',x=act_x,y=act_y},{charid='kitty',mapid='woods1',x=act_x,y=act_y}}
  pal(14,14,1)
  pal(5,5,1)
  pal(12,12,1)
@@ -1185,17 +1200,21 @@ function transition_npc_to_map(npc, dest_mapid, dest_x, dest_y)
  end
 end
 
+function is_walkable(mapid, mapx, mapy)
+  local m = get_map_by_id(mapid)
+  return is_element_in(walkable, mget(mapx+m.cellx, mapy+m.celly))
+end
+
 function transition_to_map(dest)
  act_mapsid = dest.mp
  act_x = dest.loc.x
  act_y = dest.loc.y
- act_wrld_items={}
  for i=1,#party do
   didadd=false
   repeat
    x=act_x + flr(rnd(3)) - 1
    y=act_y + flr(rnd(3)) - 1
-   if is_element_in(split(walkable), mget(x+get_map_by_id(act_mapsid).cellx, y+get_map_by_id(act_mapsid).celly)) then
+   if is_walkable(act_mapsid, x, y) then
     didadd = true
     party[i].x=x
     party[i].y=y
@@ -1232,6 +1251,17 @@ function transition_to_map(dest)
    mset(m.playmaploc.x+amcx+1,m.playmaploc.y+1+amcy,m.playmapspr+17)
   end
  end
+ -- fwd chars walking to map
+ for n in all(npcs) do 
+  local id = split(n.intentdata, '|')
+  if n.intent=='walk' and #id > 2 and id[3] == act_mapsid then 
+   n.mapid = act_mapsid
+   n.x = id[4]
+   n.y = id[5]
+   n.intent=nil
+   n.intentdata=nil
+  end
+ end
 end
 
 function distance(x1, y1, x2, y2)
@@ -1263,7 +1293,7 @@ end
 function get_chars_w_dialog()
  chars={}
  for char in all(characters) do
-  if char.chrsprdailogueidx != -1 then
+  if not is_element_in({-1,196}, char.chrsprdailogueidx) then
    add(chars,char)
   end
  end
@@ -1478,7 +1508,7 @@ function print_big(text,x,y,col,factor)
  mcpy(0x0,0x4440)
  poke(0x5f00+col,peek(0x4580))
  poke2(0x5f00,peek2(0x4581))
- fillp(peek2(0x4587)+peek(0x4589)*0x.8)
+ fillp(peek2(0x4587)+peek(0x4589)*0x0.8)
 end
 
 __gfx__
@@ -1592,8 +1622,8 @@ dd4499000009444ddd7076070760707ddadda49a9a9addadcccd4474360767032288662244425524
 dd4900022000944ddd7070070700707dddada499a99adadd7c744442366666634222222444655254243423433343040333333333c7cc7c7c5666667c44446464
 dd4000244000042dd770077005770077dddaa49a9a9aadddd7444224366aaa63442aa244425625543844443233344423333333337cc7cccc5666667c44644654
 dd420244042024ddddd70000500507ddddddda4999addddddd442dcc356686534429924440526522332243333333002333333333ccccc7ccc566667c44644464
-d4404444044404dddd7777775007777dddddddaaaaddddddd442dd7c335555334429824445252644334443333330420333344233cccccc7cc56667cc56545664
-d4004440444042dddddc1c55055555ddddddddaaaadddddd442dddd7333333334222222440504444344422333044222330442243ccccc7cccccc7ccc45444554
+d4404444044404dddd7777775007777dddddddaaaaddddddd442dd7c305555034429824445252644334443333330420333344233cccccc7cc56667cc56545664
+d4004440444042dddddc1c55055555ddddddddaaaadddddd442dddd7330000334222222440504444344422333044222330442243ccccc7cccccc7ccc45444554
 333333333333333333333333333333333333333663333333335777777777753333333332233333335555555533399933333333337ccccccccccccccc44444466
 333333355000333333355533333333333333336aa6553333677777777777777633333388883333335c55c55533999a9333333333c7ccc7cccccc7ccc46454454
 3333335445000333355555553333333333333379a75553335756733333576575333333377333333355c55c55399aa999333333337ccccc7cccc657cc45456644
