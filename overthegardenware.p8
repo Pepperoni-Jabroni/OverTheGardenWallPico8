@@ -1046,9 +1046,7 @@ end
 
 function get_npc_by_charid(qcharid)
  for n in all(get_all_npcs()) do
-  if n.charid==qcharid then
-   return n
-  end
+  if (n.charid==qcharid) return n
  end
  return nil
 end
@@ -1102,10 +1100,6 @@ end
 
 function dialog_is_complete(dialogi)
  return is_element_in(compltdlgs,dialogi)
-end
-
-function trigger_complete(trigi)
- return triggers[trigi].complete or false
 end
 
 function queue_dialog_by_idx(dialogi)
