@@ -53,20 +53,17 @@ local triggers={
  {
   trig=function()return player_use_item(1,'woods1') and (act_x!=8 or act_y!=8) end,
   action=function()queue_dialog_by_idx(6)end,
-  maplocking='woods1',
-  title="leave a trail of candy",
+  maplocking='woods1,leave a trail of candy',
  },
  {
   trig=function()return player_use_item(1,'woods1',13,7)end,
   action=function() queue_dialog_by_idx(18) end,
-  maplocking='woods1',
-  title="give the turtle a candy",
+  maplocking='woods1,give the turtle a candy',
  },
  {
   trig=function()return player_use_item(1,'woods2')end,
   action=function()end,
-  maplocking='woods2',
-  title="leave a trail of candy",
+  maplocking='woods2,leave a trail of candy',
  },
  {
   trig=function()return player_sel_location({x=5,y=7})end,
@@ -74,14 +71,12 @@ local triggers={
    queue_dialog_by_idx(3)
    do_edelwood_select()
   end,
-  maplocking='woods2',
-  title="inspect the strange tree",
+  maplocking='woods2,inspect the strange tree',
  },
  {
   trig=function()return playmap_spr_visible('woods2', 33)end,
   action=function()queue_dialog_by_idx(4)end,
-  maplocking='woods2',
-  title="meet someone new"
+  maplocking='woods2,meet someone new'
  },
  {
   trig=function()return dialog_is_complete(4)end,
@@ -91,13 +86,11 @@ local triggers={
  {
   trig=function()return act_mapsid=='woods2' and #party==2 and (player_on_location({x=10,y=4}) or player_on_location({x=11,y=4}))end,
   action=function() queue_dialog_by_idx(7) end,
-  title="find a friend"
  },
  {
   trig=function()return player_sel_location({x=8,y=4})end,
   action=function()queue_dialog_by_idx(8)end,
-  maplocking='woods2',
-  title="search the bushes"
+  maplocking='woods2,search the bushes'
  },
  {
   trig=function()return dialog_is_complete(8)end,
@@ -109,8 +102,7 @@ local triggers={
  {
   trig=function()return playmap_spr_visible('millandriver', 33)end,
   action=function()queue_dialog_by_idx(9)end,
-  maplocking='millandriver',
-  title="talk with the woodsman"
+  maplocking='millandriver,talk with the woodsman'
  },
  {
   trig=function()return dialog_is_complete(9)end,
@@ -139,8 +131,7 @@ local triggers={
    queue_dialog_by_idx(16)
    add(act_wrld_items,{spridx=inv_items[2].spridx,x=4,y=5,mapid=act_mapsid})
   end,
-  maplocking='millandriver',
-  title="enter the mill",
+  maplocking='millandriver,enter the mill',
  },
  {
   trig=function() return playmap_spr_visible('millandriver', 48) end,
@@ -152,8 +143,7 @@ local triggers={
    add(dt, '13|6')
    add(dt, '13|7')
   end,
-  maplocking='millandriver',
-  title="find the frog!",
+  maplocking='millandriver,find the frog!',
  },
  {
   trig=function() return act_mapsid=='home' end,
@@ -162,8 +152,7 @@ local triggers={
  {
   trig=function()return playmap_spr_visible('woods1', 64) end,
   action=function()queue_dialog_by_idx(11)end,
-  maplocking='woods1',
-  title="spot the turtle",
+  maplocking='woods1,spot the turtle',
  },
  {
   trig=function() return dialog_is_complete(12) end,
@@ -185,8 +174,7 @@ local triggers={
     if (n.charid=='wirt' or n.charid=='beatrice') del(npcs, n)
    end
   end,
-  maplocking='millandriver',
-  title='run back to your brother!'
+  maplocking='millandriver,run back to your brother!'
  },
  {
   trig=function()
@@ -213,8 +201,7 @@ local triggers={
    act_wrld_items=noartitems
    queue_dialog_by_idx(17)
   end,
-  maplocking='mill',
-  title='find a club'
+  maplocking='mill,find a club'
  },
  {
   trig=function() return dialog_is_complete(19) end,
@@ -224,8 +211,7 @@ local triggers={
    add(npcs,{charid='wirt',x=7,y=2,mapid='mill'})
    add(npcs,{charid='beatrice',x=6,y=3,mapid='mill'})
   end,
-  maplocking='mill',
-  title='use the club!'
+  maplocking='mill,use the club!'
  }
 }
 local menuchars={}
@@ -550,7 +536,7 @@ function update_play_map()
  local initmapid = act_mapsid
  local maplocked={}
  for t in all(triggers) do
-  if t.maplocking == act_mapsid and not t.complete then
+  if t.maplocking and split(t.maplocking)[1] == act_mapsid and not t.complete then
    add(maplocked,t)
   end
  end
@@ -582,8 +568,9 @@ function update_play_map()
     if initialdialoglen == 0 and not (nonrptdialog.x==act_x and nonrptdialog.y==act_y) then
      queue_dialog_by_txt("we aren't done here yet... we should")
      for m in all(maplocked) do
-      if m.title then
-       queue_dialog_by_txt(m.title)
+      local maplockinfo=split(m.maplocking)
+      if #maplockinfo > 1 then
+       queue_dialog_by_txt(maplockinfo[2])
       end
      end
      nonrptdialog={x=act_x,y=act_y}
@@ -1709,4 +1696,3 @@ __music__
 00 13404040
 00 14404040
 04 15164040
-
