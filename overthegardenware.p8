@@ -1,7 +1,8 @@
 pico-8 cartridge // http://www.pico-8.com
 version 41
 __lua__
-
+-- over the garden wall
+-- made by pepperoni-jabroni
 -- configs, state vars & core fns
 local walkable=split("43,185,106,191,202,203,205,207,222,223,238,239,240,241,242,244,245,246,247,248,249")
 -- of the form "<src_sprite_idx>;<dst_sprite_idxs>"
@@ -142,7 +143,7 @@ local triggers={
    add(dt, '13|6')
    add(dt, '13|7')
   end,
-  maplocking='millandriver,find the frog!',
+  maplocking='millandriver,find the frog!,hideable',
  },
  {
   trig=function() return act_mapsid=='home' end,
@@ -174,7 +175,7 @@ local triggers={
    end
    queue_dialog_by_idx(20)
   end,
-  maplocking='millandriver,run back to your brother!'
+  maplocking='millandriver,run back to your brother!,hideable'
  },
  {
   trig=function()
@@ -213,7 +214,7 @@ local triggers={
    queue_move_npc('wirt',{x=7,y=2},nil)
    queue_move_npc('beatrice',{x=6,y=3},nil)
   end,
-  maplocking='mill,use the club!'
+  maplocking='mill,use the club!,hideable'
  }
 }
 local menuchars={}
@@ -536,8 +537,11 @@ function update_play_map()
  -- check for map switch
  local maplocked={}
  for t in all(triggers) do
-  if t.maplocking and split(t.maplocking)[1] == act_mapsid and not t.complete then
-   add(maplocked,t)
+  if t.maplocking then
+    local maplockinfo=split(t.maplocking)
+    if maplockinfo[1] == act_mapsid and not t.complete then
+      if (#maplockinfo<3 or #maplocked==0) add(maplocked,t)
+    end
   end
  end
  local to_map_id,to_x,to_y=get_dest_for_loc(act_mapsid, act_x, act_y)
