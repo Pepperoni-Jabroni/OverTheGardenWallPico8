@@ -729,7 +729,7 @@ function exec_npc_intent(npc)
      end
     end
   end
-  if (npc.x==intentdata[1] and npc.y==intentdata[2] and (npcmapid==nil or npcmapid==intentdata[3])) npc.intent=nil
+  if ((#intentdata==2 and npc.x==intentdata[1] and npc.y==intentdata[2]) or (#intentdata==5 and npc.mapid==intentdata[3] and npc.x==intentdata[4] and npc.y==intentdata[5])) npc.intent=nil
  end
  if npc.intent == 'loop' then
   local id = split(npc.intentdata, '|')
