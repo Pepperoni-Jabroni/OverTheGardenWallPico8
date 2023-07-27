@@ -67,7 +67,7 @@ local triggers={
   maplocking='woods2,leave a trail of candy',
  },
  {
-  trig=function()return player_sel_location({x=5,y=7})end,
+  trig=function()return player_sel_location(5,7)end,
   action=function()
    queue_dialog_by_idx(3)
   end,
@@ -84,11 +84,11 @@ local triggers={
   maplocking='woods2'
  },
  {
-  trig=function()return act_mapsid=='woods2' and #party==2 and (player_on_location({x=10,y=4}) or player_on_location({x=11,y=4}))end,
+  trig=function()return act_mapsid=='woods2' and #party==2 and (player_on_location(10,4) or player_on_location(11,4))end,
   action=function() queue_dialog_by_idx(7) end,
  },
  {
-  trig=function()return player_sel_location({x=8,y=4})end,
+  trig=function()return player_sel_location(8,4)end,
   action=function()queue_dialog_by_idx(8)end,
   maplocking='woods2,search the bushes'
  },
@@ -179,19 +179,19 @@ local triggers={
  },
  {
   trig=function()
-   return act_mapsid=='woods1' and (player_on_location({x=0,y=7}) or player_on_location({x=0,y=8}))
+   return act_mapsid=='woods1' and (player_on_location(0,7) or player_on_location(0,8))
   end,
   action=function()queue_dialog_by_idx(14)end,
  },
  {
   trig=function()
-   return act_mapsid=='mill' and (player_on_location({x=4,y=5}) or player_on_location({x=4,y=6}))
+   return act_mapsid=='mill' and (player_on_location(4,5) or player_on_location(4,6))
   end,
   action=function()queue_dialog_by_idx(13)end,
  },
  {
   trig=function()
-   return act_mapsid=='mill' and player_sel_location({x=4,y=5})
+   return act_mapsid=='mill' and player_sel_location(4,5)
   end,
   action=function()
    act_item=2
@@ -598,7 +598,7 @@ end
    for i=-1,1 do
     for j=-1,1 do
      if i!=j and npc.x+i==act_x and npc.y+j==act_y then
-      if player_sel_location({x=npc.x,y=npc.y}) then
+      if player_sel_location(npc.x,npc.y) then
        local idles=get_char_by_name(npc.charid).idle
        queue_dialog_by_txt(idles[get_rand_idx(idles)],npc.charid)
        x_consumed=true
@@ -619,7 +619,7 @@ end
   for j=-1,1 do
    local x=act_x+i
    local y=act_y+j
-   if player_sel_location({x=x,y=y}) and not x_consumed then
+   if player_sel_location(x,y) and not x_consumed then
     for descpt in all(split(objdescript_list,'#')) do
      local splt = split(descpt, ';')
      local selspr=mget(x+get_map_by_id(act_mapsid).cellx,y+get_map_by_id(act_mapsid).celly)
@@ -1063,17 +1063,17 @@ function get_first_active_dlg()
  return curprogressdlg
 end
 
-function player_on_location(loc)
- return act_x==loc.x and act_y==loc.y
+function player_on_location(x,y)
+ return act_x==x and act_y==y
 end
 
-function player_sel_location(loc)
+function player_sel_location(x,y)
  local lkdr=act_lookingdir
  if lkdr == nil then
   return false
  end
  local sel=get_sel_info_btn(lkdr)
- return act_x+sel.x == loc.x and act_y+sel.y == loc.y
+ return act_x+sel.x == x and act_y+sel.y == y
 end
 
 function player_use_item(itemidx,mapid,x_idx,y_idx)
