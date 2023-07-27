@@ -663,6 +663,16 @@ function queue_dialog_by_txt(text,speakerid,large)
   add(act_text.dialog,{{speakerid=speakerid or act_charid,text=text,large=large or false}})
 end
 
+function get_trans_loc_for_ids(primmapid, trgtmapid)
+  for trans in all(map_trans) do 
+    if trans.mp_one == primmapid and trans.mp_two == trgtmapid then 
+      return split(trans.mp_one_locs[1])
+    elseif trans.mp_one == trgtmapid and trans.mp_two == primmapid then 
+      return split(trans.mp_two_locs[1])
+    end
+  end
+end
+
 function get_dest_for_loc(mapid, x, y)
   for trans in all(map_trans) do 
     if (trans.mp_one == mapid) then 
@@ -699,20 +709,42 @@ function exec_npc_intent(npc)
    end
  end
  -- do npc movement
- if npc.intent == 'walk' then
+ local intent=npc.intent
+ local intentdata=npc.intentdata
+ if intent=='chase_candy_and_player' then 
+  intent='walk'
+  local candy,disttocandy=dist_to_closest_item(act_mapsid,npc.x,npc.y,inv_items[1].spridx)
+  local newdata=npc.intentdata
+  if npc.mapid!=act_mapsid then 
+    local dst=get_trans_loc_for_ids(npc.mapid,act_mapsid)
+    if (dst != nil and #dst>1) newdata=dst[1]..'|'..dst[2]
+  elseif candy != nil and distance(npc.x,npc.y,candy.x,candy.y) < distance(npc.x,npc.y,act_x,act_y) then
+    newdata=candy.x..'|'..candy.y
+  else
+    newdata=act_x..'|'..act_y
+  end
+  npc.intentdata=newdata
+ end
+ if intent == 'walk' then
   local npcmapid=npc.mapid
-  local intentdata = split(npc.intentdata, '|')
+  local intentdatasplit = split(npc.intentdata, '|')
   -- do local mvmt
-  local offx=intentdata[1]-npc.x != 0
-  local offy=intentdata[2]-npc.y != 0
+  local offx=intentdatasplit[1]-npc.x != 0
+  local offy=intentdatasplit[2]-npc.y != 0
   if offx then
-   npc.x+=sgn(intentdata[1]-npc.x)
+   npc.x+=sgn(intentdatasplit[1]-npc.x)
   end
   if offy then
-   npc.y+=sgn(intentdata[2]-npc.y)
+   npc.y+=sgn(intentdatasplit[2]-npc.y)
   end
-  if #intentdata==2 and not(offx or offy) then 
-   npc.intent=nil
+  if #intentdatasplit==2 and not(offx or offy) then 
+   if npc.intent=='walk' then
+    npc.intent=nil
+   elseif npc.intent=='chase_candy_and_player' then
+    for i in all(act_wrld_items) do
+     if (i.mapid==npc.mapid and i.spridx==inv_items[1].spridx and i.x==npc.x and i.y==npc.y) del(act_wrld_items,i)
+    end
+   end
   end 
   -- do map switch
   local to_map_id,to_x,to_y=get_dest_for_loc(npcmapid, npc.x, npc.y)
@@ -720,7 +752,7 @@ function exec_npc_intent(npc)
     transition_npc_to_map(npc, to_map_id, to_x, to_y)
   end
  end
- if npc.intent == 'loop' then
+ if intent == 'loop' then
   local id = split(npc.intentdata, '|')
   if npc.x==id[3] and npc.y!=id[2] then
    npc.y-=1
@@ -732,6 +764,18 @@ function exec_npc_intent(npc)
    npc.x+=1
   end
  end
+end
+
+function dist_to_closest_item(mapid,x,y,itemspridx)
+ local closest,clostdist=nil,1000
+ for i in all(act_wrld_items) do
+  local idist=distance(x,y,i.x,i.y)
+  if i.mapid==mapid and i.spridx==itemspridx and idist<clostdist then 
+   clostdist=idist
+   closest=i
+  end
+ end
+ return closest,clostdist
 end
 
 function perform_active_party_swap()
