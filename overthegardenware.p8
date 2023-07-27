@@ -173,6 +173,7 @@ local triggers={
    for n in all(npcs) do
     if (n.charid=='wirt' or n.charid=='beatrice') del(npcs, n)
    end
+   get_map_by_id('mill').playmapspr=124
    queue_dialog_by_idx(20)
   end,
   maplocking='millandriver,run back to your brother!,hideable'
@@ -712,6 +713,12 @@ function exec_npc_intent(npc)
  local intent=npc.intent
  local intentdata=npc.intentdata
  if intent=='chase_candy_and_player' then 
+  local m=get_map_by_id(npc.mapid)
+  local qx,qy=m.cellx+npc.x,m.celly+npc.y
+  local mgetr=mget(qx,qy)
+  if (mgetr==191 and flr(rnd(2))==1) mset(qx,qy,185)
+  if (mgetr==142 or mgetr==175) mset(qx,qy,201)
+  if (mgetr==178) mset(qx,qy,179)
   intent='walk'
   local candy,disttocandy=dist_to_closest_item(act_mapsid,npc.x,npc.y,inv_items[1].spridx)
   local newdata=npc.intentdata
