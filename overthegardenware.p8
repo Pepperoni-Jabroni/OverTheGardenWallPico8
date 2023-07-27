@@ -656,7 +656,7 @@ function do_edelwood_select()
  if(not is_element_in(edelwood_sels, act_mapsid)) add(edelwood_sels, act_mapsid)
  queue_dialog_by_txt('*eerily howls in the cool fall wind*', 'edelwood', true)
  queue_dialog_by_txt(#edelwood_sels..' of 5 edelwoods found!', 'edelwood')
- if (#edelwood_sels==1) queue_achievement_text('you found all 5 edelwoods!')
+ if (#edelwood_sels==5) queue_achievement_text('you found all 5 edelwoods!')
 end
 
 function queue_dialog_by_txt(text,speakerid,large)
