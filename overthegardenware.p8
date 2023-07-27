@@ -764,13 +764,13 @@ function draw_boot()
  end
  local subtitle_x = 58
  local subtitle_y = 72
- local subtitle_color = 13
+ local subtitle_color = 1
  if boot_age < 60 then
   subtitle_color = 7
  elseif boot_age < 120 then
   subtitle_color = 6
  end
- print(boot_subtitle, subtitle_x - #boot_subtitle, subtitle_y, subtitle_color)
+ print('\^i'..boot_subtitle, subtitle_x - #boot_subtitle, subtitle_y, subtitle_color)
  if boot_age > 130 and boot_age < 160 then
   line(subtitle_x - #boot_subtitle + (boot_age - 135), subtitle_y - 8, subtitle_x - #boot_subtitle + (boot_age - 130) + 4, subtitle_y  + 16, 7)
   line(subtitle_x - #boot_subtitle + (boot_age - 135) + 1, subtitle_y - 8, subtitle_x - #boot_subtitle + (boot_age - 130) + 5, subtitle_y  + 16, 7)
@@ -993,29 +993,16 @@ function draw_play_map()
   end
  end
  darkanims=ndas
- -- draw active item hud
- if act_item!=nil and is_element_in(inv_items[act_item].charids,act_charid) then
-  draw_fancy_box(115,115,11,11,4,10,9)
-  spr(inv_items[act_item].spridx,117,117)
- end
- -- draw active char hud
- local xanchor=1
- if act_x<=3 and act_y<=2 then
-  xanchor=114
- end
+ -- draw active char & item hud
+ local has_item=act_item!=nil and is_element_in(inv_items[act_item].charids,act_charid)
+ local char_name,item_name=nil
  if act_text.charsel != nil and act_text.charsel.frmcnt>0 then
-  if act_x<=3 and act_y<=2 then
-   xanchor=90
-  end
-  local charname=act_text.charsel.txt
-  draw_fancy_box(xanchor,1,#charname*4+11, 11, 4,10, 9)
-  printsp(charname, xanchor+11, 6, 2)
-  printsp(charname, xanchor+10, 5, 9)
+  char_name,item_name=act_text.charsel.txt,inv_items[act_item].name
   act_text.charsel.frmcnt-=1
  else
-  draw_fancy_box(xanchor,1,11,11,4,10,9)
  end
- spr(get_char_by_name(act_charid).mapspridx, xanchor+2, 3)
+ draw_fancy_spr_box(1,get_char_by_name(act_charid).mapspridx,char_name)
+ if (has_item) draw_fancy_spr_box(114,inv_items[act_item].spridx,item_name)
  -- draw map title
  txtobj=act_text.maptitle
  if txtobj != nil and txtobj.frmcnt > 0 then
@@ -1027,6 +1014,20 @@ function draw_play_map()
  -- draw dialog if necessary
  palt(13,false)
  draw_dialog_if_needed()
+end
+
+function draw_fancy_spr_box(y,spridx,title)
+ local xanchor,is_close=1,distance(act_x,act_y,1,y/8) < 3
+ if (is_close) xanchor=114
+ if title != nil then
+  if (is_close) xanchor=90
+  draw_fancy_box(xanchor,y,#title*4+11, 11, 4,10, 9)
+  printsp(title, xanchor+11, y+5, 2)
+  printsp(title, xanchor+10, y+4, 9)
+ else
+  draw_fancy_box(xanchor,y,11,11,4,10,9)
+ end
+ spr(spridx, xanchor+2, y+2)
 end
 
 -->8
@@ -1301,7 +1302,10 @@ function draw_character_dialog_box(dialogobj)
  end
  draw_fancy_box(10,103,17,17,0,6,5)
  spr(c.chrsprdailogueidx, 11, 104, 2, 2)
- print("\151",112,118,0)
+ local y,col=118,9
+ if (#fulltext == #partial) y,col=118,10
+ if (btn(5)) y,col=119,2
+ print("\151",112,y,col)
 end
 
 function get_sel_info_btn(lkdrbtn)
