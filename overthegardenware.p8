@@ -41,7 +41,7 @@ local darkspr_list='174,204,218,219,235,236,251#2,3,4,8,9,10,11#0,0,1,1,0,1,1'
 local darkanims={}
 local nonrptdialog={x=nil,y=nil}
 local compltdlgs={}
-local dialog_list="1;kitty;led through the mist#1;kitty;by the milk-light of moon#1;kitty;all that was lost is revealed#1;kitty;our long bygone burdens#1;kitty;mere echoes of the spring#1;kitty;but where have we come?#1;kitty;and where shall we end?#1;kitty;if dreams can't come true#1;kitty;then why not pretend?#1;kitty;how the gentle wind#1;kitty;beckons through the leaves#1;kitty;as autumn colors fall#1;kitty;dancing in a swirl#1;kitty;of golden memories#1;kitty;the loveliest lies of all#2;greg;i sure do love my frog!#2;wirt;greg, please stop...#2;kitty;4;ribbit.#2;greg;haha, yeah!#3;wirt;i dont like this at all#3;greg;its a tree face!#4;wirt;is that some sort of deranged lunatic?#4;wirt;with an axe waiting for victims?#4;the woodsman;*swings axe and chops tree*#4;wirt;what is that strange tree?#4;greg;we should ask him for help!#5;wirt;whoa... wait greg...#5;wirt;... where are we?#5;greg;we\'re in the woods!#5;wirt;no, i mean#5;wirt;... where are we?!#6;wirt;we're really lost greg...#6;greg;i leave trails of candy from my pants!#6;greg;candytrail. candytrail. candytrail!#7;beatrice;help! help!#7;wirt;i think its coming from a bush?#8;beatrice;help me!#8;greg;wow, a talking bush!#8;beatrice;i\'m not a talking bush! i\'m a bird!#8;beatrice;and i\'m stuck!#8;greg;wow, a talking bird!#8;beatrice;if you help me get unstuck, i\'ll#8;beatrice;owe you one#8;greg;ohhhh! you'll grant me a wish?!#8;greg;*picks up beatrice out of bush*#8;wirt;uh-uh! no!#9;the woodsman;these woods are a dangerous place#9;the woodsman;for two kids to be alone#9;wirt;we... we know, sir#9;greg;yeah! i\'ve been leaving a trail#9;greg;of candy from my pants!#9;the woodsman;please come inside...#9;beatrice;i don\'t like the look of this#9;kitty;ribbit.#10;wirt;oh! terribly sorry to have#10;wirt;disturbed you sir!#10;turkey;gobble. gobble. gobble.#11;greg;wow, look at this turtle!#11;wirt;well thats strange#11;greg;i bet he wants some candy!#11;black turtle;*stares blankly*#12;the beast?;*glares at you, panting*#12;greg;you have beautiful eyes!#12;greg;ahhhh!#13;wirt;wow this place is dingey#13;beatrice;yeah this guy gives me the creeps#13;wirt;we should find a way to take him out#13;wirt;before he gets a chance to hurt us#13;greg;i can handle it!#14;wirt;i dont think we should#14;wirt;go back the way we came#15;the woodsman;whats the rucus out here?#15;wirt;oh nothing sir!#15;greg;nows my chance!#16;the woodsman;i work as a woodsman in these woods#16;the lantern;keeping the light in this lantern lit#16;the woodsman;by processing oil of the edelwood trees#16;the woodsman;you boys are welcome to stay here#16;the woodsman;ill be in the workshop#16;greg;okey dokey!#17;greg;this bird art sculpture is perfect!#18;greg;there! this little guy wanted a snack#18;black turtle;*stares blankly*#19;the woodsman;ow! *falls onto ground*#19;greg;haha yeah, i did it!#19;wirt;greg! what have you done!#19;beatrice;oh this is just great!#19;wirt;hey greg... where did your frog go?#19;greg;where is that frog o mine?#20;greg;ahhh! the beast!#20;wirt;quick, greg, to the workshop!#20;wirt;we should be able to make it#20;wirt;out through a window!#20;beatrice;hurry!#21;greg;we made it!#21;wirt;hopefully hes stuck there!#21;the beast?;*gets stuck in the window*#21;the beast?;*spits out a candy*#21;dog;*looks at you happily*#21;greg;look! hes my best friend now!#22;the woodsman;what have you boys done?!#22;the woodsman;the mill is destroyed#22;wirt;but we solved your beast problem!#22;the woodsman;you silly boys#22;the woodsman;that silly dog was not the beast#22;the woodsman;go now and continue your journey#22;wirt;we\'re sorry sir#22;the woodsman;beware the beast!"
+local dialog_list="1;kitty;led through the mist#1;kitty;by the milk-light of moon#1;kitty;all that was lost is revealed#1;kitty;our long bygone burdens#1;kitty;mere echoes of the spring#1;kitty;but where have we come?#1;kitty;and where shall we end?#1;kitty;if dreams can't come true#1;kitty;then why not pretend?#1;kitty;how the gentle wind#1;kitty;beckons through the leaves#1;kitty;as autumn colors fall#1;kitty;dancing in a swirl#1;kitty;of golden memories#1;kitty;the loveliest lies of all#2;greg;i sure do love my frog!#2;wirt;greg, please stop...#2;kitty;4;ribbit.#2;greg;haha, yeah!#3;wirt;i dont like this at all#3;greg;its a tree face!#4;wirt;is that some sort of deranged lunatic?#4;wirt;with an axe waiting for victims?#4;the woodsman;*swings axe and chops tree*;LARGE#4;wirt;what is that strange tree?#4;greg;we should ask him for help!#5;wirt;whoa... wait greg...;LARGE#5;wirt;... where are we?;LARGE#5;greg;we\'re in the woods!;LARGE#5;wirt;no, i mean;LARGE#5;wirt;... where are we?!;LARGE#6;wirt;we're really lost greg...#6;greg;i leave trails of candy from my pants!#6;greg;candytrail. candytrail. candytrail!#7;beatrice;help! help!#7;wirt;i think its coming from a bush?#8;beatrice;help me!;LARGE#8;greg;wow, a talking bush!#8;beatrice;i\'m not a talking bush! i\'m a bird!#8;beatrice;and i\'m stuck!#8;greg;wow, a talking bird!#8;beatrice;if you help me get unstuck, i\'ll#8;beatrice;owe you one#8;greg;ohhhh! you'll grant me a wish?!#8;greg;*picks up beatrice out of bush*#8;wirt;uh-uh! no!#9;the woodsman;these woods are a dangerous place#9;the woodsman;for two kids to be alone#9;wirt;we... we know, sir#9;greg;yeah! i\'ve been leaving a trail#9;greg;of candy from my pants!#9;the woodsman;please come inside...#9;beatrice;i don\'t like the look of this#9;kitty;ribbit.#10;wirt;oh! terribly sorry to have#10;wirt;disturbed you sir!#10;turkey;gobble. gobble. gobble.#11;greg;wow, look at this turtle!#11;wirt;well thats strange#11;greg;i bet he wants some candy!#11;black turtle;*stares blankly*#12;the beast?;*glares at you, panting*;LARGE#12;greg;you have beautiful eyes!#12;greg;ahhhh!#13;wirt;wow this place is dingey#13;beatrice;yeah this guy gives me the creeps#13;wirt;we should find a way to take him out#13;wirt;before he gets a chance to hurt us#13;greg;i can handle it!#14;wirt;i dont think we should#14;wirt;go back the way we came#15;the woodsman;whats the rucus out here?#15;wirt;oh nothing sir!#15;greg;nows my chance!#16;the woodsman;i work as a woodsman in these woods#16;the lantern;keeping the light in this lantern lit;LARGE#16;the woodsman;by processing oil of the edelwood trees#16;the woodsman;you boys are welcome to stay here#16;the woodsman;ill be in the workshop#16;greg;okey dokey!#17;greg;this bird art sculpture is perfect!#18;greg;there! this little guy wanted a snack#18;black turtle;*stares blankly*;LARGE#19;the woodsman;ow! *falls onto ground*#19;greg;haha yeah, i did it!#19;wirt;greg! what have you done!#19;beatrice;oh this is just great!#19;wirt;hey greg... where did your frog go?#19;greg;where is that frog o mine?#20;greg;ahhh! the beast!#20;wirt;quick, greg, to the workshop!#20;wirt;we should be able to make it#20;wirt;out through a window!#20;beatrice;hurry!#21;greg;we made it!#21;wirt;hopefully hes stuck there!#21;the beast?;*gets stuck in the window*#21;the beast?;*spits out a candy*#21;dog;*looks at you happily*;LARGE#21;greg;look! hes my best friend now!#22;the woodsman;what have you boys done?!#22;the woodsman;the mill is destroyed#22;wirt;but we solved your beast problem!#22;the woodsman;you silly boys#22;the woodsman;that silly dog was not the beast#22;the woodsman;go now and continue your journey#22;wirt;we\'re sorry sir#22;the woodsman;beware the beast!"
 local npcs={}
 local triggers={
  {
@@ -359,8 +359,10 @@ function compute_dialogs()
   end
   if #s == 3 then
    cdialogs[n][#cdialogs[n] + 1] = {speakerid=s[2], text=s[3]}
-  else
+  elseif s[4] != 'LARGE' then
    cdialogs[n][#cdialogs[n] + 1] = {speakerid=s[2], nameidx=tonum(s[3]), text=s[4]}
+  else
+   cdialogs[n][#cdialogs[n] + 1] = {speakerid=s[2], text=s[3], large=true}
   end
  end
  return cdialogs
@@ -629,10 +631,10 @@ end
       if (selspr==219) do_edelwood_select()
       if selspr==215 then
        if(not is_element_in(rockfact_sels, act_mapsid)) add(rockfact_sels, act_mapsid)
-       queue_dialog_by_txt(split('put raisins in grape juice to get grapes!,test2,test3')[#rockfact_sels], 'rock fact')
+       queue_dialog_by_txt(split('put raisins in grape juice to get grapes!,test2,test3')[#rockfact_sels], 'rock fact', true)
        queue_dialog_by_txt(#rockfact_sels..' of 3 rock facts collected!', 'rock fact')
        mset(x+get_map_by_id(act_mapsid).cellx,y+get_map_by_id(act_mapsid).celly,202)
-       if (#rockfact_sels==3) queue_dialog_by_txt('you found all 3 rock facts! well done!','achievement get!')
+       if (#rockfact_sels==3) queue_achievement_text('you found all 3 rock facts!')
       end
       break
      end
@@ -646,15 +648,19 @@ end
  end
 end
 
-function do_edelwood_select()
- if(not is_element_in(edelwood_sels, act_mapsid)) add(edelwood_sels, act_mapsid)
- queue_dialog_by_txt('*eerily howls in the cool fall wind*', 'edelwood')
- queue_dialog_by_txt(#edelwood_sels..' of 5 edelwoods found!', 'edelwood')
- 
+function queue_achievement_text(text)
+  queue_dialog_by_txt('\f9\146 '..text..' well done!','achievement get!',true)
 end
 
-function queue_dialog_by_txt(text,speakerid)
-  add(act_text.dialog,{{speakerid=speakerid or act_charid,text=text}})
+function do_edelwood_select()
+ if(not is_element_in(edelwood_sels, act_mapsid)) add(edelwood_sels, act_mapsid)
+ queue_dialog_by_txt('*eerily howls in the cool fall wind*', 'edelwood', true)
+ queue_dialog_by_txt(#edelwood_sels..' of 5 edelwoods found!', 'edelwood')
+ if (#edelwood_sels==1) queue_achievement_text('you found all 5 edelwoods!')
+end
+
+function queue_dialog_by_txt(text,speakerid,large)
+  add(act_text.dialog,{{speakerid=speakerid or act_charid,text=text,large=large or false}})
 end
 
 function get_dest_for_loc(mapid, x, y)
@@ -1032,8 +1038,8 @@ end
 
 -->8
 -- utilities
-function draw_spr_w_outline(outline_color, spr_idx, x, y, scaling, fliph, flipv)
- dim = 8
+function draw_spr_w_outline(outline_color, spr_idx, x, y, scaling, fliph, flipv,dim)
+ dim = dim or 8
  local sx,sy=(spr_idx%16)*8,(spr_idx\16)*8
  for i=0,15 do
   pal(i, outline_color)
@@ -1300,8 +1306,14 @@ function draw_character_dialog_box(dialogobj)
   end
   printsp(sub(partial,1,chi).."\n"..sub(partial,chi+1), 29, 110, 0)
  end
- draw_fancy_box(10,103,17,17,0,6,5)
+ draw_fancy_box(10,103,17,17,1,6,5)
+ palt(13, true)
  spr(c.chrsprdailogueidx, 11, 104, 2, 2)
+ if dialogobj.large then
+  draw_fancy_box(30,22,68,68,1,6,5)
+  draw_spr_w_outline(0, c.chrsprdailogueidx, 4, 3, 4, false, false, 16)
+  palt(13, false)
+ end
  local y,col=118,9
  if (#fulltext == #partial) y,col=118,10
  if (btn(5)) y,col=119,2
