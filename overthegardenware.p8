@@ -67,9 +67,10 @@ local triggers={
   maplocking='woods2,leave a trail of candy',
  },
  {
-  trig=function()return player_sel_location(5,7)end,
+  trig=function()return act_mapsid=='woods2' and player_sel_location(5,7)end,
   action=function()
    queue_dialog_by_idx(3)
+   do_edelwood_select()
   end,
   maplocking='woods2,inspect the strange tree',
  },
@@ -471,6 +472,27 @@ end
 
 function update_play_map()
  local initialdialoglen=#act_text.dialog
+ -- check for dialog progress
+ local x_consumed=false
+ if btnp(5) and initialdialoglen > 0 then
+  x_consumed=true
+  sfx(0)
+  local curprogressdlg=get_first_active_dlg()[act_dialogspeakidx]
+  if curprogressdlg != nil and curprogressdlg.time != nil then
+   if curprogressdlg.time < #curprogressdlg.text then
+    curprogressdlg.time = #curprogressdlg.text
+   else
+    act_dialogspeakidx+=1
+   end
+  end
+  if act_dialogspeakidx != nil and act_dialogspeakidx > #get_first_active_dlg() then
+   if type(act_text.dialog[1])=='number' then
+    add(compltdlgs,act_text.dialog[1])
+   end
+   act_text.dialog=drop_lead_elems(act_text.dialog)
+   act_dialogspeakidx=1
+  end
+ end
  -- check selection direction
  if btn(5) then
   pressed=nil
@@ -484,6 +506,17 @@ function update_play_map()
   end
  else
   act_lookingdir=nil
+ end
+ -- world does not progress during dialog
+ if (initialdialoglen>0)return
+ -- check for triggers
+ for i=1,#triggers do
+  local t = triggers[i]
+  if not t.complete and t.trig() then
+   t.action()
+   triggers[i].complete=true
+   x_consumed=true
+  end
  end
  -- check active movement
  if act_lookingdir == nil and initialdialoglen == 0 then
@@ -516,27 +549,6 @@ function update_play_map()
   local charname = tostr(get_char_by_name(act_charid).get_name_at_idx(get_char_by_name(act_charid),1))
   act_text.charsel={txt=charname,frmcnt=32}
  end
- -- check for dialog progress
- local x_consumed=false
- if btnp(5) and initialdialoglen > 0 then
-  x_consumed=true
-  sfx(0)
-  local curprogressdlg=get_first_active_dlg()[act_dialogspeakidx]
-  if curprogressdlg != nil and curprogressdlg.time != nil then
-   if curprogressdlg.time < #curprogressdlg.text then
-    curprogressdlg.time = #curprogressdlg.text
-   else
-    act_dialogspeakidx+=1
-   end
-  end
-  if act_dialogspeakidx != nil and act_dialogspeakidx > #get_first_active_dlg() then
-   if type(act_text.dialog[1])=='number' then
-    add(compltdlgs,act_text.dialog[1])
-   end
-   act_text.dialog=drop_lead_elems(act_text.dialog)
-   act_dialogspeakidx=1
-  end
- end
  -- check for map switch
  local maplocked={}
  for t in all(triggers) do
@@ -566,14 +578,6 @@ function update_play_map()
     transition_to_map({mp=to_map_id,loc={x=to_x,y=to_y}})
   end
 end
- -- check for triggers
- for i=1,#triggers do
-  local t = triggers[i]
-  if not t.complete and t.trig() then
-   t.action()
-   triggers[i].complete=true
-  end
- end
  -- check for item usage
  if btnp(5) and act_item!=nil and is_element_in(inv_items[act_item].charids,act_charid) and not x_consumed then
   sfx(0)
