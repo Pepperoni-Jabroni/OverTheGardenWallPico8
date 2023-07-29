@@ -213,8 +213,8 @@ local triggers={
    add(npcs,get_npc_by_charid('wirt'))
    add(npcs,get_npc_by_charid('beatrice'))
    party={}
-   queue_move_npc('wirt',{x=7,y=2},nil)
-   queue_move_npc('beatrice',{x=6,y=3},nil)
+   queue_move_npc('wirt',{x=7,y=2})
+   queue_move_npc('beatrice',{x=6,y=3})
   end,
   maplocking='mill,use the club!,hideable'
  },
@@ -474,7 +474,7 @@ function is_loc_available(mapid, x, y, qcharid)
  for n in all(get_npcs_for_map(mapid)) do
   if (n.charid != qcharid and n.x == x and n.y == y) return false
  end
- return is_walkable(mapid, x, y) and not (act_mapsid == mapid and x == act_x and y == act_y)
+ return is_walkable(x, y, mapid) and not (act_mapsid == mapid and x == act_x and y == act_y)
 end
 
 function get_available_loc(mapid, x, y, qcharid)
@@ -547,17 +547,17 @@ function update_play_map()
     break
    end
   end
-  if btnp(2) and act_y > 0 and is_walkable(act_mapsid, act_x, act_y-1) then
+  if btnp(2) and act_y > 0 and is_walkable(act_x, act_y-1) then
    act_y = act_y - 1
    last_mapid_mov=act_mapsid
-  elseif btnp(1) and act_x < 15 and is_walkable(act_mapsid, act_x+1, act_y) then
+  elseif btnp(1) and act_x < 15 and is_walkable(act_x+1, act_y) then
    act_x = act_x + 1
    act_fliph=false
    last_mapid_mov=act_mapsid
-  elseif btnp(3) and act_y < 15 and is_walkable(act_mapsid, act_x, act_y+1) then
+  elseif btnp(3) and act_y < 15 and is_walkable(act_x, act_y+1) then
    act_y = act_y + 1
    last_mapid_mov=act_mapsid
-  elseif btnp(0) and act_x > 0 and is_walkable(act_mapsid, act_x-1, act_y) then
+  elseif btnp(0) and act_x > 0 and is_walkable(act_x-1, act_y) then
    act_x = act_x - 1
    act_fliph=true
    last_mapid_mov=act_mapsid
@@ -1199,7 +1199,7 @@ end
 function maybe_queue_party_move(destx, desty)
  for p in all(party) do
   if flr(rnd(2)) == 0 and p.intent==nil then
-   queue_move_npc(p.charid,{x=destx,y=desty},nil)
+   queue_move_npc(p.charid,{x=destx,y=desty})
   end
  end
 end
@@ -1242,8 +1242,8 @@ function transition_npc_to_map(npc, dest_mapid, dest_x, dest_y)
  end
 end
 
-function is_walkable(mapid, mapx, mapy)
-  local m = get_map_by_id(mapid)
+function is_walkable(mapx, mapy, mapid)
+  local m = get_map_by_id(mapid or act_mapsid)
   return is_element_in(walkable, mget(mapx+m.cellx, mapy+m.celly))
 end
 
