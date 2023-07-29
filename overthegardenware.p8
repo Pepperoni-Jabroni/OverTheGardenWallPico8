@@ -217,6 +217,17 @@ local triggers={
    queue_move_npc('beatrice',{x=6,y=3},nil)
   end,
   maplocking='mill,use the club!,hideable'
+ },
+ {
+  trig=function() 
+    local beast=get_npc_by_charid('the beast?')
+    return player_sel_location(1,4,'mill') and beast!=nil and beast.mapid=='mill'
+  end,
+  action=function()
+    transition_to_map('millandriver',7,4)
+  end,
+  maplocking='mill,jump the window to escape!,hideable',
+  depends_on=14,
  }
 }
 local menuchars={}
@@ -554,7 +565,7 @@ function update_play_map()
  for t in all(triggers) do
   if t.maplocking then
     local maplockinfo=split(t.maplocking)
-    if maplockinfo[1] == act_mapsid and not t.complete then
+    if maplockinfo[1] == act_mapsid and not t.complete and (t.depends_on==nil or trigger_is_complete(t.depends_on)) then
       if (#maplockinfo<3 or #maplocked==0) add(maplocked,t)
     end
   end
@@ -562,7 +573,7 @@ function update_play_map()
  local to_map_id,to_x,to_y=get_dest_for_loc(act_mapsid, act_x, act_y)
  if to_map_id != nil and last_mapid_mov == act_mapsid then
   if get_mapidx_by_id(to_map_id)<get_mapidx_by_id(act_mapsid) then
-    transition_to_map({mp=to_map_id,loc={x=to_x,y=to_y}})
+    transition_to_map(to_map_id,to_x,to_y)
   elseif #maplocked > 0 then
     if initialdialoglen == 0 and not (nonrptdialog.x==act_x and nonrptdialog.y==act_y) then
       queue_dialog_by_txt("we aren't done here yet... we should")
@@ -575,7 +586,7 @@ function update_play_map()
       nonrptdialog={x=act_x,y=act_y}
     end
   else
-    transition_to_map({mp=to_map_id,loc={x=to_x,y=to_y}})
+    transition_to_map(to_map_id,to_x,to_y)
   end
 end
  -- check for item usage
@@ -655,6 +666,10 @@ end
 
 function queue_achievement_text(text)
   queue_dialog_by_txt('\f9\146 '..text..' well done!','achievement get!',true)
+end
+
+function trigger_is_complete(idx)
+  return triggers[idx].complete or false
 end
 
 function do_edelwood_select()
@@ -1129,9 +1144,9 @@ function player_on_location(x,y)
  return act_x==x and act_y==y
 end
 
-function player_sel_location(x,y)
+function player_sel_location(x,y,mapid)
  local lkdr=act_lookingdir
- if lkdr == nil then
+ if lkdr == nil or (mapid or act_mapsid)!=act_mapsid then
   return false
  end
  local sel=get_sel_info_btn(lkdr)
@@ -1199,7 +1214,7 @@ music(-1)
  act_dialogspeakidx=1
  act_item=1
  act_text.dialog = {}
- transition_to_map({mp='woods1',loc={x=8, y=8}})
+ transition_to_map('woods1',8,8)
  party={{charid='wirt',mapid='woods1',x=act_x,y=act_y},{charid='kitty',mapid='woods1',x=act_x,y=act_y}}
  pal(14,14,1)
  pal(5,5,1)
@@ -1223,10 +1238,10 @@ function is_walkable(mapid, mapx, mapy)
   return is_element_in(walkable, mget(mapx+m.cellx, mapy+m.celly))
 end
 
-function transition_to_map(dest)
- act_mapsid = dest.mp
- act_x = dest.loc.x
- act_y = dest.loc.y
+function transition_to_map(dest_mp,dest_x,dest_y)
+ act_mapsid = dest_mp
+ act_x = dest_x
+ act_y = dest_y
  -- update party loc
  for p in all(party) do
   p.mapid=act_mapsid
