@@ -32,7 +32,7 @@ local act_mapsid=nil
 local edelwood_sels,rockfact_sels={},{}
 local party={}
 -- of the form "<name>;<map_spr_idx>;<speak_spr_idx>;<idle_txts>;<scaling>#"
-local character_list='greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?;1#wirt;1;4;uh, hi...|oh sorry, just thinking;1#beatrice;16;6;yes, i can talk...|lets get out of here!;1#kitty,wirt,wirt jr.,george washington,mr. president,benjamin franklin,doctor cucumber,greg jr.,skipper,ronald,jason funderburker;17;8;ribbit;1#the beast;32;34;;1#the woodsman;33;36;i need more oil|beware these woods;1#the beast?;48;38;;2#dog;49;40;;1#black turtle;64;66;*stares blankly*;1#turkey;65;68;gobble. gobble. gobble.;1#pottsfield citizen 1;80;98;you\'re too early;1#pottsfield citizen 2;80;102;are you new here?;1#pottsfield harvest;81;70;thanks for digging me up!;1#pottsfield partier;96;100;let\'s celebrate!;1#enoch;97;72;what a wonderful harvest|you don\'t look like you belong here;2#dog student;10;44;humph...|huh...;1#gorilla;113;12;;1#jimmy brown;11;14;;1#cat student;26;46;humph...|huh...;1#ms langtree;112;104;oh that jimmy brown|i miss him so...;1#the lantern;nil;76;;1#rock fact;nil;78;;1#edelwood;219;192;;1#racoon student;27;194;humph...|huh...;1#achievement get!;nil;196;;1'
+local character_list='greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?;1#wirt;1;4;uh, hi...|oh sorry, just thinking;1#beatrice;16;6;yes, i can talk...|lets get out of here!;1#kitty,wirt,wirt jr.,george washington,mr. president,benjamin franklin,doctor cucumber,greg jr.,skipper,ronald,jason funderburker;17;8;ribbit;1#the beast;32;34;;1#the woodsman;33;36;i need more oil|beware these woods;1#the beast?;48;38;*glares at you*;2#dog;49;40;*barks*;1#black turtle;64;66;*stares blankly*;1#turkey;65;68;gobble. gobble. gobble.;1#pottsfield citizen 1;80;98;you\'re too early;1#pottsfield citizen 2;80;102;are you new here?;1#pottsfield harvest;81;70;thanks for digging me up!;1#pottsfield partier;96;100;let\'s celebrate!;1#enoch;97;72;what a wonderful harvest|you don\'t look like you belong here;2#dog student;10;44;humph...|huh...;1#gorilla;113;12;;1#jimmy brown;11;14;;1#cat student;26;46;humph...|huh...;1#ms langtree;112;104;oh that jimmy brown|i miss him so...;1#the lantern;nil;76;;1#rock fact;nil;78;;1#edelwood;219;192;;1#racoon student;27;194;humph...|huh...;1#achievement get!;nil;196;;1'
 -- of the form "<mp_one_idx>;<mp_two_idx>;<mp_one_locs>;<mp_two_locs>#"
 local map_trans_list='woods1;woods2;15,5|15,4;0,14|0,15#woods2;millandriver;13,0|14,0|15,0;0,13|0,14|0,15#millandriver;woods3;0,0|1,0;13,15|14,15|15,15#millandriver;mill;7,3;8,14#woods3;pottsfield;7,0|8,0;7,15|8,15#pottsfield;barn;4,2|5,2;7,13|8,13#pottsfield;woods4;9,0|10,0;6,15|7,15#woods4;grounds;7,0|8,0;7,15|8,15#grounds;school;6,7|7,7;7,14|8,14|11,1#pottsfield;home;10,8|11,8;6,11'
 local npc_data = 'black turtle,13,7,woods1#the woodsman,6,7,woods2#pottsfield citizen 1,7,7,barn,loop,7|7|10|10#pottsfield citizen 1,7,10,barn,loop,7|7|10|10#pottsfield citizen 2,10,7,barn,loop,7|7|10|10#pottsfield citizen 2,10,10,barn,loop,7|7|10|10#enoch,8,8,barn#ms langtree,8,9,school#dog student,7,11,school#cat student,9,11,school#racoon student,9,13,school#turkey,7,6,home'
@@ -225,6 +225,11 @@ local triggers={
   end,
   action=function()
     transition_to_map('millandriver',7,4)
+    del(npcs,get_npc_by_charid('the beast?'))
+    add(npcs,{charid='dog',mapid='millandriver',x=5,y=4})
+    add(npcs,{charid='black turtle',mapid='millandriver',x=4,y=5})
+    local wmnpc=get_npc_by_charid('the woodsman')
+    wmnpc.mapid,wmnpc.x,wmnpc.y,wmnpc.flipv='millandriver',6,5,false
   end,
   maplocking='mill,jump the window to escape!,hideable',
   depends_on=14,
@@ -565,7 +570,7 @@ function update_play_map()
  for t in all(triggers) do
   if t.maplocking then
     local maplockinfo=split(t.maplocking)
-    if maplockinfo[1] == act_mapsid and not t.complete and (t.depends_on==nil or trigger_is_complete(t.depends_on)) then
+    if maplockinfo[1] == act_mapsid and not t.complete and trigger_is_complete(t.depends_on)  then
       if (#maplockinfo<3 or #maplocked==0) add(maplocked,t)
     end
   end
@@ -669,7 +674,7 @@ function queue_achievement_text(text)
 end
 
 function trigger_is_complete(idx)
-  return triggers[idx].complete or false
+  return idx==nil or triggers[idx].complete or false
 end
 
 function do_edelwood_select()
