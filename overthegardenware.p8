@@ -119,7 +119,7 @@ local triggers={
    if act_charid == 'kitty' then
     perform_active_party_swap()
    end
-   add(npcs,{charid='kitty',x=11,y=6,mapid='millandriver'})
+   add_npc('kitty','millandriver',11,6)
    local newparty={}
    for p in all(party) do
     if p.charid != 'kitty' then
@@ -128,7 +128,7 @@ local triggers={
    end
    party=newparty
    get_map_by_id('millandriver').discvrdtiles={}
-   add(npcs,{charid='the beast?',x=12,y=6, mapid='millandriver'})
+   add_npc('the beast?','millandriver',12,6)
    queue_dialog_by_idx(16)
    add(act_wrld_items,{spridx=inv_items[2].spridx,x=4,y=5,mapid=act_mapsid})
   end,
@@ -226,10 +226,10 @@ local triggers={
   action=function()
     transition_to_map('millandriver',7,4)
     del(npcs,get_npc_by_charid('the beast?'))
-    add(npcs,{charid='dog',mapid='millandriver',x=5,y=4})
-    add(npcs,{charid='black turtle',mapid='millandriver',x=4,y=5})
-    local wmnpc=get_npc_by_charid('the woodsman')
-    wmnpc.mapid,wmnpc.x,wmnpc.y,wmnpc.flipv='millandriver',6,5,false
+    add_npc('dog','millandriver',5,4)
+    add_npc('black turtle','millandriver',4,5)
+    del(npcs,get_npc_by_charid('the woodsman'))
+    add_npc('the woodsman','millandriver',6,5)
   end,
   maplocking='mill,jump the window to escape!,hideable',
   depends_on=14,
@@ -484,6 +484,10 @@ function get_available_loc(mapid, x, y, qcharid)
   end
  end
  return x,y
+end
+
+function add_npc(charid,mapid,x,y)
+  add(npcs,{charid=charid,mapid=mapid,x=x,y=y})
 end
 
 function update_play_map()
