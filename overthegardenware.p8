@@ -46,13 +46,13 @@ local npcs={}
 local triggers={
  {
   trig=function()
-   return act_x!=8 or act_y!=8 and act_mapsid=='woods1'
+   return act_mapsid=='woods1' and (act_x!=8 or act_y!=8)
   end,
   action=function()queue_dialog_by_idx(5)end,
   maplocking='woods1',
  },
  {
-  trig=function()return act_x!=8 or act_y!=8 and player_use_item(1,'woods1') end,
+  trig=function()return player_use_item(1,'woods1') and (act_x!=8 or act_y!=8) end,
   action=function()queue_dialog_by_idx(6)end,
   maplocking='woods1,leave a trail of candy',
  },
@@ -85,7 +85,7 @@ local triggers={
   maplocking='woods2'
  },
  {
-  trig=function()return player_on_location(10,4) or player_on_location(11,4) and act_mapsid=='woods2' and #party==2 end,
+  trig=function()return act_mapsid=='woods2' and #party==2 and (player_on_location(10,4) or player_on_location(11,4))end,
   action=function() queue_dialog_by_idx(7) end,
  },
  {
@@ -187,7 +187,7 @@ local triggers={
  },
  {
   trig=function()
-   return player_on_location(4,5) or player_on_location(4,6) and act_mapsid=='mill'
+   return act_mapsid=='mill' and (player_on_location(4,5) or player_on_location(4,6))
   end,
   action=function()queue_dialog_by_idx(13)end,
  },
