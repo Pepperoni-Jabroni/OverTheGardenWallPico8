@@ -1166,22 +1166,12 @@ function player_on_location(x,y,mapid)
 end
 
 function player_sel_location(x,y,mapid)
- local lkdr=act_lookingdir
- if lkdr == nil or mapid!=act_mapsid then
-  return false
- end
- local sel=get_sel_info_btn(lkdr)
- return act_x+sel.x == x and act_y+sel.y == y
+ local sel=get_sel_info_btn(act_lookingdir)
+ return sel!=nil and mapid==act_mapsid and act_x+sel.x == x and act_y+sel.y == y
 end
 
 function player_use_item(itemidx,mapid,x_idx,y_idx)
- if act_useitem==itemidx and act_mapsid==mapid then
-  if x_idx != nil and (x_idx != act_x or y_idx != act_y) then
-   return false
-  end 
-  return true
- end
- return false
+ return act_useitem==itemidx and act_mapsid==mapid and (x_idx == nil or (x_idx == act_x and y_idx == act_y))
 end
 
 function playmap_spr_visible(mapid, spri)
@@ -1229,7 +1219,7 @@ function set_walk_intent(npc,destcurmaploc,destnextmaploc)
 end
 
 function transition_to_playmap()
-music(-1)
+ music(-1)
  act_stagetype = "playmap"
  act_charid='greg'
  act_dialogspeakidx=1
@@ -1293,10 +1283,11 @@ function transition_to_map(dest_mp,dest_x,dest_y)
  -- add buildings
  for m in all(maps) do
   if m.type=='interior' and m.playmapid==act_mapsid then
-   mset(m.playmaploc.x+amcx,m.playmaploc.y+amcy,m.playmapspr)
-   mset(m.playmaploc.x+amcx+1,m.playmaploc.y+amcy,m.playmapspr+1)
-   mset(m.playmaploc.x+amcx,m.playmaploc.y+1+amcy,m.playmapspr+16)
-   mset(m.playmaploc.x+amcx+1,m.playmaploc.y+1+amcy,m.playmapspr+17)
+   local x,y,spridx=m.playmaploc.x+amcx,m.playmaploc.y+amcy,m.playmapspr
+   mset(x.y,spridx)
+   mset(x+1,y,spridx+1)
+   mset(x,y+1,spridx+16)
+   mset(x+1,y+1,spridx+17)
   end
  end
 end
@@ -1412,6 +1403,7 @@ function draw_character_dialog_box(dialogobj)
 end
 
 function get_sel_info_btn(lkdrbtn)
+  if (lkdrbtn==nil)return nil
  local spri,selx,sely=234,0,2*lkdrbtn-5
  if lkdrbtn==2 or lkdrbtn==3 then
   spri=250
