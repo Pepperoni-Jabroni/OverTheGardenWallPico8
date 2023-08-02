@@ -4,7 +4,7 @@ __lua__
 -- over the garden wall
 -- made by pepperoni-jabroni
 -- configs, state vars & core fns
-local walkable=split("43,185,106,191,202,203,205,207,222,223,238,239,240,241,242,244,245,246,247,248,249")
+local walkable=split("43,158,185,106,190,191,202,203,205,207,222,223,238,239,240,241,242,244,245,246,247,248,249")
 -- of the form "<src_sprite_idx>;<dst_sprite_idxs>"
 local alttiles_list="206;206,221,237#238;222,238#207;207,223,239#235;235,251,218#205;202,203,205#236;204,236"
 local altsset={}
@@ -83,18 +83,18 @@ local triggers={
   maplocking='woods2'
  },
  {
-  trig=function()return #party==2 and player_location_match'woods2,right_of,13,below,1,left_of,15,above,3' end,
+  trig=function()return #party==2 and player_location_match'woods3,below,13' end,
   action=function() queue_dialog_by_idx(7) end,
  },
  {
-  trig=function()return player_sel_location(8,4,'woods2')end,
+  trig=function()return player_sel_location(7,10,'woods3')end,
   action=function()queue_dialog_by_idx(8)end,
-  maplocking='woods2,search the bushes'
+  maplocking='woods3,search the bushes'
  },
  {
   trig=function()return dialog_is_complete(8)end,
-  action=function() add(party,{charid='beatrice',x=act_x-1,y=act_y+1,mapid=act_mapsid}) end,
-  maplocking='woods2'
+  action=function() add(party,{charid='beatrice',x=7,y=10,mapid=act_mapsid}) end,
+  maplocking='woods3'
  },
  {
   trig=function() return playmap_spr_visible('millandriver', 33) end,
@@ -107,7 +107,7 @@ local triggers={
   maplocking='millandriver'
  },
  {
-  trig=function() return act_mapsid=='mill' and #party==3 end,
+  trig=function() return act_mapsid=='mill' and #party==2 end,
   action=function()
    act_item = nil 
    if act_charid == 'kitty' then
@@ -163,13 +163,12 @@ local triggers={
  {
   trig=function() 
     local beast=get_npc_by_charid('the beast?')
-    return player_location_match'mill,on,8,7' and beast!=nil and beast.mapid=='mill'
+    return player_location_match'mill,above,0' and beast!=nil and beast.mapid=='mill'
   end,
   action=function()
    add(party,get_npc_by_charid('wirt'))
-   add(party,get_npc_by_charid('beatrice'))
    for n in all(npcs) do
-    if (n.charid=='wirt' or n.charid=='beatrice') del(npcs, n)
+    if (n.charid=='wirt') del(npcs, n)
    end
    get_map_by_id('mill').playmapspr=124
    queue_dialog_by_idx(20)
@@ -202,10 +201,8 @@ local triggers={
   action=function() 
    act_item=1
    add(npcs,get_npc_by_charid('wirt'))
-   add(npcs,get_npc_by_charid('beatrice'))
    party={}
    queue_move_npc('wirt',{x=2,y=9})
-   queue_move_npc('beatrice',{x=6,y=3})
   end,
   maplocking='mill,use the club!,hideable'
  },
@@ -625,7 +622,7 @@ end
      if i!=j and npc.x+i==act_x and npc.y+j==act_y then
       if player_sel_location(npc.x,npc.y,npc.mapid) then
        local idles=get_char_by_name(npc.charid).idle
-       queue_dialog_by_txt(idles[get_rand_idx(idles)],npc.charid)
+       queue_dialog_by_txt(ternary(npc.flipv or false,'owww...',idles[get_rand_idx(idles)]),npc.charid)
        x_consumed=true
       end
      end
@@ -1278,7 +1275,7 @@ function transition_to_map(dest_mp,dest_x,dest_y)
  end
  local m = get_map_by_id(act_mapsid)
  local titlex=63-(2*#m.title)
- act_text.maptitle={x=titlex,y=56,txt=m.title,frmcnt=20}
+ act_text.maptitle={x=titlex,y=12,txt=m.title,frmcnt=45}
  -- check alt tiles
  local amcx,amcy=m.cellx,m.celly
  if not is_element_in(altsset, act_mapsid) then
