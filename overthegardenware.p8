@@ -1001,7 +1001,18 @@ function draw_play_map()
  -- draw player
  draw_spr_w_outline(0, get_char_by_name(act_charid).mapspridx, act_x, act_y, 1, act_fliph, false)
  -- draw npcs
- draw_chars_from_array(get_npcs_for_map(act_mapsid))
+ for npc in all(get_npcs_for_map(act_mapsid)) do
+  if npc.x != nil and npc.y != nil then
+   local c=get_char_by_name(npc.charid)
+   local scaling=1.0
+   if (c.scaling != nil) scaling=c.scaling
+   local flipv=false
+   if (npc.flipv) flipv=true
+   local fliph=false
+   if (act_x < npc.x and not flipv) fliph=true
+   draw_spr_w_outline(0, c.mapspridx, npc.x, npc.y, scaling, fliph, flipv)
+  end
+ end
  -- draw selection direction
  if act_lookingdir != nil then
   local lkdr=act_lookingdir
@@ -1301,12 +1312,9 @@ function distance(x1, y1, x2, y2)
 end
 
 function get_stage_by_type(stagetype)
- for i=1,#stagetypes do
-  if stagetypes[i].title==stagetype then
-   return stagetypes[i]
-  end
+ for s in all(stagetypes) do
+  if (s.title==stagetype) return s
  end
- return nil
 end
 
 function get_rand_idx(arr)
@@ -1346,21 +1354,6 @@ function union_arrs(arr1, arr2)
   add(newarr,i)
  end
  return newarr
-end
-
-function draw_chars_from_array(npcs_to_draw)
- for npc in all(npcs_to_draw) do
-  if npc.x != nil and npc.y != nil then
-   local c=get_char_by_name(npc.charid)
-   local scaling=1.0
-   if (c.scaling != nil) scaling=c.scaling
-   local flipv=false
-   if (npc.flipv) flipv=true
-   local fliph=false
-   if (act_x < npc.x and not flipv) fliph=true
-   draw_spr_w_outline(0, c.mapspridx, npc.x, npc.y, scaling, fliph, flipv)
-  end
- end
 end
 
 function draw_character_dialog_box(dialogobj)
@@ -1408,7 +1401,7 @@ function draw_character_dialog_box(dialogobj)
 end
 
 function get_sel_info_btn(lkdrbtn)
-  if (lkdrbtn==nil)return nil
+ if (lkdrbtn==nil)return nil
  local spri,selx,sely=234,0,2*lkdrbtn-5
  if lkdrbtn==2 or lkdrbtn==3 then
   spri=250
@@ -1436,10 +1429,7 @@ function get_npcs_for_map(mapid)
 end
 
 function draw_fancy_box(x,y,w,h,fg,otlntl,otlnbr)
-local xone=x+1
-local yone=y+1
-local xwid=x+w
-local yhei=y+h
+ local xone,yone,xwid,yhei=x+1,y+1,x+w,y+h
  rectfill(xone,yone,xwid-1,yhei-1,fg)
  line(xone,y,xwid-1,y,otlntl) -- top line
  line(xone,yhei,xwid-1,yhei,otlnbr) -- bottom line
