@@ -45,10 +45,8 @@ local dialog_list="1;kitty;led through the mist#1;kitty;by the milk-light of moo
 local npcs={}
 local triggers={
  {
-  trig=function()
-   return act_mapsid=='woods1' and (act_x!=8 or act_y!=8)
-  end,
-  action=function()queue_dialog_by_idx(5)end,
+  trig=function() return player_location_match"woods1,right_of,8" end,
+  action=function() queue_dialog_by_idx(5) end,
   maplocking='woods1',
  },
  {
@@ -85,7 +83,7 @@ local triggers={
   maplocking='woods2'
  },
  {
-  trig=function()return #party==2 and (player_on_location(10,4,'woods2') or player_on_location(11,4,'woods2'))end,
+  trig=function()return #party==2 and player_location_match'woods2,right_of,13,below,1,left_of,15,above,3' end,
   action=function() queue_dialog_by_idx(7) end,
  },
  {
@@ -95,21 +93,17 @@ local triggers={
  },
  {
   trig=function()return dialog_is_complete(8)end,
-  action=function()
-   add(party,{charid='beatrice',x=act_x-1,y=act_y+1,mapid=act_mapsid})
-  end,
+  action=function() add(party,{charid='beatrice',x=act_x-1,y=act_y+1,mapid=act_mapsid}) end,
   maplocking='woods2'
  },
  {
-  trig=function()return playmap_spr_visible('millandriver', 33)end,
-  action=function()queue_dialog_by_idx(9)end,
+  trig=function() return playmap_spr_visible('millandriver', 33) end,
+  action=function() queue_dialog_by_idx(9) end,
   maplocking='millandriver,talk with the woodsman'
  },
  {
-  trig=function()return dialog_is_complete(9)end,
-  action=function()
-   queue_move_npc('the woodsman',{x=7,y=3},{x=7,y=4})
-  end,
+  trig=function() return dialog_is_complete(9) end,
+  action=function() queue_move_npc('the woodsman',{x=7,y=3},{x=7,y=4}) end,
   maplocking='millandriver'
  },
  {
@@ -130,7 +124,7 @@ local triggers={
    get_map_by_id('millandriver').discvrdtiles={}
    add_npc('the beast?','millandriver',12,6)
    queue_dialog_by_idx(16)
-   add(act_wrld_items,{spridx=inv_items[2].spridx,x=4,y=5,mapid=act_mapsid})
+   add(act_wrld_items,{spridx=inv_items[2].spridx,x=2,y=12,mapid=act_mapsid})
   end,
   maplocking='millandriver,enter the mill',
  },
@@ -148,11 +142,11 @@ local triggers={
  },
  {
   trig=function() return act_mapsid=='home' end,
-  action=function()queue_dialog_by_idx(10) end,
+  action=function() queue_dialog_by_idx(10) end,
  },
  {
-  trig=function()return playmap_spr_visible('woods1', 64) end,
-  action=function()queue_dialog_by_idx(11)end,
+  trig=function() return playmap_spr_visible('woods1', 64) end,
+  action=function() queue_dialog_by_idx(11) end,
   maplocking='woods1,spot the turtle',
  },
  {
@@ -167,7 +161,10 @@ local triggers={
   maplocking='millandriver',
  },
  {
-  trig=function() return act_mapsid=='mill' and #party==1 end,
+  trig=function() 
+    local beast=get_npc_by_charid('the beast?')
+    return player_location_match'mill,on,8,7' and beast!=nil and beast.mapid=='mill'
+  end,
   action=function()
    add(party,get_npc_by_charid('wirt'))
    add(party,get_npc_by_charid('beatrice'))
@@ -180,19 +177,15 @@ local triggers={
   maplocking='millandriver,run back to your brother!,hideable'
  },
  {
-  trig=function()
-   return player_on_location(0,7,'woods1') or player_on_location(0,8,'woods1')
-  end,
-  action=function()queue_dialog_by_idx(14)end,
+  trig=function() return player_location_match'woods1,left_of,1' end,
+  action=function() queue_dialog_by_idx(14) end,
  },
  {
-  trig=function()
-   return player_on_location(4,5,'mill') or player_on_location(4,6,'mill')
-  end,
-  action=function()queue_dialog_by_idx(13)end,
+  trig=function() return player_location_match'mill,left_of,7' end,
+  action=function() queue_dialog_by_idx(13) end,
  },
  {
-  trig=function() return player_sel_location(4,5,'mill') end,
+  trig=function() return player_sel_location(2,12,'mill') end,
   action=function()
    act_item=2
    local noartitems = {}
@@ -211,7 +204,7 @@ local triggers={
    add(npcs,get_npc_by_charid('wirt'))
    add(npcs,get_npc_by_charid('beatrice'))
    party={}
-   queue_move_npc('wirt',{x=7,y=2})
+   queue_move_npc('wirt',{x=2,y=9})
    queue_move_npc('beatrice',{x=6,y=3})
   end,
   maplocking='mill,use the club!,hideable'
@@ -225,7 +218,7 @@ local triggers={
     transition_to_map('millandriver',7,4)
     del(npcs,get_npc_by_charid('the beast?'))
     add_npc('dog','millandriver',5,4)
-    add_npc('black turtle','millandriver',4,5)
+    add_npc('black turtle','millandriver',5,5)
     del(npcs,get_npc_by_charid('the woodsman'))
     add_npc('the woodsman','millandriver',6,5)
     queue_dialog_by_idx(22)
@@ -1162,7 +1155,22 @@ function get_first_active_dlg()
 end
 
 function player_on_location(x,y,mapid)
- return act_x==x and act_y==y and mapid==act_mapsid
+ return player_location_match(mapid..',on,'..x..','..y)
+end
+
+function player_location_match(locquery)
+ local locqsplit=split(locquery)
+ if (locqsplit[1]!=act_mapsid) return false
+ for i=2,#locqsplit,2 do 
+  local ione,itwo=locqsplit[i],tonum(locqsplit[i+1])
+  if ione=='on' then 
+   local ithree=tonum(locqsplit[i+2])
+   if (act_x!=itwo or act_y!=ithree) return false
+   i+=1
+  end
+  if ((ione=='above'and act_y<=itwo) or (ione=='right_of'and act_x<=itwo) or (ione=='below'and act_y>=itwo) or (ione=='left_of'and act_x>=itwo)) return false
+ end
+ return true
 end
 
 function player_sel_location(x,y,mapid)
@@ -1807,12 +1815,12 @@ ebcdcdcdecececececcfcfcfcfcfcdebebebceceeeeecfcfcfebececcddcebebcdcdcdcdebcdcfcf
 ebebcdeccfcfcfcfcfcfcfcfeccdcdebcecececeeecfcfcfcfcfcfcfcfcdebebcdebebcdebcdcfcf9fcdcdebceceebcdebcdcdcdcdcfcfcfcfcfcd9ebe9ecdebcdafbf6bbfbfbfbfbfbfbfbfbfbfafcdcdcdafbfbfbfbfbfbfbfbfbfbfafcdcdebcdeccdcdebcfcfcfcdebcdcdcdcdebebcdcdcdcdcdcdcdcdcdcdcdcdcdcdeb
 ebcdcdcfcfcfcfcfcfcfcfcfeccdebebcececeebcfcfcfcfcfcfcfcfcfcfebebcdcdcdcdcdcdcfcfcfcdcdcdcecececdebebececcdcfcfcfcfcfcdcdbe9ecdebcdafbf6bbfbfb2bfbfbfb2bfbfbfafcdcdcdafbfbfbfbfbfbfbfbfbfbfafcdcdebcdcdcdebcdcfcfcdebcdcdcdeccdebebcdcdcdeccdcdcdcdcdcdcdcdcdcdeb
 ebcdcdcfcddbcdcfcfcfececcdcdecebceceebebebcfcfcfcfcfcfcfcfcfebebebcdcdcdcdeccfcfcfcfcdcdcfcececeebcdcdcdcd6dcfcfcfcfcdcdececcdcdcdaf8e8e8e8e8e8e2b8e8e8e8e8eafcdcdcdafbfbfbfbfbfbfbfbfbfbfafcdcdebcdcdcdebcdcfcfeccdebcdcdcdcdebebcdcdcdeccdcdcdcdcdcdcdcdcdcdeb
-ebebcdcfcdcdcfcfcfeccdcdcdcdcdebebebebebeb6ccfcfcfcfcfcfcfcdebebcdcdebebcdcdeccfcfcfcdcfcfcfceceebcd9ebe9ecdcdcfcfcfcdcdcdcdcdaecdafbfbfd8bfbfbfbf5b5bbfbfbfafcdcdcdafbfbfbfbfbfbfbfbfbfb9afcdcdebcdcdcdcdebcfcfcfecebebcdcdcdebebcdcdcdeccdcdcdcfcdcde6e7cdcdeb
+ebebcdcfcdcdcfcfcfeccdcdcdcdcdebebebebebeb6ccfcfcfcfcfcfcfcdebebcdcdebebcdcdeccfcfcfcdcfcfcfceceebcd9ebe9ecdcdcfcfcfcdcdcdcdcdaecdafbfbfd8bfbfbfbf5b5bbfbf5bafcdcdcdafbfbfbfbfbfbfbfbfbfb9afcdcdebcdcdcdcdebcfcfcfecebebcdcdcdebebcdcdcdeccdcdcdcfcdcde6e7cdcdeb
 ebcddccfcfcfcfcfeccdebcdcdebcdebebebebeb6ccfcfcfcfcfcfebeccdebebd7ebcdcdcdcdeccfcfcfcfcfcfcdcdcdebcd9e9e9ebecdcdcfcfcfcdcdaeaeaecdaf5abfbfbf3bbfbfbfbfbfbfbfafcdcdcdaf3abfbfbfbfbfbfbfbfbfafcdcdebcdcdcdcdcdcdcfcfcdebcdcdcdcdebebcdcdcdeccdcdcfcfcdcdf6f7cdcdeb
 ebcdcdcfcfcfcfeccdcdcdcdeccdebebebebeb6ccfcfcfcfcfebebebcdcdebebcdcdcdcdebcdcdeccfcfcfcfcdcdebebebcdbe9ebe9e6e6ecfcfeccdaeaeaeaecdafbfbf3bbfbfbfbfbfbfbfbfbfafcdcdcdafbfbfbfbfbfbfbfbfbfbfafcdcdebcdcdcdcdcdcdcfcfcdcdcdcdcddbebebcdcdeccdcdcdcfcfcfcfcfcdcdcdeb
 ebcdcfcfcfcfeccdcdcdcdcdcdcdebebebeb6ccfcfcfcfebebebebebcdcdebebebcdcdcdebebcdcdeccfcfcfcfcdcdebebcd9e9ebecdcd6ccfcfeccdaeaeaeaecd2abfbfbfbfbfbfbfbfbfbfbfbf2acdcdcd2abfbfbfbfbfbfbfbfbfbf2acdebebcdeccdcdcdcdcfcfcdebcdcdcdcdebebcdcdcdcdcdcdcfcfcfcfcdcdcdcdeb
 ebcfcfcfcfcdcdcdcdeccdebcdcdebebeb6ccfcfcfcdcdcdcdebdbeccdcdebebebcdcddccdebcdcdcdcdcfcfcfcfcdebebcdcdcdcdcdcfcfcfcfeccdaeaeaeaecdafbfbfbfbfbfbfbfbfbfbfbfbfafcdaecdafbfbfbfbfbfbfbfbfbfbfafcdebebcdcdcdcdcdeccfcfcdebcdcdcd9eebebebebcdcdcdcfcfcfcdcdcdcdecebeb
-cfcfcfcfcdcdebcdebcdcdcdcdeccdebebcfcfcfcdcdcdcdcdcdcdcdcdcdebebebcdcdcdcdcdcdcdcdcdcdcfcfcfcfcfebcdaeaeaecdcfcfcfcf7a7baeaeaeaecdafbfbfbfbf3abfbfbfbfbfbf4aafcdaecd8e8e8e8e8e2b2b8e8e8e8e8ecdebebcdaeaeaeeccfcfcfcdebcdcd9eebebebebebcdcdcdcfcfcdcdcdcdecebebeb
+cfcfcfcfcdcdebcdebcdcdcdcdeccdebebcfcfcfcdcdcdcdcdcdcdcdcdcdebebebcdcdcdcdcdcdcdcdcdcdcfcfcfcfcfebcdaeaeaecdcfcfcfcf7a7baeaeaeaecdaf4abfbfbf3abfbfbfbfbfbf4aafcdaecd8e8e8e8e8e2b2b8e8e8e8e8ecdebebcdaeaeaeeccfcfcfcdebcdcd9eebebebebebcdcdcdcfcfcdcdcdcdecebebeb
 cfcfcfcdcdcdeccdcdcdcdebcdcdcdebcfcfcfcfcdcdcdecdccdcdcdcdcdebebebdbcdcdcdcdcdcdcdcdcdcdcdcfcfcfebcdaeaeaecdcdcfcfcf8a8baeaeaeaecc8e8e8e8e8e8e8e2b8e8e8e8e8e8eccaeaecdeccdcdcfcfcfcfcdcdeccdcdebebaeaeaeaeaecfcfcdcdcdcd9eebebebebebebebcdcdcfcfcdcdcdebebebebeb
 cfcfebebebebebebebebebebebebebebcfcfcfebebebebebebebebebebebebebebebebebebebebebebebebebebcfcfcfdbcdaeaeaeaecdcfcfcdcdcdcdaeaeaecdcdcccdcdcfcfcfcfcfcfcdcdcccdcdaeaeeccdcdcdcfcfcfcfcfcdcdeccdcdebaeaeaeaeaecfcfebebebebebebebebebebebebebebcfcfebebebebebebebeb
 ebebebebebebebebebebebebebebebebebebebcdcdcdcdcdcdcdcdebebebebebebebebebebcdcdcdcdcdcdcdcdebebeb0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
