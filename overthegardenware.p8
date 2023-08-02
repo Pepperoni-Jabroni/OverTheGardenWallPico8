@@ -280,11 +280,7 @@ function compute_characters()
  for c in all(split(character_list, '#')) do
   local cdata = split(c, ';')
   local mapspridx=cdata[2]
-  if mapspridx == 'nil' then
-   mapspridx=nil
-  else
-   mapspridx=tonum(mapspridx)
-  end
+  mapspridx=ternary(mapspridx == 'nil',nil,tonum(mapspridx))
   add(cchar,{
    name=split(cdata[1]), 
    mapspridx=mapspridx,
@@ -391,13 +387,12 @@ local dialogs = compute_dialogs()
 
 function _init()
 -- init main menu chars
- local genrandcnt=4
  repeat
   local choice=get_rand_idx(get_chars_w_dialog())
   if not is_element_in(menuchars,choice) then
    add(menuchars,choice)
   end
- until #menuchars==genrandcnt
+ until #menuchars==4
 
  -- init frog intro name
  local randomname=get_rand_idx(characters[4].name)
@@ -459,8 +454,9 @@ function update_intro()
  if btnp(5) then
   local curprogressdlg=get_first_active_dlg()[act_dialogspeakidx]
   if curprogressdlg != nil then
-   if curprogressdlg.time < #curprogressdlg.text then
-    curprogressdlg.time = #curprogressdlg.text
+   local txtlen=#curprogressdlg.text
+   if curprogressdlg.time < txtlen then
+    curprogressdlg.time = txtlen
    else
     act_dialogspeakidx+=1
    end
