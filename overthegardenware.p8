@@ -663,7 +663,7 @@ end
       if (selspr==219) do_edelwood_select()
       if selspr==215 then
        if(not is_element_in(rockfact_sels, act_mapsid)) add(rockfact_sels, act_mapsid)
-       queue_dialog_by_txt(split('put raisins in grape juice to get grapes!,test2,test3')[#rockfact_sels], 'rock fact', true)
+       queue_dialog_by_txt(split('put raisins in grape juice to get grapes!,dinosaurs had big ears but we forgot!,I was stolen from old lady daniels yard!')[#rockfact_sels], 'rock fact', true)
        queue_dialog_by_txt(#rockfact_sels..' of 3 rock facts collected!', 'rock fact')
        mset(x+get_map_by_id(act_mapsid).cellx,y+get_map_by_id(act_mapsid).celly,202)
        if (#rockfact_sels==3) queue_achievement_text('you found all 3 rock facts!')
@@ -681,7 +681,7 @@ end
 end
 
 function queue_achievement_text(text)
-  queue_dialog_by_txt('\f9\146 '..text..' well done!','achievement get!',true)
+  queue_dialog_by_txt('\f9\146 '..text..' \146','achievement get!',true)
 end
 
 function trigger_is_complete(idx)
@@ -691,8 +691,8 @@ end
 function do_edelwood_select()
  if(not is_element_in(edelwood_sels, act_mapsid)) add(edelwood_sels, act_mapsid)
  queue_dialog_by_txt('*eerily howls in the cool fall wind*', 'edelwood', true)
- queue_dialog_by_txt(#edelwood_sels..' of 5 edelwoods found!', 'edelwood')
- if (#edelwood_sels==5) queue_achievement_text('you found all 5 edelwoods!')
+ queue_dialog_by_txt(#edelwood_sels..' of 6 edelwoods found!', 'edelwood')
+ if (#edelwood_sels==6) queue_achievement_text('you found all 6 edelwoods!')
 end
 
 function queue_dialog_by_txt(text,speakerid,large)
