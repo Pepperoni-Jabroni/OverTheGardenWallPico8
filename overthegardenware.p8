@@ -42,7 +42,7 @@ local darkspr_list='174,204,218,219,235,236,251#2,3,4,8,9,10,11#0,0,1,1,0,1,1'
 local darkanims={}
 local nonrptdialog={x=nil,y=nil}
 local compltdlgs={}
-local dialog_list="1;kitty;led through the mist#1;kitty;by the milk-light of moon#1;kitty;all that was lost is revealed#1;kitty;our long bygone burdens#1;kitty;mere echoes of the spring#1;kitty;but where have we come?#1;kitty;and where shall we end?#1;kitty;if dreams can't come true#1;kitty;then why not pretend?#1;kitty;how the gentle wind#1;kitty;beckons through the leaves#1;kitty;as autumn colors fall#1;kitty;dancing in a swirl#1;kitty;of golden memories#1;kitty;the loveliest lies of all#2;greg;i sure do love my frog!#2;wirt;greg, please stop...#2;kitty;4;ribbit.#2;greg;haha, yeah!#3;wirt;i dont like this at all#3;greg;its a tree face!#4;wirt;is that some sort of deranged lunatic?#4;wirt;with an axe waiting for victims?#4;the woodsman;*swings axe and chops tree*;large#4;wirt;what is that strange tree?#4;greg;we should ask him for help!#5;wirt;whoa... wait greg...;large#5;wirt;... where are we?;large#5;greg;we\'re in the woods!;large#5;wirt;no, i mean;large#5;wirt;... where are we?!;large#6;wirt;we're really lost greg...#6;greg;i leave trails of candy from my pants!#6;greg;candytrail. candytrail. candytrail!#7;beatrice;help! help!#7;wirt;i think its coming from a bush?#8;beatrice;help me!;large#8;greg;wow, a talking bush!#8;beatrice;i\'m not a talking bush! i\'m a bird!#8;beatrice;and i\'m stuck!#8;greg;wow, a talking bird!#8;beatrice;if you help me get unstuck, i\'ll#8;beatrice;owe you one#8;greg;ohhhh! you'll grant me a wish?!#8;greg;*picks up beatrice out of bush*#8;wirt;uh-uh! no!#9;the woodsman;these woods are a dangerous place#9;the woodsman;for two kids to be alone#9;wirt;we... we know, sir#9;greg;yeah! i\'ve been leaving a trail#9;greg;of candy from my pants!#9;the woodsman;please come inside...;large#9;wirt;i don\'t like the look of this#9;kitty;ribbit.#9;greg;haha, yeah!#10;wirt;oh! terribly sorry to have#10;wirt;disturbed you sir!#10;turkey;gobble. gobble. gobble.;large#11;greg;wow, look at this turtle!#11;wirt;well thats strange#11;greg;i bet he wants some candy!#11;black turtle;*stares blankly*#12;the beast?;*glares at you, panting*;large#12;greg;you have beautiful eyes!#12;greg;ahhhh!#13;wirt;wow this place is dingey#13;greg;yeah! crazy axe person!#13;wirt;we should find a way to take him out#13;wirt;before he gets a chance to hurt us#13;greg;i can handle it!#14;wirt;i dont think we should#14;wirt;go back the way we came#15;the woodsman;whats the rucus out here?#15;wirt;oh nothing sir!#15;greg;nows my chance!#16;the woodsman;i work as a woodsman in these woods#16;the lantern;keeping the light in this lantern lit;large#16;the woodsman;by processing oil of the edelwood trees#16;the woodsman;you boys are welcome to stay here#16;the woodsman;ill be in the workshop#16;greg;okey dokey!#17;greg;this bird art sculpture is perfect!#18;greg;there! this little guy wanted a snack#18;black turtle;*stares blankly*;large#19;the woodsman;ow! *falls onto ground*#19;greg;haha yeah, i did it!#19;wirt;greg! what have you done!#19;wirt;hey greg... where did your frog go?#19;greg;where is that frog o mine?#20;greg;ahhh! the beast!#20;wirt;quick, greg, to the workshop!#20;wirt;we should be able to make it#20;wirt;out through a window!#20;the beast?;*crashes through the wall*;large#21;greg;we made it!#21;wirt;hopefully hes stuck there!#21;the beast?;*gets stuck in the window*#21;the beast?;*spits out a candy*#21;dog;*looks at you happily*;large#21;greg;look! hes my best friend now!#22;the woodsman;what have you boys done?!#22;the woodsman;the mill is destroyed#22;wirt;but we solved your beast problem!#22;the woodsman;you silly boys#22;the woodsman;that silly dog was not the beast#22;dog;*bark! bark!*;large#22;the woodsman;he just swallowed that turtle#22;black turtle;*stares blankly*;large#22;the woodsman;go now and continue your journey#22;wirt;we\'re sorry sir#22;the woodsman;beware the beast!#23;greg;oh wow! i stepped on a pumpkin!#23;wirt;huh oh that's strange#23;wirt;i did too#23;greg;haha i have a pumpkin shoe!#23;kitty;ribbit."
+local dialog_list="1;kitty;led through the mist#1;kitty;by the milk-light of moon#1;kitty;all that was lost is revealed#1;kitty;our long bygone burdens#1;kitty;mere echoes of the spring#1;kitty;but where have we come?#1;kitty;and where shall we end?#1;kitty;if dreams can't come true#1;kitty;then why not pretend?#1;kitty;how the gentle wind#1;kitty;beckons through the leaves#1;kitty;as autumn colors fall#1;kitty;dancing in a swirl#1;kitty;of golden memories#1;kitty;the loveliest lies of all#2;greg;i sure do love my frog!#2;wirt;greg, please stop...#2;kitty;4;ribbit.#2;greg;haha, yeah!#3;wirt;i dont like this at all#3;greg;its a tree face!#4;wirt;is that some sort of deranged lunatic?#4;wirt;with an axe waiting for victims?#4;the woodsman;*swings axe and chops tree*;large#4;wirt;what is that strange tree?#4;greg;we should ask him for help!#5;wirt;whoa... wait greg...;large#5;wirt;... where are we?;large#5;greg;we\'re in the woods!;large#5;wirt;no, i mean;large#5;wirt;... where are we?!;large#6;wirt;we're really lost greg...#6;greg;i leave trails of candy from my pants!#6;greg;candytrail. candytrail. candytrail!#7;beatrice;help! help!#7;wirt;i think its coming from a bush?#8;beatrice;help me!;large#8;greg;wow, a talking bush!#8;beatrice;i\'m not a talking bush! i\'m a bird!#8;beatrice;and i\'m stuck!#8;greg;wow, a talking bird!#8;beatrice;if you help me get unstuck, i\'ll#8;beatrice;owe you one#8;greg;ohhhh! you'll grant me a wish?!#8;beatrice;no but i can take you to...#8;beatrice;adalaid, the good woman of the woods!#8;greg;*picks up beatrice out of bush*#8;wirt;uh-uh! no!#9;the woodsman;these woods are a dangerous place#9;the woodsman;for two kids to be alone#9;wirt;we... we know, sir#9;greg;yeah! i\'ve been leaving a trail#9;greg;of candy from my pants!#9;the woodsman;please come inside...;large#9;wirt;i don\'t like the look of this#9;kitty;ribbit.#9;greg;haha, yeah!#10;wirt;oh! terribly sorry to have#10;wirt;disturbed you sir!#10;turkey;gobble. gobble. gobble.;large#11;greg;wow, look at this turtle!#11;wirt;well thats strange#11;greg;i bet he wants some candy!#11;black turtle;*stares blankly*#12;the beast?;*glares at you, panting*;large#12;greg;you have beautiful eyes!#12;greg;ahhhh!#13;wirt;wow this place is dingey#13;greg;yeah! crazy axe person!#13;wirt;we should find a way to take him out#13;wirt;before he gets a chance to hurt us#13;greg;i can handle it!#14;wirt;i dont think we should#14;wirt;go back the way we came#15;the woodsman;whats the rucus out here?#15;wirt;oh nothing sir!#15;greg;nows my chance!#16;the woodsman;i work as a woodsman in these woods#16;the lantern;keeping the light in this lantern lit;large#16;the woodsman;by processing oil of the edelwood trees#16;the woodsman;you boys are welcome to stay here#16;the woodsman;ill be in the workshop#16;greg;okey dokey!#17;greg;this bird art sculpture is perfect!#18;greg;there! this little guy wanted a snack#18;black turtle;*stares blankly*;large#19;the woodsman;ow! *falls onto ground*#19;greg;haha yeah, i did it!#19;wirt;greg! what have you done!#19;wirt;hey greg... where did your frog go?#19;greg;where is that frog o mine?#20;greg;ahhh! the beast!#20;wirt;quick, greg, to the workshop!#20;wirt;we should be able to make it#20;wirt;out through a window!#20;the beast?;*crashes through the wall*;large#21;greg;we made it!#21;wirt;hopefully hes stuck there!#21;the beast?;*gets stuck in the window*#21;the beast?;*spits out a candy*#21;dog;*looks at you happily*;large#21;greg;look! hes my best friend now!#22;the woodsman;what have you boys done?!#22;the woodsman;the mill is destroyed#22;wirt;but we solved your beast problem!#22;the woodsman;you silly boys#22;the woodsman;that silly dog was not the beast#22;dog;*bark! bark!*;large#22;the woodsman;he just swallowed that turtle#22;black turtle;*stares blankly*;large#22;the woodsman;go now and continue your journey#22;wirt;we\'re sorry sir#22;the woodsman;beware the beast!#23;greg;oh wow! i stepped on a pumpkin!#23;wirt;huh oh that's strange#23;wirt;i did too#23;greg;haha i have a pumpkin shoe!#23;kitty;ribbit.#24;wirt;wow, greg, look!#24;wirt;a home! maybe they have a phone#24;beatrice;oh this is just great#25;pottsfield citizen 1;hey who are you?;large#25;wirt;uh hello! we're just passing through#25;pottsfield citizen 1;folks dont just pass through here#25;beatrice;uh-uh, i dont like this!"
 local npcs={}
 local triggers={
  {
@@ -74,7 +74,7 @@ local triggers={
   maplocking='woods2,inspect the strange tree',
  },
  {
-  trig=function()return playmap_spr_visible('woods2', 33)end,
+  trig=function()return playmap_npc_visible('woods2', 'the woodsman')end,
   action=function()queue_dialog_by_idx(4)end,
   maplocking='woods2,meet someone new'
  },
@@ -98,7 +98,7 @@ local triggers={
   maplocking='woods3'
  },
  {
-  trig=function() return playmap_spr_visible('millandriver', 33) end,
+  trig=function() return playmap_npc_visible('millandriver', 'the woodsman') end,
   action=function() queue_dialog_by_idx(9) end,
   maplocking='millandriver,talk with the woodsman'
  },
@@ -130,7 +130,7 @@ local triggers={
   maplocking='millandriver,enter the mill',
  },
  {
-  trig=function() return playmap_spr_visible('millandriver', 48) end,
+  trig=function() return playmap_npc_visible('millandriver', 'the beast?') end,
   action=function()
    queue_dialog_by_idx(12)
    local dt = get_map_by_id(act_mapsid).discvrdtiles
@@ -146,7 +146,7 @@ local triggers={
   action=function() queue_dialog_by_idx(10) end,
  },
  {
-  trig=function() return playmap_spr_visible('woods1', 64) end,
+  trig=function() return playmap_npc_visible('woods1', 'black turtle') end,
   action=function() queue_dialog_by_idx(11) end,
   maplocking='woods1,spot the turtle',
  },
@@ -231,15 +231,25 @@ local triggers={
  },
  {
   trig=function() 
-   if(act_mapsid!='woods3') return false
    local m=get_map_by_id(act_mapsid)
-   return mget(m.cellx+act_x,m.celly+act_y)==158
+   return act_mapsid=='woods3' and mget(m.cellx+act_x,m.celly+act_y)==158
   end,
   action=function() 
    queue_dialog_by_idx(23)
    act_item=3
   end,
   maplocking='woods3,acquire new shoes'
+ },
+ {
+  trig=function() 
+    local m=get_map_by_id('home')
+    return act_mapsid=='pottsfield' and distance(act_x,act_y,m.playmaploc.x,m.playmaploc.y)<3
+  end,
+  action=function() queue_dialog_by_idx(24) end
+ },
+ {
+  trig=function() return playmap_npc_visible('barn', 'pottsfield citizen 1') end,
+  action=function() queue_dialog_by_idx(25) end
  }
 }
 local menuchars={}
@@ -1031,7 +1041,7 @@ function draw_play_map()
   palt(5,false)
  end
  -- draw fog of war
- if activemap.type=='exterior' then
+ if activemap.type=='exterior' or activemap.id=='barn' then
   local dark={}
   for i=0,15 do
    for j=0,15 do
@@ -1198,20 +1208,17 @@ function player_use_item(itemidx,mapid,x_idx,y_idx)
  return act_useitem==itemidx and act_mapsid==mapid and (x_idx == nil or (x_idx == act_x and y_idx == act_y))
 end
 
-function playmap_spr_visible(mapid, spri)
+function playmap_npc_visible(mapid, charid)
  if act_mapsid != mapid then
   return false
  end
- local mapspr=sget(act_x+get_map_by_id(act_mapsid).cellx,act_y+get_map_by_id(act_mapsid).celly)==spri
- local npcspr=false
  for n in all(get_npcs_for_map(act_mapsid)) do
   local idtfr=n.x..'|'..n.y
-  if is_element_in(get_map_by_id(act_mapsid).discvrdtiles,idtfr) and get_char_by_name(n.charid).mapspridx==spri then
-   npcspr=true
-   break
+  if is_element_in(get_map_by_id(act_mapsid).discvrdtiles,idtfr) and n.charid==charid then
+   return true
   end
  end
- return mapspr or npcspr
+ return false
 end
 
 function dialog_is_complete(dialogi)
