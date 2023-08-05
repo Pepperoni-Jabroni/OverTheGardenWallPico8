@@ -10,13 +10,14 @@ local alttiles_list="206;206,221,237#238;222,238#207;207,223,239#235;235,251,218
 local altsset={}
 -- of the form "<obj_sprite_idxs>;<obj_text>#"
 local objdescript_list="122,123,138,139;what a nice old wagon#124,125,140,141;the poor old mill...#158;look at these pumpkins!#159;it says pottsfield \148#174;looks like its harvest time!#190;this pumpkin is missing#204,236;its just a bush...#218,235,251;this tree sure is tall#220;a stump of some weird tree?#219;a creepy tree with a face on it#224,225,240,241;pottsfield old barn#226,227,242,243;the old grist mill#228,229,244,245;the animal schoolhouse#232,233,248,249;pottsfield old church#108;a rickety old fence#109;a scarecrow of sorts#110;the ground is higher here#127;a deep hole in the ground#42;what a nice view out this window#43;this is the door#58;its a large cabinet#59;its a comfortable chair#74;its a small desk#75;its a school desk#90;its a lounge chair#91;its a bundle of logs#106;its a ladder (i swear)#107;its a railing#143;its a piano!#177;its the mill\'s grinder!#178;its a jar of thick oil#179;its a broken jar of oil#200;its a chalk board#215;i found a rock fact!#216;its warm by the fireplace#217;a bundle of black oily sticks#180,181;a cafeteria bench and table#230,231,246,247;the town gazebo#232,233,248,249;pottsfield home"
-local inv_items={
- {spridx=255,name='candy',charids={'greg'}},
- {spridx=214,name='bird art',charids={'greg'}},
- {spridx=252,name='pumpkin shoe',charids={'greg','wirt'}},
- {spridx=253,name='shovel',charids={'greg', 'wirt', 'beatrice'}},
- {spridx=254,name='old cat',charids={'greg', 'kitty'}}
-}
+local inv_items=(function()
+  local items={}
+  for i in all(split('255,candy,greg#214,bird art,greg#252,pumpkin shoe,greg;wirt#253,shovel,greg;wirt;beatrice#254,old cat,greg;kitty', '#')) do
+    local idata=split(i)
+    add(items,{spridx=idata[1],name=idata[2],charids=split(idata[3],';')})
+  end
+  return items
+end)()
 local last_mapid_mov=nil
 local act_item=nil
 local act_useitem=nil
