@@ -27,7 +27,7 @@ local act_y=0
 local act_charid=nil
 local act_lookingdir=nil
 local act_fliph=false
-local act_text={maptitle=nil,dialog={},charsel=nil}
+local act_text_dialog,act_text_maptitle,act_text_charsel={}
 local act_stagetype="boot"
 local act_dialogspeakidx=1
 local act_mapsid=nil
@@ -62,7 +62,7 @@ local triggers,maplocking,complete_trigs={
   function() return playmap_npc_visible('woods2', 'the woodsman')end,
   function() queue_dialog_by_idx(4)end,
   function() return dialog_is_complete(4)end,
-  function() queue_move_npc('the woodsman',{x=15,y=0},{x=7,y=7})end,
+  function() queue_move_npc('the woodsman','15|0|7|7')end,
   function() return #party==2 and player_location_match'woods3,below,13' end,
   function() queue_dialog_by_idx(7) end,
   function() return player_sel_location(7,10,'woods3')end,
@@ -72,7 +72,7 @@ local triggers,maplocking,complete_trigs={
   function() return playmap_npc_visible('millandriver', 'the woodsman') end,
   function() queue_dialog_by_idx(9) end,
   function() return dialog_is_complete(9) end,
-  function() queue_move_npc('the woodsman',{x=7,y=3},{x=7,y=4}) end,
+  function() queue_move_npc('the woodsman','7|3|7|4') end,
   function() return act_mapsid=='mill' and #party==2 end,
   function()
     act_item = nil 
@@ -144,7 +144,7 @@ local triggers,maplocking,complete_trigs={
     act_item=1
     add(npcs,get_npc_by_charid('wirt'))
     party={}
-    queue_move_npc('wirt',{x=2,y=9})
+    queue_move_npc('wirt','2|9')
    end,
   function() 
      local beast=get_npc_by_charid('the beast?')
@@ -172,7 +172,7 @@ local triggers,maplocking,complete_trigs={
    end,
   function() 
      local m=get_map_by_id('home')
-     return act_mapsid=='pottsfield' and distance(act_x,act_y,m.playmaploc.x,m.playmaploc.y)<3
+     return act_mapsid=='pottsfield' and distance(act_x,act_y,m.playmaplocx,m.playmaplocy)<3
    end,
   function() queue_dialog_by_idx(24) end,
   function() return playmap_npc_visible('barn', 'pottsfield citizen 1') end,
@@ -255,7 +255,8 @@ function compute_maps()
   if mdata[1] == 'interior' then
    entry.playmapid=mdata[6]
    entry.playmapspr=mdata[7]
-   entry.playmaploc={x=mdata[8],y=mdata[9]}
+   entry.playmaplocx=mdata[8]
+   entry.playmaplocy=mdata[9]
   end
   add(cmaps, entry)
  end
@@ -422,7 +423,7 @@ function add_npc(charid,mapid,x,y)
 end
 
 function update_play_map()
- local initialdialoglen=#act_text.dialog
+ local initialdialoglen=#act_text_dialog
  -- check for dialog progress
  local x_consumed=false
  if btnp(5) and initialdialoglen > 0 then
@@ -437,10 +438,10 @@ function update_play_map()
    end
   end
   if act_dialogspeakidx != nil and act_dialogspeakidx > #get_first_active_dlg() then
-   if type(act_text.dialog[1])=='number' then
-    add(compltdlgs,act_text.dialog[1])
+   if type(act_text_dialog[1])=='number' then
+    add(compltdlgs,act_text_dialog[1])
    end
-   act_text.dialog=drop_lead_elems(act_text.dialog)
+   act_text_dialog=drop_lead_elems(act_text_dialog)
    act_dialogspeakidx=1
   end
  end
@@ -498,7 +499,7 @@ function update_play_map()
  if btnp(4) and initialdialoglen == 0 then
   perform_active_party_swap()
   local charname = tostr(get_char_by_name(act_charid).get_name_at_idx(get_char_by_name(act_charid),1))
-  act_text.charsel={txt=charname,frmcnt=32}
+  act_text_charsel={txt=charname,frmcnt=32}
  end
  -- check for map switch
  local maplocked,i={},1
@@ -597,7 +598,7 @@ end
   end
  end
  -- play sound if new dialog triggered
- if #act_text.dialog>initialdialoglen or act_lookingdir!= nil then
+ if #act_text_dialog>initialdialoglen or act_lookingdir!= nil then
   sfx(2)
  end
 end
@@ -618,7 +619,7 @@ function do_edelwood_select()
 end
 
 function queue_dialog_by_txt(text,speakerid,large)
-  add(act_text.dialog,{{speakerid=speakerid or act_charid,text=text,large=large or false}})
+  add(act_text_dialog,{{speakerid=speakerid or act_charid,text=text,large=large or false}})
 end
 
 function get_trans_loc_for_ids(primmapid, trgtmapid)
@@ -898,7 +899,7 @@ function draw_introduction()
 end
 
 function draw_dialog_if_needed()
- if #act_text.dialog > 0 then
+ if #act_text_dialog > 0 then
   local curprogressdlg=get_first_active_dlg()[act_dialogspeakidx]
   if curprogressdlg != nil then
    draw_character_dialog_box(curprogressdlg)
@@ -915,7 +916,7 @@ function draw_play_map()
  -- draw map
  map(activemap.cellx, activemap.celly)
   -- draw ring around new active char
- if act_text.charsel != nil and act_text.charsel.frmcnt>0 and flr(act_text.charsel.frmcnt/5)%2==0 then
+ if act_text_charsel != nil and act_text_charsel.frmcnt>0 and flr(act_text_charsel.frmcnt/5)%2==0 then
   local x,y=act_x*8,act_y*8
   pset(x,y+9,12)
   pset(x+7,y+9,12)
@@ -947,9 +948,9 @@ function draw_play_map()
  -- draw selection direction
  if act_lookingdir != nil then
   local lkdr=act_lookingdir
-  local sel=get_sel_info_btn(lkdr)
+  local selspr,selx,sely=get_sel_info_btn(lkdr)
   palt(5,true)
-  spr(sel.i,8*(act_x+sel.x),8*(act_y+sel.y),1,1,sel.x==-1,sel.y==1)
+  spr(selspr,8*(act_x+selx),8*(act_y+sely),1,1,selx==-1,sely==1)
   palt(5,false)
  end
  -- draw fog of war
@@ -1021,9 +1022,9 @@ function draw_play_map()
  -- draw active char & item hud
  local has_item=act_item!=nil and is_element_in(inv_items[act_item].charids,act_charid)
  local char_name=nil
- if act_text.charsel != nil and act_text.charsel.frmcnt>0 then
-  char_name=act_text.charsel.txt
-  act_text.charsel.frmcnt-=1
+ if act_text_charsel != nil and act_text_charsel.frmcnt>0 then
+  char_name=act_text_charsel.txt
+  act_text_charsel.frmcnt-=1
  else
  end
  draw_fancy_spr_box(1,get_char_by_name(act_charid).mapspridx,char_name)
@@ -1032,7 +1033,7 @@ function draw_play_map()
   draw_fancy_spr_box(114,i.spridx,ternary(char_name!=nil,i.name,nil))
  end
  -- draw map title
- txtobj=act_text.maptitle
+ txtobj=act_text_maptitle
  if txtobj != nil and txtobj.frmcnt > 0 then
   draw_fancy_box(txtobj.x, txtobj.y, #txtobj.txt*4+4, 8, 4,10, 9)
   printsp(txtobj.txt, txtobj.x+3, txtobj.y+3, 2)
@@ -1081,19 +1082,14 @@ function get_npc_by_charid(qcharid)
  for n in all(get_all_npcs()) do
   if (n.charid==qcharid) return n
  end
- return nil
 end
 
 function get_first_active_dlg()
- local curprogressdlg=act_text.dialog[1]
+ local curprogressdlg=act_text_dialog[1]
  if type(curprogressdlg)=='number' then
   curprogressdlg=dialogs[curprogressdlg]
  end
  return curprogressdlg
-end
-
-function player_on_location(x,y,mapid)
- return player_location_match(mapid..',on,'..x..','..y)
 end
 
 function player_location_match(locquery)
@@ -1112,8 +1108,8 @@ function player_location_match(locquery)
 end
 
 function player_sel_location(x,y,mapid)
- local sel=get_sel_info_btn(act_lookingdir)
- return sel!=nil and mapid==act_mapsid and act_x+sel.x == x and act_y+sel.y == y
+ local selspr,selx,sely=get_sel_info_btn(act_lookingdir)
+ return selspr!=nil and mapid==act_mapsid and act_x+selx == x and act_y+sely == y
 end
 
 function player_use_item(itemidx,mapid,x_idx,y_idx)
@@ -1138,27 +1134,24 @@ function dialog_is_complete(dialogi)
 end
 
 function queue_dialog_by_idx(dialogi)
- add(act_text.dialog,dialogi)
+ add(act_text_dialog,dialogi)
 end
 
 function maybe_queue_party_move(destx, desty)
  for p in all(party) do
   if flr(rnd(2)) == 0 and p.intent==nil then
-   queue_move_npc(p.charid,{x=destx,y=desty})
+   queue_move_npc(p.charid,destx..'|'..desty)
   end
  end
 end
 
-function queue_move_npc(charid,destcurmaploc,destnextmaploc)
- set_walk_intent(get_npc_by_charid(charid),destcurmaploc,destnextmaploc)
+function queue_move_npc(charid,intentdata)
+ set_walk_intent(get_npc_by_charid(charid),intentdata)
 end
 
-function set_walk_intent(npc,destcurmaploc,destnextmaploc)
+function set_walk_intent(npc,intentdata)
  npc.intent = "walk"
- npc.intentdata = tostr(destcurmaploc.x)..'|'..tostr(destcurmaploc.y)
- if destnextmaploc != nil then
-  npc.intentdata = npc.intentdata..'|'..tostr(destnextmaploc.x)..'|'..tostr(destnextmaploc.y)
- end
+ npc.intentdata = intentdata
 end
 
 function transition_to_playmap()
@@ -1167,7 +1160,7 @@ function transition_to_playmap()
  act_charid='greg'
  act_dialogspeakidx=1
  act_item=1
- act_text.dialog = {}
+ act_text_dialog = {}
  transition_to_map('woods1',8,8)
  party={{charid='wirt',mapid='woods1',x=act_x,y=act_y},{charid='kitty',mapid='woods1',x=act_x,y=act_y}}
  pal(14,14,1)
@@ -1206,7 +1199,7 @@ function transition_to_map(dest_mp,dest_x,dest_y)
  end
  local m = get_map_by_id(act_mapsid)
  local titlex=63-(2*#m.title)
- act_text.maptitle={x=titlex,y=12,txt=m.title,frmcnt=45}
+ act_text_maptitle={x=titlex,y=12,txt=m.title,frmcnt=45}
  -- check alt tiles
  local amcx,amcy=m.cellx,m.celly
  if not is_element_in(altsset, act_mapsid) then
@@ -1226,7 +1219,7 @@ function transition_to_map(dest_mp,dest_x,dest_y)
  -- add buildings
  for m in all(maps) do
   if m.type=='interior' and m.playmapid==act_mapsid then
-   local x,y,spridx=m.playmaploc.x+amcx,m.playmaploc.y+amcy,m.playmapspr
+   local x,y,spridx=m.playmaplocx+amcx,m.playmaplocy+amcy,m.playmapspr
    mset(x,y,spridx)
    mset(x+1,y,spridx+1)
    mset(x,y+1,spridx+16)
@@ -1338,7 +1331,7 @@ function get_sel_info_btn(lkdrbtn)
   selx=2*lkdrbtn-1
   sely=0
  end
- return {i=spri,x=selx,y=sely}
+ return spri,selx,sely
 end
 
 function drop_lead_elems(arr, count)
