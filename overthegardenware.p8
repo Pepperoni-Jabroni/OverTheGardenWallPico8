@@ -1050,9 +1050,9 @@ function draw_fancy_spr_box(y,spridx,title)
  if (is_close) xanchor=114
  if title != nil then
   if (is_close) xanchor=90
-  draw_fancy_box(xanchor,y,#title*4+11, 11, 4,10, 9)
-  printsp(title, xanchor+11, y+5, 2)
-  printsp(title, xanchor+10, y+4, 9)
+  draw_fancy_box(xanchor,y,#title*4+12, 11, 4,10, 9)
+  printsp(title, xanchor+12, y+5, 2)
+  printsp(title, xanchor+11, y+4, 9)
  else
   draw_fancy_box(xanchor,y,11,11,4,10,9)
  end
