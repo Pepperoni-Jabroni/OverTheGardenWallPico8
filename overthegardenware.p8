@@ -4,12 +4,12 @@ __lua__
 -- over the garden wall
 -- made by pepperoni-jabroni
 -- configs, state vars & core fns
-local walkable=split("43,158,185,106,190,191,202,203,205,207,222,223,238,239,240,241,242,244,245,246,247,248,249")
+local walkable=split("43,110,158,185,106,190,191,202,203,205,207,222,223,238,239,240,241,242,244,245,246,247,248,249")
 -- of the form "<src_sprite_idx>;<dst_sprite_idxs>"
 local alttiles_list="206;206,221,237#238;222,238#207;207,223,239#235;235,251,218#205;202,203,205#236;204,236"
 local altsset={}
 -- of the form "<obj_sprite_idxs>;<obj_text>#"
-local objdescript_list="122,123,138,139;what a nice old wagon#124,125,140,141;the poor old mill...#158;look at these pumpkins!#159;it says pottsfield \148#174;looks like its harvest time!#190;this pumpkin is missing#204,236;its just a bush...#218,235,251;this tree sure is tall#220;a stump of some weird tree?#219;a creepy tree with a face on it#224,225,240,241;pottsfield old barn#226,227,242,243;the old grist mill#228,229,244,245;the animal schoolhouse#232,233,248,249;pottsfield old church#108;a rickety old fence#109;a scarecrow of sorts#110;the ground is higher here#127;a deep hole in the ground#42;what a nice view out this window#43;this is the door#58;its a large cabinet#59;its a comfortable chair#74;its a small desk#75;its a school desk#90;its a lounge chair#91;its a bundle of logs#106;its a ladder (i swear)#107;its a railing#143;its a piano!#177;its the mill\'s grinder!#178;its a jar of thick oil#179;its a broken jar of oil#200;its a chalk board#215;i found a rock fact!#216;its warm by the fireplace#217;a bundle of black oily sticks#180,181;a cafeteria bench and table#230,231,246,247;the town gazebo#232,233,248,249;pottsfield home"
+local objdescript_list="122,123,138,139;what a nice old wagon#124,125,140,141;the poor old mill...#158;look at these pumpkins!#159;it says pottsfield \148#174;looks like its harvest time!#204,236;its just a bush...#218,235,251;this tree sure is tall#220;a stump of some weird tree?#219;a creepy tree with a face on it#224,225,240,241;pottsfield old barn#226,227,242,243;the old grist mill#228,229,244,245;the animal schoolhouse#232,233,248,249;pottsfield old church#108;a rickety old fence#109;a scarecrow of sorts#110;the ground is higher here#127;a deep hole in the ground#42;what a nice view out this window#43;this is the door#58;its a large cabinet#59;its a comfortable chair#74;its a small desk#75;its a school desk#90;its a lounge chair#91;its a bundle of logs#106;its a ladder (i swear)#107;its a railing#143;its a piano!#177;its the mill\'s grinder!#178;its a jar of thick oil#179;its a broken jar of oil#200;its a chalk board#215;i found a rock fact!#216;its warm by the fireplace#217;a bundle of black oily sticks#180,181;a cafeteria bench and table#230,231,246,247;the town gazebo#232,233,248,249;pottsfield home"
 local inv_items=(function()
   local items={}
   for i in all(split('255,candy,greg#214,bird art,greg#252,pumpkin shoe,greg;wirt#253,shovel,greg;wirt;beatrice#254,old cat,greg;kitty', '#')) do
@@ -34,7 +34,7 @@ local act_mapsid=nil
 local edelwood_sels,rockfact_sels={},{}
 local party={}
 -- of the form "<name>;<map_spr_idx>;<speak_spr_idx>;<idle_txts>;<scaling>#"
-local character_list='greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?;1#wirt;1;4;uh, hi...|oh sorry, just thinking;1#beatrice;16;6;yes, i can talk...|lets get out of here!;1#kitty,wirt,wirt jr.,george washington,mr. president,benjamin franklin,doctor cucumber,greg jr.,skipper,ronald,jason funderburker;17;8;ribbit;1#the beast;32;34;;1#the woodsman;33;36;i need more oil|beware these woods;1#the beast?;48;38;*glares at you*;2#dog;49;40;*barks*;1#black turtle;64;66;*stares blankly*;1#turkey;65;68;gobble. gobble. gobble.;1#pottsfield citizen 1;80;98;you\'re too early;1#pottsfield citizen 2;80;102;are you new here?;1#pottsfield harvest;81;70;thanks for digging me up!;1#pottsfield partier;96;100;let\'s celebrate!;1#enoch;97;72;what a wonderful harvest|you don\'t look like you belong here;2#dog student;10;44;humph...|huh...;1#gorilla;113;12;;1#jimmy brown;11;14;;1#cat student;26;46;humph...|huh...;1#ms langtree;112;104;oh that jimmy brown|i miss him so...;1#the lantern;nil;76;;1#rock fact;nil;78;;1#edelwood;219;192;;1#racoon student;27;194;humph...|huh...;1#achievement get!;nil;196;;1'
+local character_list='greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?;1#wirt;1;4;uh, hi...|oh sorry, just thinking;1#beatrice;16;6;yes, i can talk...|lets get out of here!;1#kitty,wirt,wirt jr.,george washington,mr. president,benjamin franklin,doctor cucumber,greg jr.,skipper,ronald,jason funderburker;17;8;ribbit;1#the beast;32;34;;1#the woodsman;33;36;i need more oil|beware these woods;1#the beast?;48;38;*glares at you*;2#dog;49;40;*barks*;1#black turtle;64;66;*stares blankly*;1#turkey;65;68;gobble. gobble. gobble.;1#pottsfield citizen 1;80;98;you\'re too early;1#pottsfield citizen 2;80;102;are you new here?;1#skeleton;81;70;thanks for digging me up!;1#partier;96;100;let\'s celebrate!;1#enoch;97;72;what a wonderful harvest|you don\'t look like you belong here;2#dog student;10;44;humph...|huh...;1#gorilla;113;12;;1#jimmy brown;11;14;;1#cat student;26;46;humph...|huh...;1#ms langtree;112;104;oh that jimmy brown|i miss him so...;1#the lantern;nil;76;;1#rock fact;nil;78;;1#edelwood;219;192;;1#racoon student;27;194;humph...|huh...;1#achievement get!;nil;196;;1'
 -- of the form "<mp_one_idx>;<mp_two_idx>;<mp_one_locs>;<mp_two_locs>#"
 local map_trans_list='woods1;woods2;15,5|15,4;0,14|0,15#woods2;millandriver;13,0|14,0|15,0;0,13|0,14|0,15#millandriver;woods3;0,0|1,0;13,15|14,15|15,15#millandriver;mill;7,3;8,14#woods3;pottsfield;7,0|8,0;7,15|8,15#pottsfield;barn;4,2|5,2;7,13|8,13#pottsfield;woods4;9,0|10,0;6,15|7,15#woods4;grounds;7,0|8,0;7,15|8,15#grounds;school;6,7|7,7;7,14|8,14|11,1#pottsfield;home;10,8|11,8;7,12'
 local npc_data = 'black turtle,13,7,woods1#the woodsman,6,7,woods2#pottsfield citizen 1,7,7,barn,loop,7|7|10|10#pottsfield citizen 1,7,10,barn,loop,7|7|10|10#pottsfield citizen 2,10,7,barn,loop,7|7|10|10#pottsfield citizen 2,10,10,barn,loop,7|7|10|10#enoch,8,8,barn#ms langtree,8,9,school#dog student,7,11,school#cat student,9,11,school#racoon student,9,13,school#turkey,7,6,home'
@@ -42,10 +42,10 @@ local map_list="exterior,woods1,somewhere in the unknown,0,16,0#exterior,woods2,
 local darkspr_list='174,204,218,219,235,236,251#2,3,4,8,9,10,11#0,0,1,1,0,1,1'
 local darkanims={}
 local nonrptdialog={x=nil,y=nil}
-local compltdlgs={}
+local compltdlgs,wheatcount,pumpkincount,digcount={},0,0,0
 local dialog_list="1;kitty;led through the mist#1;kitty;by the milk-light of moon#1;kitty;all that was lost is revealed#1;kitty;our long bygone burdens#1;kitty;mere echoes of the spring#1;kitty;but where have we come?#1;kitty;and where shall we end?#1;kitty;if dreams can't come true#1;kitty;then why not pretend?#1;kitty;how the gentle wind#1;kitty;beckons through the leaves#1;kitty;as autumn colors fall#1;kitty;dancing in a swirl#1;kitty;of golden memories#1;kitty;the loveliest lies of all#2;greg;i sure do love my frog!#2;wirt;greg, please stop...#2;kitty;4;ribbit.#2;greg;haha, yeah!#3;wirt;i dont like this at all#3;greg;its a tree face!#4;wirt;is that some sort of deranged lunatic?#4;wirt;with an axe waiting for victims?#4;the woodsman;*swings axe and chops tree*;large#4;wirt;what is that strange tree?#4;greg;we should ask him for help!#5;wirt;whoa... wait greg...;large#5;wirt;... where are we?;large#5;greg;we\'re in the woods!;large#5;wirt;no, i mean;large#5;wirt;... where are we?!;large#6;wirt;we're really lost greg...#6;greg;i leave trails of candy from my pants!#6;greg;candytrail. candytrail. candytrail!#7;beatrice;help! help!#7;wirt;i think its coming from a bush?#8;beatrice;help me!;large#8;greg;wow, a talking bush!#8;beatrice;i\'m not a talking bush! i\'m a bird!#8;beatrice;and i\'m stuck!#8;greg;wow, a talking bird!#8;beatrice;if you help me get unstuck, i\'ll#8;beatrice;owe you one#8;greg;ohhhh! you'll grant me a wish?!#8;beatrice;no but i can take you to...#8;beatrice;adalaid, the good woman of the woods!#8;greg;*picks up beatrice out of bush*#8;wirt;uh-uh! no!#9;the woodsman;these woods are a dangerous place#9;the woodsman;for two kids to be alone#9;wirt;we... we know, sir#9;greg;yeah! i\'ve been leaving a trail#9;greg;of candy from my pants!#9;the woodsman;please come inside...;large#9;wirt;i don\'t like the look of this#9;kitty;ribbit.#9;greg;haha, yeah!#10;wirt;oh! terribly sorry to have#10;wirt;disturbed you sir!#10;turkey;gobble. gobble. gobble.;large#11;greg;wow, look at this turtle!#11;wirt;well thats strange#11;greg;i bet he wants some candy!#11;black turtle;*stares blankly*#12;the beast?;*glares at you, panting*;large#12;greg;you have beautiful eyes!#12;greg;ahhhh!#13;wirt;wow this place is dingey#13;greg;yeah! crazy axe person!#13;wirt;we should find a way to take him out#13;wirt;before he gets a chance to hurt us#13;greg;i can handle it!#14;wirt;i dont think we should#14;wirt;go back the way we came#15;the woodsman;whats the rucus out here?#15;wirt;oh nothing sir!#15;greg;nows my chance!#16;the woodsman;i work as a woodsman in these woods#16;the lantern;keeping the light in this lantern lit;large#16;the woodsman;by processing oil of the edelwood trees#16;the woodsman;you boys are welcome to stay here#16;the woodsman;ill be in the workshop#16;greg;okey dokey!#17;greg;this bird art sculpture is perfect!#18;greg;there! this little guy wanted a snack#18;black turtle;*stares blankly*;large#19;the woodsman;ow! *falls onto ground*#19;greg;haha yeah, i did it!#19;wirt;greg! what have you done!#19;wirt;hey greg... where did your frog go?#19;greg;where is that frog o mine?#20;greg;ahhh! the beast!#20;wirt;quick, greg, to the workshop!#20;wirt;we should be able to make it#20;wirt;out through a window!#20;the beast?;*crashes through the wall*;large#21;greg;we made it!#21;wirt;hopefully hes stuck there!#21;the beast?;*gets stuck in the window*#21;the beast?;*spits out a candy*#21;dog;*looks at you happily*;large#21;greg;look! hes my best friend now!#22;the woodsman;what have you boys done?!#22;the woodsman;the mill is destroyed#22;wirt;but we solved your beast problem!#22;the woodsman;you silly boys#22;the woodsman;that silly dog was not the beast#22;dog;*bark! bark!*;large#22;the woodsman;he just swallowed that turtle#22;black turtle;*stares blankly*;large#22;the woodsman;go now and continue your journey#22;wirt;we\'re sorry sir#22;the woodsman;beware the beast!#23;greg;oh wow! i stepped on a pumpkin!#23;wirt;huh oh that's strange#23;wirt;i did too#23;greg;haha i have a pumpkin shoe!#23;kitty;ribbit.#24;wirt;wow, greg, look!#24;wirt;a home! maybe they have a phone#24;beatrice;oh this is just great#25;pottsfield citizen 1;hey who are you?;large#25;wirt;uh hello! we're just passing through#25;pottsfield citizen 1;folks dont just pass through here#25;beatrice;uh-uh, i dont like this!#26;enoch;well, well, well,...;large#26;enoch;what do we have here?#26;beatrice;nothing sir!#26;pottsfield citizen 1;they tramped our crops!#26;enoch;for this you are sentenced#26;enoch;to some manual labour"
-local npcs={}
-local triggers,maplocking,complete_trigs={
+local npcs,complete_trigs={},{}
+local triggers,maplocking={
   function() return player_location_match"woods1,right_of,8" end,
   function() queue_dialog_by_idx'5' end,
   function() return player_use_item(1,'woods1') and (act_x!=8 or act_y!=8) end,
@@ -178,8 +178,31 @@ local triggers,maplocking,complete_trigs={
   function() return playmap_npc_visible'barn,pottsfield citizen 1' end,
   function() queue_dialog_by_idx'25' end,
   function() return playmap_npc_visible'barn,enoch' end,
-  function() queue_dialog_by_idx'26' end,
-},'woods1|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|woods2||woods3,search the bushes|woods3|millandriver,talk with the woodsman|millandriver|millandriver,enter the mill|millandriver,find the frog!,hideable||woods1,spot the turtle|millandriver|millandriver,run back to your brother!,hideable|||mill,find a club|mill,use the club!,hideable|mill,jump the window to escape!,hideable,14||woods3,acquire new shoes||barn,meet the host',{}
+  function() 
+    queue_dialog_by_idx'26' 
+    act_item=nil
+    queue_move_npc('enoch','7|13|7|5')
+  end,
+  function() return player_sel_spr('pottsfield',174) and enoch_in_pottsfield() end,
+  function() 
+    replace_player_sel'190'
+    wheatcount+=1
+    if (wheatcount<5)del(complete_trigs,29)
+    maybe_queue_collect_text()
+  end,
+  function() return player_sel_spr('pottsfield',158) and enoch_in_pottsfield() end,
+  function() 
+    replace_player_sel'190'
+    pumpkincount+=1
+    if (pumpkincount<5)del(complete_trigs,30)
+    maybe_queue_collect_text()
+  end,
+  function() return player_sel_location(7,5,'pottsfield') and enoch_in_pottsfield() and wheatcount>4 and pumpkincount>4 end,
+  function() 
+    act_item=4
+    queue_dialog_by_txt('now dig!','enoch',true)
+  end
+},'woods1|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|woods2||woods3,search the bushes|woods3|millandriver,talk with the woodsman|millandriver|millandriver,enter the mill|millandriver,find the frog!,hideable||woods1,spot the turtle|millandriver|millandriver,run back to your brother!,hideable|||mill,find a club|mill,use the club!,hideable|mill,jump the window to escape!,hideable,14||woods3,acquire new shoes|||barn,meet the host|pottsfield,collect wheat,hideable,28|pottsfield,collect pumpkin,hideable,28|pottsfield,talk with enoch,hideable,30'
 local menuchars={}
 local stagefns,stagenames={
   function()update_boot()end,
@@ -465,8 +488,8 @@ function update_play_map()
  for i=1,#triggers,2 do
   local divi=ceil(i/2)
   if not is_element_in(complete_trigs,divi) and triggers[i]() then
-   triggers[i+1]()
    add(complete_trigs,divi)
+   triggers[i+1]()
    x_consumed=true
   end
  end
@@ -545,6 +568,20 @@ end
    end
   -- shovel
   elseif act_item==4 then
+    local m=get_map_by_id(act_mapsid)
+    local x,y=act_x+m.cellx,act_y+m.celly
+    if mget(x,y)==110 then 
+      digcount+=1
+      if digcount==2 then
+        queue_dialog_by_txt'we\'re digging our own graves!'
+      end
+      if digcount==4 then 
+        mset(x,y,127)
+        add_npc('skeleton',act_mapsid,act_x,act_y)
+        act_y-=1
+        act_item=nil
+      end
+    end
   end
  else
   act_useitem=nil
@@ -647,6 +684,14 @@ function get_dest_for_loc(mapid, x, y)
     end
   end
   return nil,nil,nil
+end
+
+function enoch_in_pottsfield()
+  return get_npc_by_charid('enoch').mapid=='pottsfield'
+end
+
+function maybe_queue_collect_text()
+  if(wheatcount>4 and pumpkincount>4) queue_dialog_by_txt'we\'re done collecting!'
 end
 
 function exec_npc_intent(npc)
@@ -1111,6 +1156,18 @@ function player_sel_location(x,y,mapid)
  return selspr!=nil and mapid==act_mapsid and act_x+selx == x and act_y+sely == y
 end
 
+function player_sel_spr(mapid,sprid)
+ local selspr,selx,sely=get_sel_info_btn(act_lookingdir)
+ local m=get_map_by_id(act_mapsid)
+ return mapid==act_mapsid and selspr!=nil and mget(m.cellx+act_x+selx,m.celly+act_y+sely)==sprid
+end
+
+function replace_player_sel(sprid)
+ local selspr,selx,sely=get_sel_info_btn(act_lookingdir)
+ local m=get_map_by_id(act_mapsid)
+ mset(m.cellx+act_x+selx,m.celly+act_y+sely,sprid)
+end
+
 function player_use_item(itemidx,mapid,x_idx,y_idx)
  return act_useitem==itemidx and act_mapsid==mapid and (x_idx == nil or (x_idx == act_x and y_idx == act_y))
 end
@@ -1504,14 +1561,14 @@ daf999addd767dddddddd00ddddddddddd555588822f0fdd77dd56ddd677ddddddddababbabadddd
 daafffaad7d6d7ddddddd00dddddddddd555558882220f5d776666666d677dddddddababbab9dddd8282884454450445ddddddddddddddddddd5555666555ddd
 dffffffddd767dddddddd0dddddddddd555544888225555577dd56ddd6d77ddddddabbab39339ddd8222284454450445dddddddddddddddddddd55555555dddd
 ddaddadddd6d6ddddddddddddddddddd5554448882445555d77776666ddd77dddddabab333939ddda888844445544554ddddddddddddddddddddddd5555ddddd
-dd999ddddd9999dddddddddd44ddddddddddddd444dddddddddd22244422ddddd44444444422244d4424444244244244333332333333433333333333ddddd666
-d90909ddd944944ddddddd94444ddddddddddd99444ddddddd333333333333dd44444244444444444422244244422444333324333344944333bbbb33dddd6665
-d99999ddd999999ddddd99999999dddddddd99999999dddddddd99999999ddddd44224442222244d442442224442444433323233333993333bbbbbb3dddd4655
-d90009dddd9777ddddd9900999009dddddd9900999009dddddd9900999009dddd42444444444424d4222442444424444332323433339933333bbbb33dddd445d
-dd999dddd3a3a3adddd9000090000dddddd9000090000dddddd9000090000ddddd444774447744dd4244222444442444334233333333233333bbbb33ddd44ddd
+dd999ddddd9999dddddddddd44ddddddddddddd444dddddddddd22244422ddddd44444444422244d4424444244244244333332333333433338333333ddddd666
+d90909ddd944944ddddddd94444ddddddddddd99444ddddddd333333333333dd4444424444444444442224424442244433332433334494438a833333dddd6665
+d99999ddd999999ddddd99999999dddddddd99999999dddddddd99999999ddddd44224442222244d44244222444244443332323333399333282bbb33dddd4655
+d90009dddd9777ddddd9900999009dddddd9900999009dddddd9900999009dddd42444444444424d42224424444244443323234333399333323bbbb3dddd445d
+dd999dddd3a3a3adddd9000090000dddddd9000090000dddddd9000090000ddddd444774447744dd42442224444424443342333333332333b3bbbb3bddd44ddd
 d7d6d7ddd3a3a3addd9a0000a0000adddd9a0000a0000adddd9a0000a0000addddd47607f7607ddd4224442444442444332333333444244333bbbb33dd44dddd
 dd767dddd3a3a3addd99a00a9a00a9dddd99a00a9a00a9dddd99a00a4a00a9dddddd7007f7007ddd224222444442244434343333334444333b3333b3444ddddd
-dd6d6dddd3a3a3addd999aa999aa99dddd999aa900aa99dddd999aa444aa99dddddde77fff77eddd2444424444244244333333333333333333333333d4dddddd
+dd6d6dddd3a3a3addd999aa999aa99dddd999aa900aa99dddd999aa444aa99dddddde77fff77eddd24444244442442443333333333333333b333333bd4dddddd
 dd4444ddddd00ddddd999888888999dddd99999a00a999dddd999899498999ddddddff8fff8ffddd333333333333333333333333333333330222202234444433
 d44444dddd0a0addddd9876676789dddddd99999aa999dddddd9878888789ddddddddff888ffdddd333333333333333333353333333333332020002044444443
 ddf0f0dddd0000ddddd9867767689dddddd9a0000000adddddd9867767689dddddddddfffffddddd333333333344333335553333333333332020202044222243
@@ -1578,12 +1635,12 @@ d4004440444042dddddc1c55055555ddddddddaaaadddddd442dddd7330000334222222440504444
 35444444444444503770007655555333333777777777722337663633336366733338777777778223555555559444422333333333cc7ccccccccccccc44444554
 334444444444442237700077555555553337222222227223373677777777637333877777777778235555555543343434ddddddddddddd766dddddddddddddd2d
 3344444444444422447777776666666333378877787c722337677777777776733337777777777663555cc55543439343dddddddddddd7666dd5d5d6ddddd8d22
-334444444444442255777667777777733337887778c772233777777777777773333700766700766355c55c5544333443dddddddddddd6465dd959dd6ddd888dd
-3345522222554422447444777007007333378877987c7223676777777777767633370076670076635c5555c534434232daadaaaddddd445ddd5557d6dd88888d
-33442442442444225574447770060063333788777888722377766666666667773337777667777663555cc55593442323aa9a99aaddd44ddddd666676d88888dd
-3344244244244422446449744007007333378877788872235767777777777675333777766777766355c55c5533424233a9a9aa9add44ddddd6d65567dd888ddd
-334424424424442255744476677777733337444444447233357666666666675333377755557776635c5555c533242233a99a999a444dddddddd5d66622d8dddd
-334424424424442344744474477667733332222222222333335777777777753333377666666776335555555594444229da9999add4ddddddddddd5ddd2dddddd
+334444444444442255777667777777733337887778c772233777777777777773333700766700766355c55c5544333443dddddddddddd6965dd959dd6ddd888dd
+3345522222554422447444777007007333378877987c7223676777777777767633370076670076635c5555c534434232daadaaaddddd925ddd5557d6dd88888d
+33442442442444225574447770060063333788777888722377766666666667773337777667777663555cc55593442323aa9a99aaddd92ddddd666676d88888dd
+3344244244244422446449744007007333378877788872235767777777777675333777766777766355c55c5533424233a9a9aa9add92ddddd6d65567dd888ddd
+334424424424442255744476677777733337444444447233357666666666675333377755557776635c5555c533242233a99a999a992dddddddd5d66622d8dddd
+334424424424442344744474477667733332222222222333335777777777753333377666666776335555555594444229da9999add2ddddddddddd5ddd2dddddd
 __label__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
