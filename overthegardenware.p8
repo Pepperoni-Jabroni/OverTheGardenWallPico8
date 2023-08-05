@@ -993,32 +993,31 @@ function draw_play_map()
   end
  end
  -- draw dark animations
- local ndas={}
  for d in all(darkanims) do
   local idtfr=tostr(d.x)..'|'..tostr(d.y)
   if d.frmcnt>0 and not is_element_in(activemap.discvrdtiles, idtfr) then
-   add(ndas,d)
    if d.type=='eyes' then
-    local pcol=7
+    local pcol,dx,dy=7,d.x*8,d.y*8
     if d.frmcnt<8 or d.frmcnt>27 then
      pcol=1
     else
-     pset(d.x*8+1,d.y*8+4,6)
-     pset(d.x*8+3,d.y*8+4,6)
-     pset(d.x*8+2,d.y*8+3,6)
-     pset(d.x*8+2,d.y*8+5,6)
-    pset(d.x*8+4,d.y*8+4,pcol)
-    pset(d.x*8+6,d.y*8+4,pcol)
-    pset(d.x*8+5,d.y*8+3,pcol)
-    pset(d.x*8+5,d.y*8+5,pcol)
+     pset(dx+1,dy+4,6)
+     pset(dx+3,dy+4,6)
+     pset(dx+2,dy+3,6)
+     pset(dx+2,dy+5,6)
+     pset(dx+4,dy+4,6)
+     pset(dx+6,dy+4,6)
+     pset(dx+5,dy+3,6)
+     pset(dx+5,dy+5,6)
     end
-    pset(d.x*8+2,d.y*8+4,pcol)
-    pset(d.x*8+5,d.y*8+4,pcol)
+    pset(dx+2,dy+4,pcol)
+    pset(dx+5,dy+4,pcol)
    end
-  d.frmcnt-=1
+   d.frmcnt-=1
+  else
+    del(darkanims,d)
   end
  end
- darkanims=ndas
  -- draw active char & item hud
  local has_item=act_item!=nil and is_element_in(inv_items[act_item].charids,act_charid)
  local char_name=nil
