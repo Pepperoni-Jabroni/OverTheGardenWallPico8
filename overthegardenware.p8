@@ -179,7 +179,7 @@ local triggers,maplocking,complete_trigs={
   function() queue_dialog_by_idx'25' end,
   function() return playmap_npc_visible'barn,enoch' end,
   function() queue_dialog_by_idx'26' end,
-},'woods1|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|woods2|empty|woods3,search the bushes|woods3|millandriver,talk with the woodsman|millandriver|millandriver,enter the mill|millandriver,find the frog!,hideable|empty|woods1,spot the turtle|millandriver|millandriver,run back to your brother!,hideable|empty|empty|mill,find a club|mill,use the club!,hideable|mill,jump the window to escape!,hideable,14|empty|woods3,acquire new shoes|empty|barn,meet the host',{}
+},'woods1|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|woods2||woods3,search the bushes|woods3|millandriver,talk with the woodsman|millandriver|millandriver,enter the mill|millandriver,find the frog!,hideable||woods1,spot the turtle|millandriver|millandriver,run back to your brother!,hideable|||mill,find a club|mill,use the club!,hideable|mill,jump the window to escape!,hideable,14||woods3,acquire new shoes||barn,meet the host',{}
 local menuchars={}
 local stagefns,stagenames={
   function()update_boot()end,
