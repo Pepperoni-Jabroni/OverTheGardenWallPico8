@@ -44,242 +44,152 @@ local nonrptdialog={x=nil,y=nil}
 local compltdlgs={}
 local dialog_list="1;kitty;led through the mist#1;kitty;by the milk-light of moon#1;kitty;all that was lost is revealed#1;kitty;our long bygone burdens#1;kitty;mere echoes of the spring#1;kitty;but where have we come?#1;kitty;and where shall we end?#1;kitty;if dreams can't come true#1;kitty;then why not pretend?#1;kitty;how the gentle wind#1;kitty;beckons through the leaves#1;kitty;as autumn colors fall#1;kitty;dancing in a swirl#1;kitty;of golden memories#1;kitty;the loveliest lies of all#2;greg;i sure do love my frog!#2;wirt;greg, please stop...#2;kitty;4;ribbit.#2;greg;haha, yeah!#3;wirt;i dont like this at all#3;greg;its a tree face!#4;wirt;is that some sort of deranged lunatic?#4;wirt;with an axe waiting for victims?#4;the woodsman;*swings axe and chops tree*;large#4;wirt;what is that strange tree?#4;greg;we should ask him for help!#5;wirt;whoa... wait greg...;large#5;wirt;... where are we?;large#5;greg;we\'re in the woods!;large#5;wirt;no, i mean;large#5;wirt;... where are we?!;large#6;wirt;we're really lost greg...#6;greg;i leave trails of candy from my pants!#6;greg;candytrail. candytrail. candytrail!#7;beatrice;help! help!#7;wirt;i think its coming from a bush?#8;beatrice;help me!;large#8;greg;wow, a talking bush!#8;beatrice;i\'m not a talking bush! i\'m a bird!#8;beatrice;and i\'m stuck!#8;greg;wow, a talking bird!#8;beatrice;if you help me get unstuck, i\'ll#8;beatrice;owe you one#8;greg;ohhhh! you'll grant me a wish?!#8;beatrice;no but i can take you to...#8;beatrice;adalaid, the good woman of the woods!#8;greg;*picks up beatrice out of bush*#8;wirt;uh-uh! no!#9;the woodsman;these woods are a dangerous place#9;the woodsman;for two kids to be alone#9;wirt;we... we know, sir#9;greg;yeah! i\'ve been leaving a trail#9;greg;of candy from my pants!#9;the woodsman;please come inside...;large#9;wirt;i don\'t like the look of this#9;kitty;ribbit.#9;greg;haha, yeah!#10;wirt;oh! terribly sorry to have#10;wirt;disturbed you sir!#10;turkey;gobble. gobble. gobble.;large#11;greg;wow, look at this turtle!#11;wirt;well thats strange#11;greg;i bet he wants some candy!#11;black turtle;*stares blankly*#12;the beast?;*glares at you, panting*;large#12;greg;you have beautiful eyes!#12;greg;ahhhh!#13;wirt;wow this place is dingey#13;greg;yeah! crazy axe person!#13;wirt;we should find a way to take him out#13;wirt;before he gets a chance to hurt us#13;greg;i can handle it!#14;wirt;i dont think we should#14;wirt;go back the way we came#15;the woodsman;whats the rucus out here?#15;wirt;oh nothing sir!#15;greg;nows my chance!#16;the woodsman;i work as a woodsman in these woods#16;the lantern;keeping the light in this lantern lit;large#16;the woodsman;by processing oil of the edelwood trees#16;the woodsman;you boys are welcome to stay here#16;the woodsman;ill be in the workshop#16;greg;okey dokey!#17;greg;this bird art sculpture is perfect!#18;greg;there! this little guy wanted a snack#18;black turtle;*stares blankly*;large#19;the woodsman;ow! *falls onto ground*#19;greg;haha yeah, i did it!#19;wirt;greg! what have you done!#19;wirt;hey greg... where did your frog go?#19;greg;where is that frog o mine?#20;greg;ahhh! the beast!#20;wirt;quick, greg, to the workshop!#20;wirt;we should be able to make it#20;wirt;out through a window!#20;the beast?;*crashes through the wall*;large#21;greg;we made it!#21;wirt;hopefully hes stuck there!#21;the beast?;*gets stuck in the window*#21;the beast?;*spits out a candy*#21;dog;*looks at you happily*;large#21;greg;look! hes my best friend now!#22;the woodsman;what have you boys done?!#22;the woodsman;the mill is destroyed#22;wirt;but we solved your beast problem!#22;the woodsman;you silly boys#22;the woodsman;that silly dog was not the beast#22;dog;*bark! bark!*;large#22;the woodsman;he just swallowed that turtle#22;black turtle;*stares blankly*;large#22;the woodsman;go now and continue your journey#22;wirt;we\'re sorry sir#22;the woodsman;beware the beast!#23;greg;oh wow! i stepped on a pumpkin!#23;wirt;huh oh that's strange#23;wirt;i did too#23;greg;haha i have a pumpkin shoe!#23;kitty;ribbit.#24;wirt;wow, greg, look!#24;wirt;a home! maybe they have a phone#24;beatrice;oh this is just great#25;pottsfield citizen 1;hey who are you?;large#25;wirt;uh hello! we're just passing through#25;pottsfield citizen 1;folks dont just pass through here#25;beatrice;uh-uh, i dont like this!"
 local npcs={}
-local triggers={
- {
-  trig=function() return player_location_match"woods1,right_of,8" end,
-  action=function() queue_dialog_by_idx(5) end,
-  maplocking='woods1',
- },
- {
-  trig=function()return player_use_item(1,'woods1') and (act_x!=8 or act_y!=8) end,
-  action=function()queue_dialog_by_idx(6)end,
-  maplocking='woods1,leave a trail of candy',
- },
- {
-  trig=function()return player_use_item(1,'woods1',13,7)end,
-  action=function() queue_dialog_by_idx(18) end,
-  maplocking='woods1,give the turtle a candy',
- },
- {
-  trig=function()return player_use_item(1,'woods2')end,
-  action=function()end,
-  maplocking='woods2,leave a trail of candy',
- },
- {
-  trig=function()return player_sel_location(5,7,'woods2')end,
-  action=function()
-   queue_dialog_by_idx(3)
-   do_edelwood_select()
-  end,
-  maplocking='woods2,inspect the strange tree',
- },
- {
-  trig=function()return playmap_npc_visible('woods2', 'the woodsman')end,
-  action=function()queue_dialog_by_idx(4)end,
-  maplocking='woods2,meet someone new'
- },
- {
-  trig=function()return dialog_is_complete(4)end,
-  action=function()queue_move_npc('the woodsman',{x=15,y=0},{x=7,y=7})end,
-  maplocking='woods2'
- },
- {
-  trig=function()return #party==2 and player_location_match'woods3,below,13' end,
-  action=function() queue_dialog_by_idx(7) end,
- },
- {
-  trig=function()return player_sel_location(7,10,'woods3')end,
-  action=function()queue_dialog_by_idx(8)end,
-  maplocking='woods3,search the bushes'
- },
- {
-  trig=function()return dialog_is_complete(8)end,
-  action=function() add(party,{charid='beatrice',x=7,y=10,mapid=act_mapsid}) end,
-  maplocking='woods3'
- },
- {
-  trig=function() return playmap_npc_visible('millandriver', 'the woodsman') end,
-  action=function() queue_dialog_by_idx(9) end,
-  maplocking='millandriver,talk with the woodsman'
- },
- {
-  trig=function() return dialog_is_complete(9) end,
-  action=function() queue_move_npc('the woodsman',{x=7,y=3},{x=7,y=4}) end,
-  maplocking='millandriver'
- },
- {
-  trig=function() return act_mapsid=='mill' and #party==2 end,
-  action=function()
-   act_item = nil 
-   if act_charid == 'kitty' then
-    perform_active_party_swap()
-   end
-   add_npc('kitty','millandriver',11,6)
-   local newparty={}
-   for p in all(party) do
-    if p.charid != 'kitty' then
-     add(newparty,p)
+local triggers,maplocking,complete_trigs={
+  function() return player_location_match"woods1,right_of,8" end,
+  function() queue_dialog_by_idx(5) end,
+  function() return player_use_item(1,'woods1') and (act_x!=8 or act_y!=8) end,
+  function() queue_dialog_by_idx(6)end,
+  function() return player_use_item(1,'woods1',13,7)end,
+  function() queue_dialog_by_idx(18) end,
+  function() return player_use_item(1,'woods2')end,
+  function() end,
+  function() return player_sel_location(5,7,'woods2')end,
+  function()
+    queue_dialog_by_idx(3)
+    do_edelwood_select()
+   end,
+  function() return playmap_npc_visible('woods2', 'the woodsman')end,
+  function() queue_dialog_by_idx(4)end,
+  function() return dialog_is_complete(4)end,
+  function() queue_move_npc('the woodsman',{x=15,y=0},{x=7,y=7})end,
+  function() return #party==2 and player_location_match'woods3,below,13' end,
+  function() queue_dialog_by_idx(7) end,
+  function() return player_sel_location(7,10,'woods3')end,
+  function() queue_dialog_by_idx(8)end,
+  function() return dialog_is_complete(8)end,
+  function() add(party,{charid='beatrice',x=7,y=10,mapid=act_mapsid}) end,
+  function() return playmap_npc_visible('millandriver', 'the woodsman') end,
+  function() queue_dialog_by_idx(9) end,
+  function() return dialog_is_complete(9) end,
+  function() queue_move_npc('the woodsman',{x=7,y=3},{x=7,y=4}) end,
+  function() return act_mapsid=='mill' and #party==2 end,
+  function()
+    act_item = nil 
+    if act_charid == 'kitty' then
+     perform_active_party_swap()
     end
-   end
-   party=newparty
-   get_map_by_id('millandriver').discvrdtiles={}
-   add_npc('the beast?','millandriver',12,6)
-   queue_dialog_by_idx(16)
-   add(act_wrld_items,{spridx=inv_items[2].spridx,x=2,y=12,mapid=act_mapsid})
+    add_npc('kitty','millandriver',11,6)
+    local newparty={}
+    for p in all(party) do
+     if p.charid != 'kitty' then
+      add(newparty,p)
+     end
+    end
+    party=newparty
+    get_map_by_id('millandriver').discvrdtiles={}
+    add_npc('the beast?','millandriver',12,6)
+    queue_dialog_by_idx(16)
+    add(act_wrld_items,{spridx=inv_items[2].spridx,x=2,y=12,mapid=act_mapsid})
   end,
-  maplocking='millandriver,enter the mill',
- },
- {
-  trig=function() return playmap_npc_visible('millandriver', 'the beast?') end,
-  action=function()
-   queue_dialog_by_idx(12)
-   local dt = get_map_by_id(act_mapsid).discvrdtiles
-   add(dt, '12|6')
-   add(dt, '12|7')
-   add(dt, '13|6')
-   add(dt, '13|7')
+  function() return playmap_npc_visible('millandriver', 'the beast?') end,
+  function()
+    queue_dialog_by_idx(12)
+    local dt = get_map_by_id(act_mapsid).discvrdtiles
+    add(dt, '12|6')
+    add(dt, '12|7')
+    add(dt, '13|6')
+    add(dt, '13|7')
   end,
-  maplocking='millandriver,find the frog!,hideable',
- },
- {
-  trig=function() return act_mapsid=='home' end,
-  action=function() queue_dialog_by_idx(10) end,
- },
- {
-  trig=function() return playmap_npc_visible('woods1', 'black turtle') end,
-  action=function() queue_dialog_by_idx(11) end,
-  maplocking='woods1,spot the turtle',
- },
- {
-  trig=function() return dialog_is_complete(12) end,
-  action=function()
-   get_npc_by_charid('the beast?').intent = 'chase_candy_and_player'
-   add(party,get_npc_by_charid('kitty'))
-   for n in all(npcs) do
-    if (n.charid == 'kitty') del(npcs, n)
-   end
-  end,
-  maplocking='millandriver',
- },
- {
-  trig=function() 
-    local beast=get_npc_by_charid('the beast?')
-    return player_location_match'mill,above,0' and beast!=nil and beast.mapid=='mill'
-  end,
-  action=function()
-   add(party,get_npc_by_charid('wirt'))
-   for n in all(npcs) do
-    if (n.charid=='wirt') del(npcs, n)
-   end
-   get_map_by_id('mill').playmapspr=124
-   queue_dialog_by_idx(20)
-  end,
-  maplocking='millandriver,run back to your brother!,hideable'
- },
- {
-  trig=function() return player_location_match'woods1,left_of,1' end,
-  action=function() queue_dialog_by_idx(14) end,
- },
- {
-  trig=function() return player_location_match'mill,left_of,7' end,
-  action=function() queue_dialog_by_idx(13) end,
- },
- {
-  trig=function() return player_sel_location(2,12,'mill') end,
-  action=function()
-   act_item=2
-   local noartitems = {}
-   for i in all(act_wrld_items) do 
-    if (i.spridx != inv_items[2].spridx) add(noartitems, i)
-   end
-   act_wrld_items=noartitems
-   queue_dialog_by_idx(17)
-  end,
-  maplocking='mill,find a club'
- },
- {
-  trig=function() return dialog_is_complete(19) end,
-  action=function() 
-   act_item=1
-   add(npcs,get_npc_by_charid('wirt'))
-   party={}
-   queue_move_npc('wirt',{x=2,y=9})
-  end,
-  maplocking='mill,use the club!,hideable'
- },
- {
-  trig=function() 
-    local beast=get_npc_by_charid('the beast?')
-    return player_sel_location(1,4,'mill') and beast!=nil and beast.mapid=='mill'
-  end,
-  action=function()
-    transition_to_map('millandriver',7,4)
-    del(npcs,get_npc_by_charid('the beast?'))
-    add_npc('dog','millandriver',5,4)
-    add_npc('black turtle','millandriver',5,5)
-    del(npcs,get_npc_by_charid('the woodsman'))
-    add_npc('the woodsman','millandriver',6,5)
-    queue_dialog_by_idx(22)
-    act_item=nil
-  end,
-  maplocking='mill,jump the window to escape!,hideable',
-  depends_on=14,
- },
- {
-  trig=function() return act_mapsid=='woods3' end,
-  action=function() queue_achievement_text('you completed act 1!') end
- },
- {
-  trig=function() 
-   local m=get_map_by_id(act_mapsid)
-   return act_mapsid=='woods3' and mget(m.cellx+act_x,m.celly+act_y)==158
-  end,
-  action=function() 
-   queue_dialog_by_idx(23)
-   act_item=3
-  end,
-  maplocking='woods3,acquire new shoes'
- },
- {
-  trig=function() 
-    local m=get_map_by_id('home')
-    return act_mapsid=='pottsfield' and distance(act_x,act_y,m.playmaploc.x,m.playmaploc.y)<3
-  end,
-  action=function() queue_dialog_by_idx(24) end
- },
- {
-  trig=function() return playmap_npc_visible('barn', 'pottsfield citizen 1') end,
-  action=function() queue_dialog_by_idx(25) end
- }
-}
+  function() return act_mapsid=='home' end,
+  function() queue_dialog_by_idx(10) end,
+  function() return playmap_npc_visible('woods1', 'black turtle') end,
+  function() queue_dialog_by_idx(11) end,
+  function() return dialog_is_complete(12) end,
+  function()
+    get_npc_by_charid('the beast?').intent = 'chase_candy_and_player'
+    add(party,get_npc_by_charid('kitty'))
+    for n in all(npcs) do
+     if (n.charid == 'kitty') del(npcs, n)
+    end
+   end,
+  function() 
+     local beast=get_npc_by_charid('the beast?')
+     return player_location_match'mill,above,0' and beast!=nil and beast.mapid=='mill'
+   end,
+  function()
+    add(party,get_npc_by_charid('wirt'))
+    for n in all(npcs) do
+     if (n.charid=='wirt') del(npcs, n)
+    end
+    get_map_by_id('mill').playmapspr=124
+    queue_dialog_by_idx(20)
+   end,
+  function() return player_location_match'woods1,left_of,1' end,
+  function() queue_dialog_by_idx(14) end,
+  function() return player_location_match'mill,left_of,7' end,
+  function() queue_dialog_by_idx(13) end,
+  function() return player_sel_location(2,12,'mill') end,
+  function()
+    act_item=2
+    local noartitems ={}
+    for i in all(act_wrld_items) do 
+     if (i.spridx != inv_items[2].spridx) add(noartitems, i)
+    end
+    act_wrld_items=noartitems
+    queue_dialog_by_idx(17)
+   end,
+  function() return dialog_is_complete(19) end,
+  function() 
+    act_item=1
+    add(npcs,get_npc_by_charid('wirt'))
+    party={}
+    queue_move_npc('wirt',{x=2,y=9})
+   end,
+  function() 
+     local beast=get_npc_by_charid('the beast?')
+     return player_sel_location(1,4,'mill') and beast!=nil and beast.mapid=='mill'
+   end,
+  function()
+     transition_to_map('millandriver',7,4)
+     del(npcs,get_npc_by_charid('the beast?'))
+     add_npc('dog','millandriver',5,4)
+     add_npc('black turtle','millandriver',5,5)
+     del(npcs,get_npc_by_charid('the woodsman'))
+     add_npc('the woodsman','millandriver',6,5)
+     queue_dialog_by_idx(22)
+     act_item=nil
+   end,
+  function() return act_mapsid=='woods3' end,
+  function() queue_achievement_text('you completed act 1!') end,
+  function() 
+    local m=get_map_by_id(act_mapsid)
+    return act_mapsid=='woods3' and mget(m.cellx+act_x,m.celly+act_y)==158
+   end,
+  function() 
+    queue_dialog_by_idx(23)
+    act_item=3
+   end,
+  function() 
+     local m=get_map_by_id('home')
+     return act_mapsid=='pottsfield' and distance(act_x,act_y,m.playmaploc.x,m.playmaploc.y)<3
+   end,
+  function() queue_dialog_by_idx(24) end,
+  function() return playmap_npc_visible('barn', 'pottsfield citizen 1') end,
+  function() queue_dialog_by_idx(25) end
+},'woods1|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|woods2|empty|woods3,search the bushes|woods3|millandriver,talk with the woodsman|millandriver|millandriver,enter the mill|millandriver,find the frog!,hideable|empty|woods1,spot the turtle|millandriver|millandriver,run back to your brother!,hideable|empty|empty|mill,find a club|mill,use the club!,hideable|mill,jump the window to escape!,hideable,14|empty|woods3,acquire new shoes|empty',{}
 local menuchars={}
-local stagetypes={
- {
-  title="boot",
-  update=function()update_boot()end,
-  draw=function()draw_boot()end
- },
- {
-  title="mainmenu",
-  update=function()update_main_menu()end,
-  draw=function()draw_main_menu()end
- },
- {
-  title="controls",
-  update=function()update_controls()end,
-  draw=function()draw_controls()end
- },
- {
-  title="intro",
-  update=function()update_intro()end,
-  draw=function()draw_introduction()end
- },
- {
-  title="playmap",
-  update=function()update_play_map()end,
-  draw=function()draw_play_map()end
- }
-}
+local stagefns,stagenames={
+  function()update_boot()end,
+  function()draw_boot()end,
+  function()update_main_menu()end,
+  function()draw_main_menu()end,
+  function()update_controls()end,
+  function()draw_controls()end,
+  function()update_intro()end,
+  function()draw_introduction()end,
+  function()update_play_map()end,
+  function()draw_play_map()end
+},'boot,mainmenu,controls,intro,playmap'
 local title_line_data='128#129#130#131#132#132,true#131,true#130,true#129,true#128,true#144#0#133#134#135#136#137#145#0#144,true#144#0#146#147#148#149#150#151#0#144,true#144#0#152#153#160#161#162#163#0#144,true#144#0#0#164#165#166#167#0#0#144,true#168#169#176#176#176#176#176#176#169,true#168,true'
 
 -- base functions
@@ -548,11 +458,11 @@ function update_play_map()
  -- world does not progress during dialog
  if (initialdialoglen>0)return
  -- check for triggers
- for i=1,#triggers do
-  local t = triggers[i]
-  if not t.complete and t.trig() then
-   t.action()
-   triggers[i].complete=true
+ for i=1,#triggers,2 do
+  local divi=ceil(i/2)
+  if not is_element_in(complete_trigs,divi) and triggers[i]() then
+   triggers[i+1]()
+   add(complete_trigs,divi)
    x_consumed=true
   end
  end
@@ -588,14 +498,13 @@ function update_play_map()
   act_text.charsel={txt=charname,frmcnt=32}
  end
  -- check for map switch
- local maplocked={}
- for t in all(triggers) do
-  if t.maplocking then
-    local maplockinfo=split(t.maplocking)
-    if maplockinfo[1] == act_mapsid and not t.complete and trigger_is_complete(t.depends_on)  then
-      if (#maplockinfo<3 or #maplocked==0) add(maplocked,t)
-    end
+ local maplocked,i={},1
+ for m in all(split(maplocking, '|')) do
+  local mdata=split(m)
+  if mdata[1]==act_mapsid and not is_element_in(complete_trigs,i) and trigger_is_complete(ternary(#mdata>3,mdata[4],nil)) then 
+    if (#mdata<3 or #maplocked==0) add(maplocked,m)
   end
+  i+=1
  end
  local to_map_id,to_x,to_y=get_dest_for_loc(act_mapsid, act_x, act_y)
  if to_map_id != nil and last_mapid_mov == act_mapsid then
@@ -605,7 +514,7 @@ function update_play_map()
     if initialdialoglen == 0 and not (nonrptdialog.x==act_x and nonrptdialog.y==act_y) then
       queue_dialog_by_txt("we aren't done here yet... we should")
       for m in all(maplocked) do
-        local maplockinfo=split(m.maplocking)
+        local maplockinfo=split(m)
         if #maplockinfo > 1 then
           queue_dialog_by_txt(maplockinfo[2])
         end
@@ -695,7 +604,7 @@ function queue_achievement_text(text)
 end
 
 function trigger_is_complete(idx)
-  return idx==nil or triggers[idx].complete or false
+  return idx==nil or is_element_in(complete_trigs,idx) or false
 end
 
 function do_edelwood_select()
@@ -1328,8 +1237,9 @@ function distance(x1, y1, x2, y2)
 end
 
 function get_stage_by_type(stagetype)
- for s in all(stagetypes) do
-  if (s.title==stagetype) return s
+ local sns=split(stagenames)
+ for i=1,#sns do
+  if (sns[i]==stagetype) return {update=stagefns[i*2-1],draw=stagefns[i*2]}
  end
 end
 
