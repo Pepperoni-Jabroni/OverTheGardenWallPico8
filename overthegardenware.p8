@@ -47,31 +47,31 @@ local dialog_list="1;kitty;led through the mist#1;kitty;by the milk-light of moo
 local npcs={}
 local triggers,maplocking,complete_trigs={
   function() return player_location_match"woods1,right_of,8" end,
-  function() queue_dialog_by_idx(5) end,
+  function() queue_dialog_by_idx'5' end,
   function() return player_use_item(1,'woods1') and (act_x!=8 or act_y!=8) end,
-  function() queue_dialog_by_idx(6)end,
+  function() queue_dialog_by_idx'6'end,
   function() return player_use_item(1,'woods1',13,7)end,
-  function() queue_dialog_by_idx(18) end,
+  function() queue_dialog_by_idx'18' end,
   function() return player_use_item(1,'woods2')end,
   function() end,
   function() return player_sel_location(5,7,'woods2')end,
   function()
-    queue_dialog_by_idx(3)
+    queue_dialog_by_idx'3'
     do_edelwood_select()
    end,
-  function() return playmap_npc_visible('woods2', 'the woodsman')end,
-  function() queue_dialog_by_idx(4)end,
-  function() return dialog_is_complete(4)end,
+  function() return playmap_npc_visible'woods2,the woodsman'end,
+  function() queue_dialog_by_idx'4'end,
+  function() return dialog_is_complete'4'end,
   function() queue_move_npc('the woodsman','15|0|7|7')end,
   function() return #party==2 and player_location_match'woods3,below,13' end,
-  function() queue_dialog_by_idx(7) end,
+  function() queue_dialog_by_idx'7' end,
   function() return player_sel_location(7,10,'woods3')end,
-  function() queue_dialog_by_idx(8)end,
-  function() return dialog_is_complete(8)end,
+  function() queue_dialog_by_idx'8'end,
+  function() return dialog_is_complete'8'end,
   function() add(party,{charid='beatrice',x=7,y=10,mapid=act_mapsid}) end,
-  function() return playmap_npc_visible('millandriver', 'the woodsman') end,
-  function() queue_dialog_by_idx(9) end,
-  function() return dialog_is_complete(9) end,
+  function() return playmap_npc_visible'millandriver,the woodsman' end,
+  function() queue_dialog_by_idx'9' end,
+  function() return dialog_is_complete'9' end,
   function() queue_move_npc('the woodsman','7|3|7|4') end,
   function() return act_mapsid=='mill' and #party==2 end,
   function()
@@ -89,12 +89,12 @@ local triggers,maplocking,complete_trigs={
     party=newparty
     get_map_by_id('millandriver').discvrdtiles={}
     add_npc('the beast?','millandriver',12,6)
-    queue_dialog_by_idx(16)
+    queue_dialog_by_idx'16'
     add(act_wrld_items,{spridx=inv_items[2].spridx,x=2,y=12,mapid=act_mapsid})
   end,
-  function() return playmap_npc_visible('millandriver', 'the beast?') end,
+  function() return playmap_npc_visible'millandriver,the beast?' end,
   function()
-    queue_dialog_by_idx(12)
+    queue_dialog_by_idx'12'
     local dt = get_map_by_id(act_mapsid).discvrdtiles
     add(dt, '12|6')
     add(dt, '12|7')
@@ -102,13 +102,13 @@ local triggers,maplocking,complete_trigs={
     add(dt, '13|7')
   end,
   function() return act_mapsid=='home' end,
-  function() queue_dialog_by_idx(10) end,
-  function() return playmap_npc_visible('woods1', 'black turtle') end,
-  function() queue_dialog_by_idx(11) end,
-  function() return dialog_is_complete(12) end,
+  function() queue_dialog_by_idx'10' end,
+  function() return playmap_npc_visible'woods1,black turtle' end,
+  function() queue_dialog_by_idx'11' end,
+  function() return dialog_is_complete'12' end,
   function()
     get_npc_by_charid('the beast?').intent = 'chase_candy_and_player'
-    add(party,get_npc_by_charid('kitty'))
+    add(party,get_npc_by_charid'kitty')
     for n in all(npcs) do
      if (n.charid == 'kitty') del(npcs, n)
     end
@@ -118,17 +118,17 @@ local triggers,maplocking,complete_trigs={
      return player_location_match'mill,above,0' and beast!=nil and beast.mapid=='mill'
    end,
   function()
-    add(party,get_npc_by_charid('wirt'))
+    add(party,get_npc_by_charid'wirt')
     for n in all(npcs) do
      if (n.charid=='wirt') del(npcs, n)
     end
     get_map_by_id('mill').playmapspr=124
-    queue_dialog_by_idx(20)
+    queue_dialog_by_idx'20'
    end,
   function() return player_location_match'woods1,left_of,1' end,
-  function() queue_dialog_by_idx(14) end,
+  function() queue_dialog_by_idx'14' end,
   function() return player_location_match'mill,left_of,7' end,
-  function() queue_dialog_by_idx(13) end,
+  function() queue_dialog_by_idx'13' end,
   function() return player_sel_location(2,12,'mill') end,
   function()
     act_item=2
@@ -137,12 +137,12 @@ local triggers,maplocking,complete_trigs={
      if (i.spridx != inv_items[2].spridx) add(noartitems, i)
     end
     act_wrld_items=noartitems
-    queue_dialog_by_idx(17)
+    queue_dialog_by_idx'17'
    end,
-  function() return dialog_is_complete(19) end,
+  function() return dialog_is_complete'19' end,
   function() 
     act_item=1
-    add(npcs,get_npc_by_charid('wirt'))
+    add(npcs,get_npc_by_charid'wirt')
     party={}
     queue_move_npc('wirt','2|9')
    end,
@@ -157,7 +157,7 @@ local triggers,maplocking,complete_trigs={
      add_npc('black turtle','millandriver',5,5)
      del(npcs,get_npc_by_charid('the woodsman'))
      add_npc('the woodsman','millandriver',6,5)
-     queue_dialog_by_idx(22)
+     queue_dialog_by_idx'22'
      act_item=nil
    end,
   function() return act_mapsid=='woods3' end,
@@ -167,18 +167,18 @@ local triggers,maplocking,complete_trigs={
     return act_mapsid=='woods3' and mget(m.cellx+act_x,m.celly+act_y)==158
    end,
   function() 
-    queue_dialog_by_idx(23)
+    queue_dialog_by_idx'23'
     act_item=3
    end,
   function() 
-     local m=get_map_by_id('home')
+     local m=get_map_by_id'home'
      return act_mapsid=='pottsfield' and distance(act_x,act_y,m.playmaplocx,m.playmaplocy)<3
    end,
-  function() queue_dialog_by_idx(24) end,
-  function() return playmap_npc_visible('barn', 'pottsfield citizen 1') end,
-  function() queue_dialog_by_idx(25) end,
-  function() return playmap_npc_visible('barn', 'enoch') end,
-  function() queue_dialog_by_idx(26) end,
+  function() queue_dialog_by_idx'24' end,
+  function() return playmap_npc_visible'barn,pottsfield citizen 1' end,
+  function() queue_dialog_by_idx'25' end,
+  function() return playmap_npc_visible'barn,enoch' end,
+  function() queue_dialog_by_idx'26' end,
 },'woods1|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|woods2|empty|woods3,search the bushes|woods3|millandriver,talk with the woodsman|millandriver|millandriver,enter the mill|millandriver,find the frog!,hideable|empty|woods1,spot the turtle|millandriver|millandriver,run back to your brother!,hideable|empty|empty|mill,find a club|mill,use the club!,hideable|mill,jump the window to escape!,hideable,14|empty|woods3,acquire new shoes|empty|barn,meet the host',{}
 local menuchars={}
 local stagefns,stagenames={
@@ -374,7 +374,7 @@ function update_main_menu()
  if btnp(4) or btnp(5) then
   if act_y==0 then
    act_stagetype="intro"
-   queue_dialog_by_idx(1)
+   queue_dialog_by_idx'1'
    music(0)
   elseif act_y==1 then
    act_stagetype="controls"
@@ -539,8 +539,8 @@ end
   -- bird art
   elseif act_item==2 then
    local wmnpc = get_npc_by_charid('the woodsman')
-   if distance(act_x, act_y, wmnpc.x, wmnpc.y) < 2.0 and not dialog_is_complete(19) then
-    queue_dialog_by_idx(19)
+   if distance(act_x, act_y, wmnpc.x, wmnpc.y) < 2.0 and not dialog_is_complete'19' then
+    queue_dialog_by_idx'19'
     wmnpc.flipv=true
    end
   -- shovel
@@ -1116,13 +1116,14 @@ function player_use_item(itemidx,mapid,x_idx,y_idx)
  return act_useitem==itemidx and act_mapsid==mapid and (x_idx == nil or (x_idx == act_x and y_idx == act_y))
 end
 
-function playmap_npc_visible(mapid, charid)
- if act_mapsid != mapid then
+function playmap_npc_visible(mapidcharid)
+ local mcs=split(mapidcharid)
+ if act_mapsid != mcs[1] then
   return false
  end
  for n in all(get_npcs_for_map(act_mapsid)) do
   local idtfr=n.x..'|'..n.y
-  if is_element_in(get_map_by_id(act_mapsid).discvrdtiles,idtfr) and n.charid==charid then
+  if is_element_in(get_map_by_id(act_mapsid).discvrdtiles,idtfr) and n.charid==mcs[2] then
    return true
   end
  end
@@ -1130,11 +1131,11 @@ function playmap_npc_visible(mapid, charid)
 end
 
 function dialog_is_complete(dialogi)
- return is_element_in(compltdlgs,dialogi)
+ return is_element_in(compltdlgs,tonum(dialogi))
 end
 
 function queue_dialog_by_idx(dialogi)
- add(act_text_dialog,dialogi)
+ add(act_text_dialog,tonum(dialogi))
 end
 
 function maybe_queue_party_move(destx, desty)
