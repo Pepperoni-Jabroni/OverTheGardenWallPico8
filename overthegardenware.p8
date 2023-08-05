@@ -475,17 +475,12 @@ function update_play_map()
  end
  -- check selection direction
  if btn(5) then
-  pressed=nil
+  act_lookingdir=nil
   for i=0,3 do
    if btn(i) then
-    pressed=i
+    act_lookingdir=i
    end
   end
-  if pressed != nil then
-   act_lookingdir=pressed
-  end
- else
-  act_lookingdir=nil
  end
  -- world does not progress during dialog
  if (initialdialoglen>0)return
