@@ -197,7 +197,7 @@ local triggers,maplocking={
     if (pumpkincount<5)del(complete_trigs,30)
     maybe_queue_collect_text()
   end,
-  function() return player_sel_location(7,5,'pottsfield') and enoch_in_pottsfield() and wheatcount>4 and pumpkincount>4 end,
+  function() return player_sel_location(7,5,'pottsfield') and wheatcount>4 and pumpkincount>4 end,
   function() 
     act_item=4
     queue_dialog_by_txt('now dig!','enoch',true)
