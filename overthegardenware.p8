@@ -207,7 +207,7 @@ local triggers,maplocking={
     act_item=nil
     queue_dialog_by_txt('thanks for grabbing me!','skeleton')
   end
-},'woods1|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|woods2||woods3,search the bushes|woods3|millandriver,talk with the woodsman|millandriver|millandriver,enter the mill|millandriver,find the frog!,hideable||woods1,spot the turtle|millandriver|millandriver,run back to your brother!,hideable|||mill,find a club|mill,use the club!,hideable|mill,jump the window to escape!,hideable,14||woods3,acquire new shoes|||barn,meet the host|pottsfield,collect wheat,hideable,28|pottsfield,collect pumpkin,hideable,28|pottsfield,talk with enoch,hideable,30|pottsfield,dig at the flower,hideable,31'
+},'|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|||woods3,search the bushes||millandriver,talk with the woodsman||millandriver,enter the mill|millandriver,find the frog!,hideable||woods1,spot the turtle||millandriver,run back to your brother!,hideable|||mill,find a club|mill,use the club!,hideable|mill,jump the window to escape!,hideable,14||woods3,acquire new shoes|||barn,meet the host|pottsfield,collect wheat,hideable,28|pottsfield,collect pumpkin,hideable,28|pottsfield,talk with enoch,hideable,30|pottsfield,dig at the flower,hideable,31'
 local menuchars={}
 local stagefns,stagenames={
   function()update_boot()end,
