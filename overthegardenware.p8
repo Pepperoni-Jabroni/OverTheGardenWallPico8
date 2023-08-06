@@ -715,7 +715,7 @@ function exec_npc_intent(npc)
   local m=get_map_by_id(npc.mapid)
   local qx,qy=m.cellx+npc.x,m.celly+npc.y
   local mgetr=mget(qx,qy)
-  if (mgetr==191 and flr(rnd(2))==1) mset(qx,qy,185)
+  if (mgetr==191) mset(qx,qy,185)
   if (mgetr==142 or mgetr==175) mset(qx,qy,201)
   if (mgetr==178) mset(qx,qy,179)
   intent='walk'
