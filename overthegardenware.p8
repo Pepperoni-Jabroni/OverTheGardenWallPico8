@@ -38,7 +38,7 @@ local character_list='greg;0;2;where is that frog o\' mine!|wanna hear a rock fa
 -- of the form "<mp_one_idx>;<mp_two_idx>;<mp_one_locs>;<mp_two_locs>#"
 local map_trans_list='woods1;woods2;15,5|15,4;0,14|0,15#woods2;millandriver;13,0|14,0|15,0;0,13|0,14|0,15#millandriver;woods3;0,0|1,0;13,15|14,15|15,15#millandriver;mill;7,3;8,14#woods3;pottsfield;7,0|8,0;7,15|8,15#pottsfield;barn;4,2|5,2;7,13|8,13#pottsfield;woods4;9,0|10,0;6,15|7,15#woods4;grounds;7,0|8,0;7,15|8,15#grounds;school;6,7|7,7;7,14|8,14|11,1#pottsfield;home;10,8|11,8;7,12'
 local npc_data = 'black turtle,13,7,woods1#the woodsman,6,7,woods2#pottsfield citizen 1,7,7,barn,loop,7|7|10|10#pottsfield citizen 1,7,10,barn,loop,7|7|10|10#pottsfield citizen 2,10,7,barn,loop,7|7|10|10#pottsfield citizen 2,10,10,barn,loop,7|7|10|10#enoch,8,8,barn#ms langtree,8,9,school#dog student,7,11,school#cat student,9,11,school#racoon student,9,13,school#turkey,7,6,home'
-local map_list="exterior,woods1,somewhere in the unknown,0,16,0#exterior,woods2,somewhere in the unknown,0,0,14#interior,mill,the old grist mill,64,0,millandriver,226,7,2#exterior,millandriver,the mill and the river,16,0,0#exterior,woods3,somewhere in the unknown,32,0,0#interior,barn,harvest party,80,0,pottsfield,224,4,1#interior,home,pottsfield home,32,16,pottsfield,232,10,7#exterior,pottsfield,pottsfield,48,0,0#exterior,woods4,somewhere in the unknown,96,0,0#interior,school,schoolhouse,16,16,grounds,228,6,6#exterior,grounds,the schoolgrounds,112,0,0"
+local map_list="exterior,woods1,somewhere in the unknown,0,16,0#exterior,woods2,somewhere in the unknown,0,0,14#interior,mill,the old grist mill,64,0,millandriver,226,7,2#exterior,millandriver,the mill and the river,16,0,0#exterior,woods3,somewhere in the unknown,32,0,0#interior,barn,harvest party,80,0,pottsfield,224,4,1#interior,home,pottsfield home,32,16,pottsfield,232,10,7#exterior,pottsfield,pottsfield,48,0,0#exterior,woods4,somewhere in the unknown,96,0,0#interior,school,schoolhouse,16,16,grounds,228,7,6#exterior,grounds,the schoolgrounds,112,0,0"
 local darkspr_list='174,204,218,219,235,236,251#2,3,4,8,9,10,11#0,0,1,1,0,1,1'
 local darkanims={}
 local nonrptdialog={x=nil,y=nil}
@@ -481,6 +481,8 @@ function update_play_map()
     act_lookingdir=i
    end
   end
+ else
+  act_lookingdir=nil
  end
  -- world does not progress during dialog
  if (initialdialoglen>0)return
@@ -1252,6 +1254,7 @@ function transition_to_map(dest_mp,dest_x,dest_y)
   p.intentdata=nil
  end
  local m = get_map_by_id(act_mapsid)
+ if (m.type=='interior')act_y-=1
  local titlex=63-(2*#m.title)
  act_text_maptitle={x=titlex,y=12,txt=m.title,frmcnt=45}
  -- check alt tiles
