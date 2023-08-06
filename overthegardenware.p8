@@ -1238,7 +1238,8 @@ end
 
 function is_walkable(mapx, mapy, mapid)
   local m = get_map_by_id(mapid or act_mapsid)
-  return is_element_in(walkable, mget(mapx+m.cellx, mapy+m.celly))
+  local s = mget(mapx+m.cellx, mapy+m.celly)
+  return is_element_in(walkable,s) and (m.type!='interior' or not is_element_in({207,223,239},s)) 
 end
 
 function transition_to_map(dest_mp,dest_x,dest_y)
