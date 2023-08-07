@@ -34,7 +34,7 @@ local act_mapsid=nil
 local edelwood_sels,rockfact_sels={},{}
 local party={}
 -- of the form "<name>;<map_spr_idx>;<speak_spr_idx>;<idle_txts>;<scaling>#"
-local character_list='g;greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?#w;wirt;1;4;uh, hi...|oh sorry, just thinking#b;beatrice;16;6;yes, i can talk...|lets get out of here!#k;;17;8;ribbit#a;the beast;32;34#m;the woodsman;33;36;i need more oil|beware these woods#?;the beast?;48;38;*glares at you*;2#d;dog;49;40;*barks*#t;black turtle;64;66;*stares blankly*#z;turkey;65;68;gobble. gobble. gobble.#o;pottsfield citizen 1;80;98;you\'re too early#i;pottsfield citizen 2;80;102;are you new here?#s;skeleton;81;70;thanks for digging me up!#p;partier;96;100;let\'s celebrate!#e;enoch;97;72;what a wonderful harvest|you don\'t look like you belong here;2#u;dog student;10;44;humph...|huh...#l;gorilla;113;12#j;jimmy brown;11;14#c;cat student;26;46;humph...|huh...#r;ms langtree;112;104;oh that jimmy brown|i miss him so...#n;the lantern;;76#F;rock fact;;78#E;edelwood;219;192#y;racoon student;27;194;humph...|huh...#A;achievement get!;;196'
+local character_list='g;greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?#w;wirt;1;4;uh, hi...|oh sorry, just thinking#b;beatrice;16;6;yes, i can talk...|lets get out of here!#k;;17;8;ribbit#a;the beast;32;34#m;the woodsman;33;36;i need more oil|beware these woods#?;the beast?;48;38;*glares at you*;2#d;dog;49;40;*barks*#t;black turtle;64;66;*stares blankly*#z;turkey;65;68;gobble. gobble. gobble.#o;pottsfield citizen 1;80;98;you\'re too early#i;pottsfield citizen 2;80;102;are you new here?#s;skeleton;81;70;thanks for digging me up!#p;partier;96;100;let\'s celebrate!#e;enoch;97;72;you don\'t look like you belong here;2#u;dog student;10;44;humph...|huh...#l;gorilla;113;12#j;jimmy brown;11;14#c;cat student;26;46;humph...|huh...#r;ms langtree;112;104;oh that jimmy brown|i miss him so...#n;the lantern;;76#F;rock fact;;78#E;edelwood;219;192#y;racoon student;27;194;humph...|huh...#A;achievement get!;;196'
 -- of the form "<mp_one_idx>;<mp_two_idx>;<mp_one_locs>;<mp_two_locs>#"
 local map_trans_list='woods1;woods2;15,5|15,4;0,14|0,15#woods2;millandriver;13,0|14,0|15,0;0,13|0,14|0,15#millandriver;woods3;0,0|1,0;13,15|14,15|15,15#millandriver;mill;7,3;8,14#woods3;pottsfield;7,0|8,0;7,15|8,15#pottsfield;barn;4,2|5,2;7,13|8,13#pottsfield;woods4;9,0|10,0;6,15|7,15#woods4;grounds;7,0|8,0;7,15|8,15#grounds;school;6,7|7,7;7,14|8,14|11,1#pottsfield;home;10,8|11,8;7,12'
 local npc_data = 't,13,7,woods1#m,6,7,woods2#o,6,12,barn#o,7,4,barn,loop,7|4|10|7#o,7,7,barn,loop,7|4|10|7#i,10,4,barn,loop,7|4|10|7#i,10,7,barn,loop,7|4|10|7#e,8,5,barn#r,8,9,school#u,7,11,school#c,9,11,school#y,9,13,school#z,7,6,home'
@@ -551,6 +551,7 @@ function update_play_map()
         add_npc('s',act_mapsid,act_x+1,act_y)
         act_y-=1
         act_item=nil
+        get_npc_by_charid('e').idle={'what a wonderful harvest'}
       end
     end
   end
