@@ -12,7 +12,7 @@ local altsset={}
 local objdescript_list="122,123,138,139;what a nice old wagon#124,125,140,141;the poor old mill...#158;look at these pumpkins!#159;it says pottsfield \148#174;looks like its harvest time!#204,236;its just a bush...#218,235,251;this tree sure is tall#220;a stump of some weird tree?#219;a creepy tree with a face on it#224,225,240,241;pottsfield old barn#226,227,242,243;the old grist mill#228,229,244,245;the animal schoolhouse#232,233,248,249;pottsfield old church#108;a rickety old fence#109;a scarecrow of sorts#110;the ground is higher here#127;a deep hole in the ground#42;what a nice view out this window#43;this is the door#58;its a large cabinet#59;its a comfortable chair#74;its a small desk#75;its a school desk#90;its a lounge chair#91;its a bundle of logs#106;its a ladder (i swear)#107;its a railing#143;its a piano!#177;its the mill\'s grinder!#178;its a jar of thick oil#179;its a broken jar of oil#200;its a chalk board#215;i found a rock fact!#216;its warm by the fireplace#217;a bundle of black oily sticks#180,181;a cafeteria bench and table#230,231,246,247;the town gazebo#232,233,248,249;pottsfield home"
 local inv_items=(function()
   local items={}
-  for i in all(split('255,candy,greg#214,bird art,greg#252,pumpkin shoe,greg;wirt#253,shovel,greg;wirt;beatrice#254,old cat,greg;kitty', '#')) do
+  for i in all(split('255,candy,g#214,bird art,g#252,pumpkin shoe,g;w#253,shovel,g;w;b#254,old cat,g;k', '#')) do
     local idata=split(i)
     add(items,{spridx=idata[1],name=idata[2],charids=split(idata[3],';')})
   end
@@ -34,15 +34,15 @@ local act_mapsid=nil
 local edelwood_sels,rockfact_sels={},{}
 local party={}
 -- of the form "<name>;<map_spr_idx>;<speak_spr_idx>;<idle_txts>;<scaling>#"
-local character_list='greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?;1#wirt;1;4;uh, hi...|oh sorry, just thinking;1#beatrice;16;6;yes, i can talk...|lets get out of here!;1#kitty,wirt,wirt jr.,george washington,mr. president,benjamin franklin,doctor cucumber,greg jr.,skipper,ronald,jason funderburker;17;8;ribbit;1#the beast;32;34;;1#the woodsman;33;36;i need more oil|beware these woods;1#the beast?;48;38;*glares at you*;2#dog;49;40;*barks*;1#black turtle;64;66;*stares blankly*;1#turkey;65;68;gobble. gobble. gobble.;1#pottsfield citizen 1;80;98;you\'re too early;1#pottsfield citizen 2;80;102;are you new here?;1#skeleton;81;70;thanks for digging me up!;1#partier;96;100;let\'s celebrate!;1#enoch;97;72;what a wonderful harvest|you don\'t look like you belong here;2#dog student;10;44;humph...|huh...;1#gorilla;113;12;;1#jimmy brown;11;14;;1#cat student;26;46;humph...|huh...;1#ms langtree;112;104;oh that jimmy brown|i miss him so...;1#the lantern;nil;76;;1#rock fact;nil;78;;1#edelwood;219;192;;1#racoon student;27;194;humph...|huh...;1#achievement get!;nil;196;;1'
+local character_list='g;greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?#w;wirt;1;4;uh, hi...|oh sorry, just thinking#b;beatrice;16;6;yes, i can talk...|lets get out of here!#k;kitty,wirt,wirt jr.,george washington,mr. president,benjamin franklin,doctor cucumber,greg jr.,skipper,ronald,jason funderburker;17;8;ribbit#a;the beast;32;34#m;the woodsman;33;36;i need more oil|beware these woods#?;the beast?;48;38;*glares at you*;2#d;dog;49;40;*barks*#t;black turtle;64;66;*stares blankly*#k;turkey;65;68;gobble. gobble. gobble.#o;pottsfield citizen 1;80;98;you\'re too early#i;pottsfield citizen 2;80;102;are you new here?#s;skeleton;81;70;thanks for digging me up!#p;partier;96;100;let\'s celebrate!#e;enoch;97;72;what a wonderful harvest|you don\'t look like you belong here;2#u;dog student;10;44;humph...|huh...#l;gorilla;113;12#j;jimmy brown;11;14#c;cat student;26;46;humph...|huh...#r;ms langtree;112;104;oh that jimmy brown|i miss him so...#n;the lantern;;76#F;rock fact;;78#E;edelwood;219;192#y;racoon student;27;194;humph...|huh...#A;achievement get!;;196'
 -- of the form "<mp_one_idx>;<mp_two_idx>;<mp_one_locs>;<mp_two_locs>#"
 local map_trans_list='woods1;woods2;15,5|15,4;0,14|0,15#woods2;millandriver;13,0|14,0|15,0;0,13|0,14|0,15#millandriver;woods3;0,0|1,0;13,15|14,15|15,15#millandriver;mill;7,3;8,14#woods3;pottsfield;7,0|8,0;7,15|8,15#pottsfield;barn;4,2|5,2;7,13|8,13#pottsfield;woods4;9,0|10,0;6,15|7,15#woods4;grounds;7,0|8,0;7,15|8,15#grounds;school;6,7|7,7;7,14|8,14|11,1#pottsfield;home;10,8|11,8;7,12'
-local npc_data = 'black turtle,13,7,woods1#the woodsman,6,7,woods2#pottsfield citizen 1,7,7,barn,loop,7|7|10|10#pottsfield citizen 1,7,10,barn,loop,7|7|10|10#pottsfield citizen 2,10,7,barn,loop,7|7|10|10#pottsfield citizen 2,10,10,barn,loop,7|7|10|10#enoch,8,8,barn#ms langtree,8,9,school#dog student,7,11,school#cat student,9,11,school#racoon student,9,13,school#turkey,7,6,home'
+local npc_data = 't,13,7,woods1#m,6,7,woods2#o,7,7,barn,loop,7|7|10|10#o,7,10,barn,loop,7|7|10|10#i,10,7,barn,loop,7|7|10|10#i,10,10,barn,loop,7|7|10|10#e,8,8,barn#r,8,9,school#u,7,11,school#c,9,11,school#y,9,13,school#k,7,6,home'
 local map_list="exterior,woods1,somewhere in the unknown,0,16,0#exterior,woods2,somewhere in the unknown,0,0,14#interior,mill,the old grist mill,64,0,millandriver,226,7,2#exterior,millandriver,the mill and the river,16,0,0#exterior,woods3,somewhere in the unknown,32,0,0#interior,barn,harvest party,80,0,pottsfield,224,4,1#interior,home,pottsfield home,32,16,pottsfield,232,10,7#exterior,pottsfield,pottsfield,48,0,0#exterior,woods4,somewhere in the unknown,96,0,0#interior,school,schoolhouse,16,16,grounds,228,7,6#exterior,grounds,the schoolgrounds,112,0,0"
 local darkspr_list='174,204,218,219,235,236,251#2,3,4,8,9,10,11#0,0,1,1,0,1,1'
 local darkanims={}
 local compltdlgs,wheatcount,pumpkincount,digcount={},0,0,0
-local dialog_list="kitty;led through the mist-kitty;by the milk light of moon-kitty;all that was lost is revealed-kitty;our long bygone burdens-kitty;mere echoes of the spring-kitty;but where have we come?-kitty;and where shall we end?-kitty;if dreams can't come true-kitty;then why not pretend?-kitty;how the gentle wind-kitty;beckons through the leaves-kitty;as autumn colors fall-kitty;dancing in a swirl-kitty;of golden memories-kitty;the loveliest lies of all+greg;i sure do love my frog!-wirt;greg, please stop...-kitty;ribbit.-greg;haha, yeah!+wirt;i dont like this at all-greg;its a tree face!+wirt;is that some sort of deranged lunatic?-wirt;with an axe waiting for victims?-the woodsman;*swings axe and chops tree*;large-wirt;what is that strange tree?-greg;we should ask him for help!+wirt;whoa... wait greg...;large-wirt;... where are we?;large-greg;we\'re in the woods!;large-wirt;no, i mean;large-wirt;... where are we?!;large+wirt;we're really lost greg...-greg;i leave trails of candy from my pants!-greg;candytrail. candytrail. candytrail!+beatrice;help! help!-wirt;i think its coming from a bush?+beatrice;help me!;large-greg;wow, a talking bush!-beatrice;i\'m not a talking bush! i\'m a bird!-beatrice;and i\'m stuck!-greg;wow, a talking bird!-beatrice;if you help me get unstuck, i\'ll-beatrice;owe you one-greg;ohhhh! you'll grant me a wish?!-beatrice;no but i can take you to...-beatrice;adalaid, the good woman of the woods!-greg;*picks up beatrice out of bush*-wirt;uh uh! no!+the woodsman;these woods are a dangerous place-the woodsman;for two kids to be alone-wirt;we... we know, sir-greg;yeah! i\'ve been leaving a trail-greg;of candy from my pants!-the woodsman;please come inside...;large-wirt;i don\'t like the look of this-kitty;ribbit.-greg;haha, yeah!+wirt;oh! terribly sorry to have-wirt;disturbed you sir!-turkey;gobble. gobble. gobble.;large+greg;wow, look at this turtle!-wirt;well thats strange-greg;i bet he wants some candy!-black turtle;*stares blankly*+the beast?;*glares at you, panting*;large-greg;you have beautiful eyes!-greg;ahhhh!+wirt;wow this place is dingey-greg;yeah! crazy axe person!-wirt;we should find a way to take him out-wirt;before he gets a chance to hurt us-greg;i can handle it!+wirt;i dont think we should-wirt;go back the way we came+the woodsman;whats the rucus out here?-wirt;oh nothing sir!-greg;nows my chance!+the woodsman;i work as a woodsman in these woods-the lantern;keeping the light in this lantern lit;large-the woodsman;by processing oil of the edelwood trees-the woodsman;you boys are welcome to stay here-the woodsman;ill be in the workshop-greg;okey dokey!+greg;this bird art sculpture is perfect!+greg;there! this little guy wanted a snack-black turtle;*stares blankly*;large+the woodsman;ow! *falls onto ground*-greg;haha yeah, i did it!-wirt;greg! what have you done!-wirt;hey greg... where did your frog go?-greg;where is that frog o mine?+greg;ahhh! the beast!-wirt;quick, greg, to the workshop!-wirt;we should be able to make it-wirt;out through a window!-the beast?;*crashes through the wall*;large+greg;we made it!-wirt;hopefully hes stuck there!-the beast?;*gets stuck in the window*-the beast?;*spits out a candy*-dog;*looks at you happily*;large-greg;look! hes my best friend now!+the woodsman;what have you boys done?!-the woodsman;the mill is destroyed-wirt;but we solved your beast problem!-the woodsman;you silly boys-the woodsman;that silly dog was not the beast-dog;*bark! bark!*;large-the woodsman;he just swallowed that turtle-black turtle;*stares blankly*;large-the woodsman;go now and continue your journey-wirt;we\'re sorry sir-the woodsman;beware the beast!+greg;oh wow! i stepped on a pumpkin!-wirt;huh oh that's strange-wirt;i did too-greg;haha i have a pumpkin shoe!-kitty;ribbit.+wirt;wow, greg, look!-wirt;a home! maybe they have a phone-beatrice;oh this is just great+pottsfield citizen 1;hey who are you?;large-wirt;uh hello! we're just passing through-pottsfield citizen 1;folks dont just pass through here-beatrice;nope, i dont like this!+enoch;well, well, well,...-enoch;what do we have here?;large-beatrice;nothing sir!-pottsfield citizen 1;they tramped our crops!-enoch;for this you are sentenced-enoch;to some manual labour"
+local dialog_list="k;led through the mist-k;by the milk light of moon-k;all that was lost is revealed-k;our long bygone burdens-k;mere echoes of the spring-k;but where have we come?-k;and where shall we end?-k;if dreams can't come true-k;then why not pretend?-k;how the gentle wind-k;beckons through the leaves-k;as autumn colors fall-k;dancing in a swirl-k;of golden memories-k;the loveliest lies of all+g;i sure do love my frog!-w;greg, please stop...-k;4;ribbit.-g;haha, yeah!+w;i dont like this at all-g;its a tree face!+w;is that some sort of deranged lunatic?-w;with an axe waiting for victims?-m;*swings axe and chops tree*;large-w;what is that strange tree?-g;we should ask him for help!+w;whoa... wait greg...;large-w;... where are we?;large-g;we\'re in the woods!;large-w;no, i mean;large-w;... where are we?!;large+w;we're really lost greg...-g;i leave trails of candy from my pants!-g;candytrail. candytrail. candytrail!+b;help! help!-w;i think its coming from a bush?+b;help me!;large-g;wow, a talking bush!-b;i\'m not a talking bush! i\'m a bird!-b;and i\'m stuck!-g;wow, a talking bird!-b;if you help me get unstuck, i\'ll-b;owe you one-g;ohhhh! you'll grant me a wish?!-b;no but i can take you to...-b;adalaid, the good woman of the woods!-g;*picks up beatrice out of bush*-w;uh uh! no!+m;these woods are a dangerous place-m;for two kids to be alone-w;we... we know, sir-g;yeah! i\'ve been leaving a trail-g;of candy from my pants!-m;please come inside...;large-w;i don\'t like the look of this-k;ribbit.-g;haha, yeah!+w;oh! terribly sorry to have-w;disturbed you sir!-k;gobble. gobble. gobble.;large+g;wow, look at this turtle!-w;well thats strange-g;i bet he wants some candy!-t;*stares blankly*+?;*glares at you, panting*;large-g;you have beautiful eyes!-g;ahhhh!+w;wow this place is dingey-g;yeah! crazy axe person!-w;we should find a way to take him out-w;before he gets a chance to hurt us-g;i can handle it!+w;i dont think we should-w;go back the way we came+m;whats the rucus out here?-w;oh nothing sir!-g;nows my chance!+m;i work as a woodsman in these woods-n;keeping the light in this lantern lit;large-m;by processing oil of the edelwood trees-m;you boys are welcome to stay here-m;ill be in the workshop-g;okey dokey!+g;this bird art sculpture is perfect!+g;there! this little guy wanted a snack-t;*stares blankly*;large+m;ow! *falls onto ground*-g;haha yeah, i did it!-w;greg! what have you done!-w;hey greg... where did your frog go?-g;where is that frog o mine?+g;ahhh! the beast!-w;quick, greg, to the workshop!-w;we should be able to make it-w;out through a window!-?;*crashes through the wall*;large+g;we made it!-w;hopefully hes stuck there!-?;*gets stuck in the window*-?;*spits out a candy*-d;*looks at you happily*;large-g;look! hes my best friend now!+m;what have you boys done?!-m;the mill is destroyed-w;but we solved your beast problem!-m;you silly boys-m;that silly dog was not the beast-d;*bark! bark!*;large-m;he just swallowed that turtle-t;*stares blankly*;large-m;go now and continue your journey-w;we\'re sorry sir-m;beware the beast!+g;oh wow! i stepped on a pumpkin!-w;huh oh that's strange-w;i did too-g;haha i have a pumpkin shoe!-k;ribbit.+w;wow, greg, look!-w;a home! maybe they have a phone-b;oh this is just great+o;hey -o;who are you?;large-w;uh hello! we're just passing through-o;folks dont just pass through here-b;nope, i dont like this!+e;well, well, well,...-e;what do we have here?;large-b;nothing sir!-o;they tramped our crops!-i;look at their shoes!-e;for this you are sentenced-e;to...-e;a few hours of manual labour-w;oh uh okay?-e;come outside with me+e;you must collect 5 pumpkins-e;and 5 bundles of wheat-e;go now, and pay your dues!+e;now for your final act-e;you must dig a hole-e;6 feet deep-e;take these shovels and-e;start digging-b;oh god!"
 local npcs,complete_trigs={},{}
 local triggers,maplocking={
   function() return player_location_match"woods1,right_of,8" end,
@@ -58,40 +58,40 @@ local triggers,maplocking={
     queue_dialog_by_idx'3'
     do_edelwood_select()
    end,
-  function() return playmap_npc_visible'woods2,the woodsman'end,
+  function() return playmap_npc_visible'woods2,m'end,
   function() queue_dialog_by_idx'4'end,
   function() return dialog_is_complete'4'end,
-  function() queue_move_npc('the woodsman','15|0|7|7')end,
+  function() queue_move_npc('m','15|0|7|7')end,
   function() return #party==2 and player_location_match'woods3,below,13' end,
   function() queue_dialog_by_idx'7' end,
   function() return player_sel_location(7,10,'woods3')end,
   function() queue_dialog_by_idx'8'end,
   function() return dialog_is_complete'8'end,
-  function() add(party,{charid='beatrice',x=7,y=10,mapid=act_mapsid}) end,
-  function() return playmap_npc_visible'millandriver,the woodsman' end,
+  function() add(party,{charid='b',x=7,y=10,mapid=act_mapsid}) end,
+  function() return playmap_npc_visible'millandriver,m' end,
   function() queue_dialog_by_idx'9' end,
   function() return dialog_is_complete'9' end,
-  function() queue_move_npc('the woodsman','7|3|7|4') end,
+  function() queue_move_npc('m','7|3|7|4') end,
   function() return act_mapsid=='mill' and #party==2 end,
   function()
     act_item = nil 
-    if act_charid == 'kitty' then
+    if act_charid == 'k' then
      perform_active_party_swap()
     end
-    add_npc('kitty','millandriver',11,6)
+    add_npc('k','millandriver',11,6)
     local newparty={}
     for p in all(party) do
-     if p.charid != 'kitty' then
+     if p.charid != 'k' then
       add(newparty,p)
      end
     end
     party=newparty
     get_map_by_id('millandriver').discvrdtiles={}
-    add_npc('the beast?','millandriver',12,6)
+    add_npc('?','millandriver',12,6)
     queue_dialog_by_idx'16'
     add(act_wrld_items,{spridx=inv_items[2].spridx,x=2,y=12,mapid=act_mapsid})
   end,
-  function() return playmap_npc_visible'millandriver,the beast?' end,
+  function() return playmap_npc_visible'millandriver,?' end,
   function()
     queue_dialog_by_idx'12'
     local dt = get_map_by_id(act_mapsid).discvrdtiles
@@ -102,24 +102,24 @@ local triggers,maplocking={
   end,
   function() return act_mapsid=='home' end,
   function() queue_dialog_by_idx'10' end,
-  function() return playmap_npc_visible'woods1,black turtle' end,
+  function() return playmap_npc_visible'woods1,t' end,
   function() queue_dialog_by_idx'11' end,
   function() return dialog_is_complete'12' end,
   function()
-    get_npc_by_charid('the beast?').intent = 'chase_candy_and_player'
-    add(party,get_npc_by_charid'kitty')
+    get_npc_by_charid('?').intent = 'chase_candy_and_player'
+    add(party,get_npc_by_charid'k')
     for n in all(npcs) do
-     if (n.charid == 'kitty') del(npcs, n)
+     if (n.charid == 'k') del(npcs, n)
     end
    end,
   function() 
-     local beast=get_npc_by_charid('the beast?')
+     local beast=get_npc_by_charid('?')
      return player_location_match'mill,above,0' and beast!=nil and beast.mapid=='mill'
    end,
   function()
-    add(party,get_npc_by_charid'wirt')
+    add(party,get_npc_by_charid'w')
     for n in all(npcs) do
-     if (n.charid=='wirt') del(npcs, n)
+     if (n.charid=='w') del(npcs, n)
     end
     get_map_by_id('mill').playmapspr=124
     queue_dialog_by_idx'20'
@@ -141,21 +141,21 @@ local triggers,maplocking={
   function() return dialog_is_complete'19' end,
   function() 
     act_item=1
-    add(npcs,get_npc_by_charid'wirt')
+    add(npcs,get_npc_by_charid'w')
     party={}
-    queue_move_npc('wirt','2|9')
+    queue_move_npc('w','2|9')
    end,
   function() 
-     local beast=get_npc_by_charid('the beast?')
+     local beast=get_npc_by_charid'?'
      return player_sel_location(1,4,'mill') and beast!=nil and beast.mapid=='mill'
    end,
   function()
      transition_to_map('millandriver',7,4)
-     del(npcs,get_npc_by_charid('the beast?'))
-     add_npc('dog','millandriver',5,4)
-     add_npc('black turtle','millandriver',5,5)
-     del(npcs,get_npc_by_charid('the woodsman'))
-     add_npc('the woodsman','millandriver',6,5)
+     del(npcs,get_npc_by_charid'?')
+     add_npc('d','millandriver',5,4)
+     add_npc('t','millandriver',5,5)
+     del(npcs,get_npc_by_charid'm')
+     add_npc('m','millandriver',6,5)
      queue_dialog_by_idx'22'
      act_item=nil
    end,
@@ -174,13 +174,13 @@ local triggers,maplocking={
      return act_mapsid=='pottsfield' and distance(act_x,act_y,m.playmaplocx,m.playmaplocy)<3
    end,
   function() queue_dialog_by_idx'24' end,
-  function() return playmap_npc_visible'barn,pottsfield citizen 1' end,
+  function() return playmap_npc_visible'barn,o' end,
   function() queue_dialog_by_idx'25' end,
-  function() return playmap_npc_visible'barn,enoch' end,
+  function() return playmap_npc_visible'barn,e' end,
   function() 
     queue_dialog_by_idx'26' 
     act_item=nil
-    queue_move_npc('enoch','7|13|7|5')
+    queue_move_npc('e','7|13|7|5')
   end,
   function() return player_sel_spr('pottsfield',174) and enoch_in_pottsfield() end,
   function() 
@@ -199,12 +199,12 @@ local triggers,maplocking={
   function() return player_sel_location(7,5,'pottsfield') and wheatcount>4 and pumpkincount>4 end,
   function() 
     act_item=4
-    queue_dialog_by_txt('now dig!','enoch',true)
+    queue_dialog_by_txt('now dig!','e',true)
   end,
   function() return digcount==4 end,
   function() 
     act_item=nil
-    queue_dialog_by_txt('thanks for grabbing me!','skeleton')
+    queue_dialog_by_txt('thanks for grabbing me!','s')
   end
 },'|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|||woods3,search the bushes||millandriver,talk with the woodsman||millandriver,enter the mill|millandriver,find the frog!,hideable||woods1,spot the turtle||millandriver,run back to your brother!,hideable|||mill,find a club|mill,use the club!,hideable|mill,jump the window to escape!,hideable,14||woods3,acquire new shoes|||barn,meet the host|pottsfield,collect wheat,hideable,28|pottsfield,collect pumpkin,hideable,28|pottsfield,talk with enoch,hideable,30|pottsfield,dig at the flower,hideable,31'
 local menuchars={}
@@ -220,7 +220,7 @@ local stagefns,stagenames={
   function()update_play_map()end,
   function()draw_play_map()end
 },'boot,mainmenu,controls,intro,playmap'
-local title_line_data='128#129#130#131#132#132,true#131,true#130,true#129,true#128,true#144#0#133#134#135#136#137#145#0#144,true#144#0#146#147#148#149#150#151#0#144,true#144#0#152#153#160#161#162#163#0#144,true#144#0#0#164#165#166#167#0#0#144,true#168#169#176#176#176#176#176#176#169,true#168,true'
+local title_line_data,frog_names='128#129#130#131#132#132,true#131,true#130,true#129,true#128,true#144#0#133#134#135#136#137#145#0#144,true#144#0#146#147#148#149#150#151#0#144,true#144#0#152#153#160#161#162#163#0#144,true#144#0#0#164#165#166#167#0#0#144,true#168#169#176#176#176#176#176#176#169,true#168,true',split('kitty,wirt,wirt jr.,george washington,mr. president,benjamin franklin,doctor cucumber,greg jr.,skipper,ronald,jason funderburker')
 
 -- base functions
 function is_element_in(array, k)
@@ -239,22 +239,23 @@ function compute_characters()
  local cchar={}
  for c in all(split(character_list, '#')) do
   local cdata = split(c, ';')
-  local mapspridx=cdata[2]
-  mapspridx=ternary(mapspridx == 'nil',nil,tonum(mapspridx))
+  local mapspridx=cdata[3]
+  mapspridx=ternary(mapspridx=='',nil,tonum(mapspridx))
   add(cchar,{
-   name=split(cdata[1]), 
+   id=cdata[1],
+   name=cdata[2], 
    mapspridx=mapspridx,
-   chrsprdailogueidx=tonum(cdata[3]),
-   idle=split(cdata[4],'|'),
-   scaling=tonum(cdata[5])
+   chrsprdailogueidx=tonum(cdata[4]),
+   idle=ternary(#cdata>4,split(cdata[5],'|'),'huh?'),
+   scaling=ternary(#cdata>5,tonum(cdata[6]),1)
   })
  end
  return cchar
 end
 local characters = compute_characters()
-function get_char_by_name(name)
+function get_char_by_id(id)
  for c in all(characters) do
-  if (is_element_in(c.name, name)) return c
+  if (c.id==id) return c
  end
 end
 
@@ -333,7 +334,7 @@ function compute_dialogs()
   add(cdialogs,{})
   for g in all(dlg_objs) do 
     local s=split(g,';')
-    add(cdialogs[i],{speakerid=s[1],text=s[2],nameidx=1,large=ternary(#s>2,s[3]=='large',false)})
+    add(cdialogs[i],{speakerid=s[1],text=s[2],large=ternary(#s>2,s[3]=='large',false)})
   end
   i+=1
  end
@@ -342,30 +343,15 @@ end
 local dialogs = compute_dialogs()
 
 function _init()
--- init main menu chars
+ -- init main menu chars
  repeat
   local choice=get_rand_idx(get_chars_w_dialog())
   if not is_element_in(menuchars,choice) then
    add(menuchars,choice)
   end
  until #menuchars==4
-
- -- init frog intro name
- local randomname=get_rand_idx(characters[4].name)
- for i=1,#dialogs[1] do
-  dialogs[1][i].nameidx=randomname
- end
-
- -- init object member fns
- for char in all(characters) do
-  char.get_name_at_idx = function(this, idx)
-   if type(this.name) == 'string' then
-    return this.name
-   elseif type(this.name) == 'table' then
-    return this.name[idx]
-   end
-  end 
- end
+ -- choose random frog name
+ get_char_by_id('k').name=frog_names[get_rand_idx(frog_names)]
 end
 
 function _update()
@@ -513,8 +499,7 @@ function update_play_map()
  -- check for player switch
  if btnp(4) and initialdialoglen == 0 then
   perform_active_party_swap()
-  local charname = tostr(get_char_by_name(act_charid).get_name_at_idx(get_char_by_name(act_charid),1))
-  act_text_charsel={txt=charname,frmcnt=32}
+  act_text_charsel={txt=get_char_by_id(act_charid).name,frmcnt=32}
  end
  -- check for map switch
  local maplocked,i={},1
@@ -552,7 +537,7 @@ function update_play_map()
    add(act_wrld_items,{spridx=inv_items[act_item].spridx,x=act_x,y=act_y,mapid=act_mapsid})
   -- bird art
   elseif act_item==2 then
-   local wmnpc = get_npc_by_charid('the woodsman')
+   local wmnpc = get_npc_by_charid'm'
    if distance(act_x, act_y, wmnpc.x, wmnpc.y) < 2.0 and not dialog_is_complete'19' then
     queue_dialog_by_idx'19'
     wmnpc.flipv=true
@@ -568,7 +553,7 @@ function update_play_map()
       end
       if digcount==4 then 
         mset(x,y,127)
-        add_npc('skeleton',act_mapsid,act_x+1,act_y)
+        add_npc('s',act_mapsid,act_x+1,act_y)
         act_y-=1
         act_item=nil
       end
@@ -584,7 +569,7 @@ function update_play_map()
     for j=-1,1 do
      if i!=j and npc.x+i==act_x and npc.y+j==act_y then
       if player_sel_location(npc.x,npc.y,npc.mapid) then
-       local idles=get_char_by_name(npc.charid).idle
+       local idles=get_char_by_id(npc.charid).idle
        queue_dialog_by_txt(ternary(npc.flipv or false,'owww...',idles[get_rand_idx(idles)]),npc.charid)
        x_consumed=true
       end
@@ -614,8 +599,8 @@ function update_play_map()
       if (selspr==219) do_edelwood_select()
       if selspr==215 then
        if(not is_element_in(rockfact_sels, act_mapsid)) add(rockfact_sels, act_mapsid)
-       queue_dialog_by_txt(split('put raisins in grape juice to get grapes!,dinosaurs had big ears but we forgot!,I was stolen from old lady daniels yard!')[#rockfact_sels], 'rock fact', true)
-       queue_dialog_by_txt(#rockfact_sels..' of 3 rock facts collected!', 'rock fact')
+       queue_dialog_by_txt(split('put raisins in grape juice to get grapes!,dinosaurs had big ears but we forgot!,I was stolen from old lady daniels yard!')[#rockfact_sels], 'F', true)
+       queue_dialog_by_txt(#rockfact_sels..' of 3 rock facts collected!', 'F')
        mset(x+get_map_by_id(act_mapsid).cellx,y+get_map_by_id(act_mapsid).celly,202)
        if (#rockfact_sels==3) queue_achievement_text('you found all 3 rock facts!')
       end
@@ -632,7 +617,7 @@ function update_play_map()
 end
 
 function queue_achievement_text(text)
-  queue_dialog_by_txt('\f9\146 '..text..' \146','achievement get!',true)
+  queue_dialog_by_txt('\f9\146 '..text..' \146','A',true)
 end
 
 function trigger_is_complete(idx)
@@ -641,8 +626,8 @@ end
 
 function do_edelwood_select()
  if(not is_element_in(edelwood_sels, act_mapsid)) add(edelwood_sels, act_mapsid)
- queue_dialog_by_txt('*eerily howls in the cool fall wind*', 'edelwood', true)
- queue_dialog_by_txt(#edelwood_sels..' of 6 edelwoods found!', 'edelwood')
+ queue_dialog_by_txt('*eerily howls in the cool fall wind*', 'E', true)
+ queue_dialog_by_txt(#edelwood_sels..' of 6 edelwoods found!', 'E')
  if (#edelwood_sels==6) queue_achievement_text('you found all 6 edelwoods!')
 end
 
@@ -678,7 +663,7 @@ function get_dest_for_loc(mapid, x, y)
 end
 
 function enoch_in_pottsfield()
-  return get_npc_by_charid('enoch').mapid=='pottsfield'
+  return get_npc_by_charid('e').mapid=='pottsfield'
 end
 
 function maybe_queue_collect_text()
@@ -967,11 +952,11 @@ function draw_play_map()
   if (i.mapid==act_mapsid) draw_spr_w_outline(0, i.spridx, i.x,i.y, 1, false, false)
  end
  -- draw player
- draw_spr_w_outline(0, get_char_by_name(act_charid).mapspridx, act_x, act_y, 1, act_fliph, false)
+ draw_spr_w_outline(0, get_char_by_id(act_charid).mapspridx, act_x, act_y, 1, act_fliph, false)
  -- draw npcs
  for npc in all(get_npcs_for_map(act_mapsid)) do
   if npc.x != nil and npc.y != nil then
-   local c=get_char_by_name(npc.charid)
+   local c=get_char_by_id(npc.charid)
    local scaling=1.0
    if (c.scaling != nil) scaling=c.scaling
    local flipv=false
@@ -1062,7 +1047,7 @@ function draw_play_map()
   act_text_charsel.frmcnt-=1
  else
  end
- draw_fancy_spr_box(1,get_char_by_name(act_charid).mapspridx,char_name)
+ draw_fancy_spr_box(1,get_char_by_id(act_charid).mapspridx,char_name)
  if has_item then
   local i=inv_items[act_item]
   draw_fancy_spr_box(114,i.spridx,ternary(char_name!=nil,i.name,nil))
@@ -1205,12 +1190,12 @@ end
 function transition_to_playmap()
  music(-1)
  act_stagetype = "playmap"
- act_charid='greg'
+ act_charid='g'
  act_dialogspeakidx=1
  act_item=1
  act_text_dialog = {}
  transition_to_map('woods1',8,8)
- party={{charid='wirt',mapid='woods1',x=act_x,y=act_y},{charid='kitty',mapid='woods1',x=act_x,y=act_y}}
+ party={{charid='w',mapid='woods1',x=act_x,y=act_y},{charid='k',mapid='woods1',x=act_x,y=act_y}}
  pal(14,14,1)
  pal(5,5,1)
  pal(12,12,1)
@@ -1332,14 +1317,10 @@ function draw_character_dialog_box(dialogobj)
  if dialogobj.time == nil then
   dialogobj.time = 1;
  end
- local nameidx=1
- if dialogobj.nameidx != nil then
-  nameidx=dialogobj.nameidx
- end
  draw_fancy_box(8,100,112,24,4,10,9)
- local c = get_char_by_name(dialogobj.speakerid)
- print(c.get_name_at_idx(c,nameidx), 30, 104, 2)
- print(c.get_name_at_idx(c,nameidx), 29, 103, 9)
+ local c = get_char_by_id(dialogobj.speakerid)
+ print(c.name, 30, 104, 2)
+ print(c.name, 29, 103, 9)
  local fulltext,partial = dialogobj.text,dialogobj.text
  if dialogobj.time < #fulltext then
   partial=sub(fulltext,1,dialogobj.time)
