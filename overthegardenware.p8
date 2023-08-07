@@ -99,20 +99,14 @@ local triggers,maplocking={
   function() return dialog_is_complete'12' end,
   function()
     get_npc_by_charid('?').intent = 'chase_candy_and_player'
-    add(party,get_npc_by_charid'k')
-    for n in all(npcs) do
-     if (n.charid == 'k') del(npcs, n)
-    end
+    transfer_npc_to_party'k'
    end,
   function() 
      local beast=get_npc_by_charid('?')
      return player_location_match'mill,above,0' and beast!=nil and beast.mapid=='mill'
    end,
   function()
-    add(party,get_npc_by_charid'w')
-    for n in all(npcs) do
-     if (n.charid=='w') del(npcs, n)
-    end
+    transfer_npc_to_party'w'
     get_map_by_id('mill').playmapspr=124
     queue_dialog_by_idx'20'
    end,
@@ -761,6 +755,13 @@ function dist_to_closest_item(mapid,x,y,itemspridx)
   end
  end
  return closest,clostdist
+end
+
+function transfer_npc_to_party(charid)
+  add(party,get_npc_by_charid(charid))
+  for n in all(npcs) do
+   if (n.charid==charid) del(npcs, n)
+  end
 end
 
 function remove_charids_in_party(charids)
