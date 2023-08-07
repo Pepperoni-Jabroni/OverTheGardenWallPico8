@@ -37,12 +37,12 @@ local party={}
 local character_list='g;greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?#w;wirt;1;4;uh, hi...|oh sorry, just thinking#b;beatrice;16;6;yes, i can talk...|lets get out of here!#k;;17;8;ribbit#a;the beast;32;34#m;the woodsman;33;36;i need more oil|beware these woods#?;the beast?;48;38;*glares at you*;2#d;dog;49;40;*barks*#t;black turtle;64;66;*stares blankly*#z;turkey;65;68;gobble. gobble. gobble.#o;pottsfield citizen 1;80;98;you\'re too early#i;pottsfield citizen 2;80;102;are you new here?#s;skeleton;81;70;thanks for digging me up!#p;partier;96;100;let\'s celebrate!#e;enoch;97;72;what a wonderful harvest|you don\'t look like you belong here;2#u;dog student;10;44;humph...|huh...#l;gorilla;113;12#j;jimmy brown;11;14#c;cat student;26;46;humph...|huh...#r;ms langtree;112;104;oh that jimmy brown|i miss him so...#n;the lantern;;76#F;rock fact;;78#E;edelwood;219;192#y;racoon student;27;194;humph...|huh...#A;achievement get!;;196'
 -- of the form "<mp_one_idx>;<mp_two_idx>;<mp_one_locs>;<mp_two_locs>#"
 local map_trans_list='woods1;woods2;15,5|15,4;0,14|0,15#woods2;millandriver;13,0|14,0|15,0;0,13|0,14|0,15#millandriver;woods3;0,0|1,0;13,15|14,15|15,15#millandriver;mill;7,3;8,14#woods3;pottsfield;7,0|8,0;7,15|8,15#pottsfield;barn;4,2|5,2;7,13|8,13#pottsfield;woods4;9,0|10,0;6,15|7,15#woods4;grounds;7,0|8,0;7,15|8,15#grounds;school;6,7|7,7;7,14|8,14|11,1#pottsfield;home;10,8|11,8;7,12'
-local npc_data = 't,13,7,woods1#m,6,7,woods2#o,6,12,barn#o,7,4,barn,loop,7|4|10|7#o,7,7,barn,loop,7|4|10|7#i,10,4,barn,loop,7|4|10|7#i,10,7,barn,loop,7|4|10|7#e,5,5,barn#r,8,9,school#u,7,11,school#c,9,11,school#y,9,13,school#z,7,6,home'
+local npc_data = 't,13,7,woods1#m,6,7,woods2#o,6,12,barn#o,7,4,barn,loop,7|4|10|7#o,7,7,barn,loop,7|4|10|7#i,10,4,barn,loop,7|4|10|7#i,10,7,barn,loop,7|4|10|7#e,8,5,barn#r,8,9,school#u,7,11,school#c,9,11,school#y,9,13,school#z,7,6,home'
 local map_list="exterior,woods1,somewhere in the unknown,0,16,0#exterior,woods2,somewhere in the unknown,0,0,14#interior,mill,the old grist mill,64,0,millandriver,226,7,2#exterior,millandriver,the mill and the river,16,0,0#exterior,woods3,somewhere in the unknown,32,0,0#interior,barn,harvest party,80,0,pottsfield,224,4,1#interior,home,pottsfield home,32,16,pottsfield,232,10,7#exterior,pottsfield,pottsfield,48,0,0#exterior,woods4,somewhere in the unknown,96,0,0#interior,school,schoolhouse,16,16,grounds,228,7,6#exterior,grounds,the schoolgrounds,112,0,0"
 local darkspr_list='174,204,218,219,235,236,251#2,3,4,8,9,10,11#0,0,1,1,0,1,1'
 local darkanims={}
 local compltdlgs,wheatcount,pumpkincount,digcount={},0,0,0
-local dialog_list="k;led through the mist-k;by the milk light of moon-k;all that was lost is revealed-k;our long bygone burdens-k;mere echoes of the spring-k;but where have we come?-k;and where shall we end?-k;if dreams can't come true-k;then why not pretend?-k;how the gentle wind-k;beckons through the leaves-k;as autumn colors fall-k;dancing in a swirl-k;of golden memories-k;the loveliest lies of all+g;i sure do love my frog!-w;greg, please stop...-k;4;ribbit.-g;haha, yeah!+w;i dont like this at all-g;its a tree face!+w;is that some sort of deranged lunatic?-w;with an axe waiting for victims?-m;*swings axe and chops tree*;large-w;what is that strange tree?-g;we should ask him for help!+w;whoa... wait greg...;large-w;... where are we?;large-g;we\'re in the woods!;large-w;no, i mean;large-w;... where are we?!;large+w;we're really lost greg...-g;i leave trails of candy from my pants!-g;candytrail. candytrail. candytrail!+b;help! help!-w;i think its coming from a bush?+b;help me!;large-g;wow, a talking bush!-b;i\'m not a talking bush! i\'m a bird!-b;and i\'m stuck!-g;wow, a talking bird!-b;if you help me get unstuck, i\'ll-b;owe you one-g;ohhhh! you'll grant me a wish?!-b;no but i can take you to...-b;adalaid, the good woman of the woods!-g;*picks up beatrice out of bush*-w;uh uh! no!+m;these woods are a dangerous place-m;for two kids to be alone-w;we... we know, sir-g;yeah! i\'ve been leaving a trail-g;of candy from my pants!-m;please come inside...;large-w;i don\'t like the look of this-k;ribbit.-g;haha, yeah!+w;oh! terribly sorry to have-w;disturbed you sir!-z;gobble. gobble. gobble.;large+g;wow, look at this turtle!-w;well thats strange-g;i bet he wants some candy!-t;*stares blankly*+?;*glares at you, panting*;large-g;you have beautiful eyes!-g;ahhhh!+w;wow this place is dingey-g;yeah! crazy axe person!-w;we should find a way to take him out-w;before he gets a chance to hurt us-g;i can handle it!+w;i dont think we should-w;go back the way we came+m;whats the rucus out here?-w;oh nothing sir!-g;nows my chance!+m;i work as a woodsman in these woods-n;keeping the light in this lantern lit;large-m;by processing oil of the edelwood trees-m;you boys are welcome to stay here-m;ill be in the workshop-g;okey dokey!+g;this bird art sculpture is perfect!+g;there! this little guy wanted a snack-t;*stares blankly*;large+m;ow! *falls onto ground*-g;haha yeah, i did it!-w;greg! what have you done!-w;hey greg... where did your frog go?-g;where is that frog o mine?+g;ahhh! the beast!-w;quick, greg, to the workshop!-w;we should be able to make it-w;out through a window!-?;*crashes through the wall*;large+g;we made it!-w;hopefully hes stuck there!-?;*gets stuck in the window*-?;*spits out a candy*-d;*looks at you happily*;large-g;look! hes my best friend now!+m;what have you boys done?!-m;the mill is destroyed-w;but we solved your beast problem!-m;you silly boys-m;that silly dog was not the beast-d;*bark! bark!*;large-m;he just swallowed that turtle-t;*stares blankly*;large-m;go now and continue your journey-w;we\'re sorry sir-m;beware the beast!+g;oh wow! i stepped on a pumpkin!-w;huh oh that's strange-w;i did too-g;haha i have a pumpkin shoe!-k;ribbit.+w;wow, greg, look!-w;a home! maybe they have a phone-b;oh this is just great+o;hey -o;who are you?;large-w;uh hello! we're just passing through-o;folks dont just pass through here-b;nope, i dont like this!+e;well, well, well,...-e;what do we have here?;large-b;nothing sir!-o;they tramped our crops!-i;look at their shoes!-e;for this you are sentenced-e;to...-e;a few hours of manual labour-w;oh uh okay?-e;come outside with me+e;you must collect 5 pumpkins-e;and 5 bundles of wheat-e;go now, and pay your dues!+e;now for your final act-e;you must dig a hole-e;6 feet deep-e;take these shovels and-e;start digging-b;oh god!"
+local dialog_list="k;led through the mist-k;by the milk light of moon-k;all that was lost is revealed-k;our long bygone burdens-k;mere echoes of the spring-k;but where have we come?-k;and where shall we end?-k;if dreams can't come true-k;then why not pretend?-k;how the gentle wind-k;beckons through the leaves-k;as autumn colors fall-k;dancing in a swirl-k;of golden memories-k;the loveliest lies of all+g;i sure do love my frog!-w;greg, please stop...-k;4;ribbit.-g;haha, yeah!+w;i dont like this at all-g;its a tree face!+w;is that some sort of deranged lunatic?-w;with an axe waiting for victims?-m;*swings axe and chops tree*;large-w;what is that strange tree?-g;we should ask him for help!+w;whoa... wait greg...;large-w;... where are we?;large-g;we\'re in the woods!;large-w;no, i mean;large-w;... where are we?!;large+w;we're really lost greg...-g;i leave trails of candy from my pants!-g;candytrail. candytrail. candytrail!+b;help! help!-w;i think its coming from a bush?+b;help me!;large-g;wow, a talking bush!-b;i\'m not a talking bush! i\'m a bird!-b;and i\'m stuck!-g;wow, a talking bird!-b;if you help me get unstuck, i\'ll-b;owe you one-g;ohhhh! you'll grant me a wish?!-b;no but i can take you to...-b;adalaid, the good woman of the woods!-g;*picks up beatrice out of bush*-w;uh uh! no!+m;these woods are a dangerous place-m;for two kids to be alone-w;we... we know, sir-g;yeah! i\'ve been leaving a trail-g;of candy from my pants!-m;please come inside...;large-w;i don\'t like the look of this-k;ribbit.-g;haha, yeah!+w;oh! terribly sorry to have-w;disturbed you sir!-z;gobble. gobble. gobble.;large+g;wow, look at this turtle!-w;well thats strange-g;i bet he wants some candy!-t;*stares blankly*+?;*glares at you, panting*;large-g;you have beautiful eyes!-g;ahhhh!+w;wow this place is dingey-g;yeah! crazy axe person!-w;we should find a way to take him out-w;before he gets a chance to hurt us-g;i can handle it!+w;i dont think we should-w;go back the way we came+m;whats the rucus out here?-w;oh nothing sir!-g;nows my chance!+m;i work as a woodsman in these woods-n;keeping the light in this lantern lit;large-m;by processing oil of the edelwood trees-m;you boys are welcome to stay here-m;ill be in the workshop-g;okey dokey!+g;this bird art sculpture is perfect!+g;there! this little guy wanted a snack-t;*stares blankly*;large+m;ow! *falls onto ground*-g;haha yeah, i did it!-w;greg! what have you done!-w;hey greg... where did your frog go?-g;where is that frog o mine?+g;ahhh! the beast!-w;quick, greg, to the workshop!-w;we should be able to make it-w;out through a window!-?;*crashes through the wall*;large+g;we made it!-w;hopefully hes stuck there!-?;*gets stuck in the window*-?;*spits out a candy*-d;*looks at you happily*;large-g;look! hes my best friend now!+m;what have you boys done?!-m;the mill is destroyed-w;but we solved your beast problem!-m;you silly boys-m;that silly dog was not the beast-d;*bark! bark!*;large-m;he just swallowed that turtle-t;*stares blankly*;large-m;go now and continue your journey-w;we\'re sorry sir-m;beware the beast!+g;oh wow! i stepped on a pumpkin!-w;huh oh that's strange-w;i did too-g;haha i have a pumpkin shoe!-k;ribbit.+w;wow, greg, look!-w;a home! maybe they have a phone-b;oh this is just great+o;hey -o;who are you?;large-w;uh hello! we're just passing through-o;folks dont just pass through here-b;nope, i dont like this!+e;well, well, well,...-e;what do we have here?;large-b;nothing sir!-o;they tramped our crops!-i;look at their shoes!-e;for this you are sentenced-e;to...-e;a few hours of manual labour-w;oh uh okay?-e;come outside with me+e;you must collect 5 pumpkins-e;and 5 bundles of wheat-e;go now, and pay your dues!+e;now for your final act-e;you must dig a hole-e;6 feet deep-e;take these shovels and-e;start digging-b;oh god!+r;and that children-r;is how you do addition-r;well hi there children!;large-r;please, take your seats-w;oh ok sure!-b;no wirt! ugh!-g;school? no way-g;lets go play outside-k;ribbit!-y;hmph!"
 local npcs,complete_trigs={},{}
 local triggers,maplocking={
   function() return player_location_match"woods1,right_of,8" end,
@@ -75,17 +75,9 @@ local triggers,maplocking={
   function() return act_mapsid=='mill' and #party==2 end,
   function()
     act_item = nil 
-    if act_charid == 'k' then
-     perform_active_party_swap()
-    end
-    add_npc('k','millandriver',11,6)
-    local newparty={}
-    for p in all(party) do
-     if p.charid != 'k' then
-      add(newparty,p)
-     end
-    end
-    party=newparty
+    remove_charids_in_party{'k'}
+    local k=get_npc_by_charid'k'
+    k.mapid,k.x,k.y='millandriver',11,6
     get_map_by_id('millandriver').discvrdtiles={}
     add_npc('?','millandriver',12,6)
     queue_dialog_by_idx'16'
@@ -141,8 +133,7 @@ local triggers,maplocking={
   function() return dialog_is_complete'19' end,
   function() 
     act_item=1
-    add(npcs,get_npc_by_charid'w')
-    party={}
+    remove_charids_in_party{'w'}
     queue_move_npc('w','2|9')
    end,
   function() 
@@ -202,8 +193,15 @@ local triggers,maplocking={
   function() 
     act_item=nil
     queue_dialog_by_txt('thanks for grabbing me!','s')
+  end,
+  function() return player_location_match'school,below,12' end,
+  function() 
+    queue_dialog_by_idx'29'
+    remove_charids_in_party{'w','b'}
+    queue_move_npc('w','5|11')
+    queue_move_npc('b','4|11')
   end
-},'|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|||woods3,search the bushes||millandriver,talk with the woodsman||millandriver,enter the mill|millandriver,find the frog!,hideable||woods1,spot the turtle||millandriver,run back to your brother!,hideable|||mill,find a club|mill,use the club!,hideable|mill,jump the window to escape!,hideable,14||woods3,acquire new shoes|||barn,meet the host|pottsfield,collect wheat,hideable,28|pottsfield,collect pumpkin,hideable,28||pottsfield,dig at the flower,hideable,31'
+},'|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|||woods3,search the bushes||millandriver,talk with the woodsman||millandriver,enter the mill|millandriver,find the frog!,hideable||woods1,spot the turtle||millandriver,run back to your brother!,hideable|||mill,find a club|mill,use the club!,hideable|mill,jump the window to escape!,hideable,14||woods3,acquire new shoes|||barn,meet the host|pottsfield,collect wheat,hideable,28|pottsfield,collect pumpkin,hideable,28||pottsfield,dig at the flower,hideable,31|school,start the lesson'
 local menuchars={}
 local stagefns,stagenames={
   function()update_boot()end,
@@ -762,6 +760,18 @@ function dist_to_closest_item(mapid,x,y,itemspridx)
   end
  end
  return closest,clostdist
+end
+
+function remove_charids_in_party(charids)
+  while is_element_in(charids,act_charid) do 
+    perform_active_party_swap()
+  end
+  for c in all(charids) do 
+    add(npcs,get_npc_by_charid(c))
+  end
+  for p in all(party) do 
+    if (is_element_in(charids,p.charid)) del(party,p)
+  end
 end
 
 function perform_active_party_swap()
