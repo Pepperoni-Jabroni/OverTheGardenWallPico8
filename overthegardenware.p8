@@ -501,6 +501,7 @@ function update_play_map()
   local mdata=split(m)
   if mdata[1]==act_mapsid and not is_element_in(complete_trigs,i) and trigger_is_complete(ternary(#mdata>2,mdata[3],nil)) then 
     maplocked=mdata[2]
+    break
   end
   i+=1
  end
