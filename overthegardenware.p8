@@ -195,7 +195,7 @@ local triggers,maplocking={
     queue_move_npc('w','5|11')
     queue_move_npc('b','4|11')
   end
-},split('|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|||woods3,search the bushes||millandriver,talk with the woodsman||millandriver,enter the mill|millandriver,find the frog!,hideable||woods1,spot the turtle||millandriver,run back to your brother!,hideable|||mill,find a club|mill,use the club!,hideable|mill,jump the window to escape!,hideable,14||woods3,acquire new shoes|||barn,meet the host|pottsfield,collect wheat,hideable,28|pottsfield,collect pumpkin,hideable,28||pottsfield,dig at the flower,hideable,31|school,start the lesson', '|')
+},split('|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|||woods3,search the bushes||millandriver,talk with the woodsman||millandriver,enter the mill|millandriver,find the frog!||woods1,spot the turtle||millandriver,run back to your brother!|||mill,find a club|mill,use the club!|mill,jump the window to escape!,14||woods3,acquire new shoes|||barn,meet the host|pottsfield,collect wheat,28|pottsfield,collect pumpkin,28||pottsfield,dig at the flower,31|school,start the lesson', '|')
 local menuchars={}
 local stagefns,stagenames={
   function()update_boot()end,
@@ -496,11 +496,11 @@ function update_play_map()
   act_text_charsel={txt=get_char_by_id(act_charid).name,frmcnt=32}
  end
  -- check for map switch
- local maplocked,i={},1
+ local i,maplocked=1
  for m in all(maplocking) do
   local mdata=split(m)
-  if mdata[1]==act_mapsid and not is_element_in(complete_trigs,i) and trigger_is_complete(ternary(#mdata>3,mdata[4],nil)) then 
-    if (#mdata<3 or #maplocked==0) add(maplocked,mdata[2])
+  if mdata[1]==act_mapsid and not is_element_in(complete_trigs,i) and trigger_is_complete(ternary(#mdata>2,mdata[3],nil)) then 
+    maplocked=mdata[2]
   end
   i+=1
  end
@@ -509,12 +509,10 @@ function update_play_map()
   is_on_trans_loc=true
   if get_mapidx_by_id(to_map_id)<get_mapidx_by_id(act_mapsid) then
     transition_to_map(to_map_id,to_x,to_y)
-  elseif #maplocked > 0 then
+  elseif maplocked != nil then
     if initialdialoglen == 0 then
-      queue_dialog_by_txt("we aren't done here yet... we should")
-      for m in all(maplocked) do
-        queue_dialog_by_txt(m)
-      end
+      queue_dialog_by_txt"we aren't done here yet... we should"
+      queue_dialog_by_txt('\f9['..maplocked..']')
     end
   else
     transition_to_map(to_map_id,to_x,to_y)
