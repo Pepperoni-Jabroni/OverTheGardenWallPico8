@@ -196,7 +196,7 @@ local triggers,maplocking={
     queue_move_npc('b','4|11')
   end
 },split('|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|||woods3,search the bushes||millandriver,talk with the woodsman||millandriver,enter the mill|millandriver,find the frog!||woods1,spot the turtle||millandriver,run back to your brother!|||mill,find a club|mill,use the club!|mill,jump the window to escape!,14||woods3,acquire new shoes|||barn,meet the host|pottsfield,collect wheat,28|pottsfield,collect pumpkin,28||pottsfield,dig at the flower,31|school,start the lesson', '|')
-local menuchars={}
+local menuchars,achievs={},{}
 local stagefns,stagenames={
   function()update_boot()end,
   function()draw_boot()end,
@@ -612,7 +612,16 @@ end
 
 function queue_achievement_text(text)
   queue_dialog_by_txt('\f9\146 '..text..' \146','A',true)
+  if (not is_element_in(achievs, text)) add(achievs, text)
 end
+
+menuitem(1,'achievements',function() 
+  if (act_stagetype!='playmap') return
+  for a in all(achievs) do 
+    queue_achievement_text(a)
+  end
+  queue_dialog_by_txt(#achievs..' of 5 achievements gotten!')
+end)
 
 function trigger_is_complete(idx)
   return idx==nil or is_element_in(complete_trigs,idx) or false
