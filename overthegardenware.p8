@@ -200,7 +200,7 @@ local triggers,maplocking={
   function() queue_dialog_by_idx'30' end,
   function() 
     if (not trigger_is_complete(34)) return false
-    local closest,clostdist=dist_to_closest_item('grounds',act_x,act_y,254)
+    local closest,clostdist=nearest_old_cat()
     return closest==nil
   end,
   function() 
@@ -209,10 +209,23 @@ local triggers,maplocking={
     while not is_loc_available('grounds',x,y,nil) do 
       x,y=flr(rnd(16)),flr(rnd(16))
     end
-    add(act_wrld_items,{spridx=inv_items[5].spridx,x=x,y=y,mapid=act_mapsid})
+    add(act_wrld_items,{spridx=inv_items[5].spridx,x=x,y=y,mapid=act_mapsid,cldwn=1})
     if(oldcats<2) del(complete_trigs,35)
+  end,
+  function() 
+    local closest,clostdist=nearest_old_cat()
+    return closest != nil
+  end,
+  function()
+    local closest,clostdist=nearest_old_cat()
+    if (closest.cldwn==15) then
+      closest.x,closest.y=get_available_loc('grounds',closest.x,closest.y)
+      closest.cldwn=0
+    end
+    closest.cldwn+=1
+    del(complete_trigs,36)
   end
-},split('|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|||woods3,search the bushes||millandriver,talk with the woodsman||millandriver,enter the mill|millandriver,find the frog!|pottsfield,visit the home|woods1,spot the turtle||millandriver,run back to your brother!|||mill,find a club|mill,use the club!|mill,jump the window to escape!,14||woods3,acquire new shoes|||barn,meet the host|pottsfield,collect wheat,28|pottsfield,collect pumpkin,28||pottsfield,dig at the flower,31|school,start the lesson|grounds,play 2 old cat,33|grounds,play 2 old cat,34', '|')
+},split('|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|||woods3,search the bushes||millandriver,talk with the woodsman||millandriver,enter the mill|millandriver,find the frog!|pottsfield,visit the home|woods1,spot the turtle||millandriver,run back to your brother!|||mill,find a club|mill,use the club!|mill,jump the window to escape!,14||woods3,acquire new shoes|||barn,meet the host|pottsfield,collect wheat,28|pottsfield,collect pumpkin,28||pottsfield,dig at the flower,31|school,start the lesson|grounds,play 2 old cat,33|grounds,play 2 old cat,34|', '|')
 local menuchars,achievs={},{}
 local stagefns,stagenames={
   function()update_boot()end,
@@ -429,12 +442,15 @@ function is_loc_available(mapid, x, y, qcharid)
 end
 
 function get_available_loc(mapid, x, y, qcharid)
+ local tgts={}
  for i=-1,1 do 
   for j=-1,1 do 
-   if (is_loc_available(mapid, x+i, y+j, qcharid)) return x+i, y+j
+   if (is_loc_available(mapid, x+i, y+j, qcharid) and not (i+j==0)) add(tgts,{x+i, y+j}) 
   end
  end
- return x,y
+ if (#tgts==0) return x,y
+ local r=tgts[get_rand_idx(tgts)]
+ return r[1],r[2]
 end
 
 function add_npc(charid,mapid,x,y)
@@ -653,6 +669,10 @@ end
 
 function queue_dialog_by_txt(text,speakerid,large)
   add(act_text_dialog,{{speakerid=speakerid or act_charid,text=text,large=large or false}})
+end
+
+function nearest_old_cat()
+  return dist_to_closest_item('grounds',act_x,act_y,254)
 end
 
 function get_trans_loc_for_ids(primmapid, trgtmapid)
