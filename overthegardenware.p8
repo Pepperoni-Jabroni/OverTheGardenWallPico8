@@ -274,6 +274,12 @@ local triggers,maplocking={
   function() 
     queue_dialog_by_idx'37'
     add_npc('C','school',7,6)
+    queue_move_npc('C','7|14')
+    queue_move_npc('r','7|9')
+    music(-1)
+    for i in all(act_wrld_items) do 
+      if(i.spridx==126) del(act_wrld_items,i)
+    end
   end
 },split('|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|||woods3,search the bushes||millandriver,talk with the woodsman||millandriver,enter the mill|millandriver,find the frog!|pottsfield,visit the home|woods1,spot the turtle||millandriver,run back to your brother!|||mill,find a club|mill,use the club!|mill,jump the window to escape!,14||woods3,acquire new shoes|||barn,meet the host|pottsfield,collect wheat,28|pottsfield,collect pumpkin,28||pottsfield,dig at the flower,31|school,start the lesson|grounds,go play outside,33|grounds,play 2 old cat,34|||school,run back to school!,37|school,cheer folks up,38|school,talk to the teacher,39|||', '|')
 local menuchars,achievs={},{}
@@ -1060,10 +1066,6 @@ function draw_play_map()
   pset(x+7,y+10,1)
   line(x+1,y+11,x+6,y+11,1)
  end
- -- draw items
- for i in all(act_wrld_items) do
-  if (i.mapid==act_mapsid) draw_spr_w_outline(0, i.spridx, i.x,i.y, 1, false, false)
- end
  -- draw player
  draw_spr_w_outline(0, get_char_by_id(act_charid).mapspridx, act_x, act_y, 1, act_fliph, false)
  -- draw npcs
@@ -1078,6 +1080,10 @@ function draw_play_map()
    if (act_x < npc.x and not flipv) fliph=true
    draw_spr_w_outline(0, c.mapspridx, npc.x, npc.y, scaling, fliph, flipv)
   end
+ end
+ -- draw items
+ for i in all(act_wrld_items) do
+  if (i.mapid==act_mapsid) draw_spr_w_outline(0, i.spridx, i.x,i.y, 1, false, false)
  end
  -- draw selection direction
  if act_lookingdir != nil then
@@ -1660,9 +1666,9 @@ dd999dddd3a3a3adddd9000090000dddddd9000090000dddddd9000090000ddddd444774447744dd
 d7d6d7ddd3a3a3addd9a0000a0000adddd9a0000a0000adddd9a0000a0000addddd47607f7607ddd4224442444442444332333333444244333bbbb33dd44dddd
 dd767dddd3a3a3addd99a00a9a00a9dddd99a00a9a00a9dddd99a00a4a00a9dddddd7007f7007ddd224222444442244434343333334444333b3333b3444ddddd
 dd6d6dddd3a3a3addd999aa999aa99dddd999aa900aa99dddd999aa444aa99dddddde77fff77eddd24444244442442443333333333333333b333333bd4dddddd
-dd4444ddddd00ddddd999888888999dddd99999a00a999dddd999899498999ddddddff8fff8ffddd33333333333333333333333333333333000ddd9434444433
-d44444dddd0a0addddd9876676789dddddd99999aa999dddddd9878888789ddddddddff888ffdddd333333333333333333353333333333330d0dd94d44444443
-ddf0f0dddd0000ddddd9867767689dddddd9a0000000adddddd9867767689dddddddddfffffddddd33333333334433333555333333333333d0d0d9ad44222243
+dd4444ddddd00ddddd999888888999dddd99999a00a999dddd999899498999ddddddff8fff8ffddd33333333333333333333333333333333dddddd9434444433
+d44444dddd0a0addddd9876676789dddddd99999aa999dddddd9878888789ddddddddff888ffdddd33333333333333333335333333333333ddddd94d44444443
+ddf0f0dddd0000ddddd9867767689dddddd9a0000000adddddd9867767689dddddddddfffffddddd33333333334433333555333333333333ddddd9ad44222243
 ddeffedd0d0676d0dddd98888889dddddddd9aaaaaaadddddddd98888889dddddddddd6fff6ddddd33333333442333335555533333333333dddd9a4d34220243
 d776677d00000000ddddff9999ffdddddddddd9999ddddddddddff9999ffddddddddd656f656dddd33333344992333333557733333333333ddaa94dd34200243
 df7777fdd000000dddaaffffffffaaddddd7777777777dddddaaffffffffaadddd777656665677dd33334432399233333570003733333333da94addd44000043
