@@ -61,7 +61,7 @@ local triggers,maplocking={
   function() return playmap_npc_visible'woods2,m'end,
   function() queue_dialog_by_idx'4'end,
   function() return dialog_is_complete'4'end,
-  function() queue_move_npc('m','15|0|7|7')end,
+  function() queue_move_npcs'm,15|0|7|7' end,
   function() return #party==2 and player_location_match'woods3,below,13' end,
   function() queue_dialog_by_idx'7' end,
   function() return player_sel_location(7,10,'woods3')end,
@@ -71,7 +71,7 @@ local triggers,maplocking={
   function() return playmap_npc_visible'millandriver,m' end,
   function() queue_dialog_by_idx'9' end,
   function() return dialog_is_complete'9' end,
-  function() queue_move_npc('m','7|3|7|4') end,
+  function() queue_move_npcs'm,7|3|7|4' end,
   function() return act_mapsid=='mill' and #party==2 end,
   function()
     act_item = nil 
@@ -128,7 +128,7 @@ local triggers,maplocking={
   function() 
     act_item=1
     remove_charids_in_party{'w'}
-    queue_move_npc('w','2|9')
+    queue_move_npcs'w,2|9'
    end,
   function() 
      local beast=get_npc_by_charid'?'
@@ -165,7 +165,7 @@ local triggers,maplocking={
   function() 
     queue_dialog_by_idx'26' 
     act_item=nil
-    queue_move_npc('e','7|13|7|5')
+    queue_move_npcs'e,7|13|7|5'
   end,
   function() return player_sel_spr('pottsfield',174) and enoch_in_pottsfield() end,
   function() 
@@ -193,8 +193,7 @@ local triggers,maplocking={
     queue_dialog_by_idx'29'
     remove_charids_in_party{'w','b'}
     transfer_npc_to_party'y'
-    queue_move_npc('w','5|11')
-    queue_move_npc('b','4|11')
+    queue_move_npcs'w,5|11,b,4|11'
   end,
   function() return get_npc_by_charid'y'.mapid=='grounds' end,
   function() queue_dialog_by_idx'30' end,
@@ -246,11 +245,7 @@ local triggers,maplocking={
   function() 
     queue_dialog_by_idx'32'
     del(npcs,get_npc_by_charid'l')
-    queue_move_npc('r','3|5')
-    queue_move_npc('w','7|5')
-    queue_move_npc('b','8|5')
-    queue_move_npc('u','6|2')
-    queue_move_npc('c','7|2')
+    queue_move_npcs'r,3|5,w,7|5,b,8|5,u,6|2,c,7|2'
   end,
   function() return trigger_is_complete(38) and player_location_match'school,below,6' end,
   function() queue_dialog_by_idx'33' end,
@@ -274,8 +269,7 @@ local triggers,maplocking={
   function() 
     queue_dialog_by_idx'37'
     add_npc('C','school',7,6)
-    queue_move_npc('C','7|14')
-    queue_move_npc('r','7|9')
+    queue_move_npcs'C,7|14,r,7|9'
     music(-1)
     for i in all(act_wrld_items) do 
       if(i.spridx==126) del(act_wrld_items,i)
@@ -1302,13 +1296,16 @@ end
 function maybe_queue_party_move(destx, desty)
  for p in all(party) do
   if flr(rnd(2)) == 0 and p.intent==nil then
-   queue_move_npc(p.charid,destx..'|'..desty)
+    set_walk_intent(p,destx..'|'..desty)
   end
  end
 end
 
-function queue_move_npc(charid,intentdata)
- set_walk_intent(get_npc_by_charid(charid),intentdata)
+function queue_move_npcs(chars_and_intents)
+  local s=split(chars_and_intents)
+  for i=1,#s,2 do 
+    set_walk_intent(get_npc_by_charid(s[i]),s[i+1])
+  end
 end
 
 function set_walk_intent(npc,intentdata)
