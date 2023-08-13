@@ -69,7 +69,7 @@ local triggers,maplocking={
     get_map_by_id('millandriver').discvrdtiles={}
     add_npc'?,millandriver,12,6'
     queue_dialog_by_idx'16'
-    add(act_wrld_items,{spridx=inv_items[2].spridx,x=2,y=12,mapid=act_mapsid})
+    add_world_item'214,mill,2,12'
   end,
   function() return playmap_npc_visible'millandriver,?' end,
   function()
@@ -105,11 +105,9 @@ local triggers,maplocking={
   function() return player_sel_location(2,12,'mill') end,
   function()
     act_item=2
-    local noartitems ={}
     for i in all(act_wrld_items) do 
-     if (i.spridx != inv_items[2].spridx) add(noartitems, i)
+     if (i.spridx == 214) del(act_wrld_items, i)
     end
-    act_wrld_items=noartitems
     queue_dialog_by_idx'17'
    end,
   function() return dialog_is_complete'19' end,
@@ -196,7 +194,7 @@ local triggers,maplocking={
     while not is_loc_available('grounds',x,y,nil) do 
       x,y=flr(rnd(16)),flr(rnd(16))
     end
-    add(act_wrld_items,{spridx=inv_items[5].spridx,x=x,y=y,mapid=act_mapsid,cldwn=1})
+    add_world_item(join_all{'254','grounds',x,y})
     if(oldcats<2) del(complete_trigs,35)
   end,
   function() 
@@ -252,8 +250,8 @@ local triggers,maplocking={
   function() return dialog_is_complete'35' end,
   function() 
     queue_dialog_by_idx'36'
-    add(act_wrld_items,{spridx=126,x=6,y=2,mapid=act_mapsid})
-    add(act_wrld_items,{spridx=126,x=7,y=2,mapid=act_mapsid})
+    add_world_item'126,school,6,2'
+    add_world_item'126,school,7,2'
   end,
   function() return dialog_is_complete'36' end,
   function() 
@@ -264,7 +262,7 @@ local triggers,maplocking={
     for i in all(act_wrld_items) do 
       if(i.spridx==126) del(act_wrld_items,i)
     end
-    add(act_wrld_items,{spridx=126,x=12,y=4,mapid='grounds'})
+    add_world_item'126,grounds,12,4'
   end
 },split('|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|||woods3,search the bushes||millandriver,talk with the woodsman||millandriver,enter the mill|millandriver,find the frog!|pottsfield,visit the home|woods1,spot the turtle||millandriver,run back to your brother!|||mill,find a club|mill,use the club!|mill,jump the window to escape!,14||woods3,acquire new shoes||pottsfield,meet the residents|barn,meet the host|pottsfield,collect wheat,28|pottsfield,collect pumpkin,28||pottsfield,dig at the flower,31|school,start the lesson|grounds,go play outside,33|grounds,play 2 old cat,34|||school,run back to school!,37|school,cheer folks up,38|school,talk to the teacher,39|||', '|')
 local menuchars,achievs={},{}
@@ -513,6 +511,11 @@ function add_npc(chardata,is_party)
   add(ternary(is_party or false,party,npcs),{charid=chardata[1],mapid=chardata[2],x=chardata[3],y=chardata[4]})
 end
 
+function add_world_item(itemdata)
+  itemdata=split(itemdata)
+  add(act_wrld_items,{spridx=itemdata[1],mapid=itemdata[2],x=itemdata[3],y=itemdata[4],cldwn=1})
+end
+
 function update_play_map()
  local initialdialoglen=#act_text_dialog
  -- check for dialog progress
@@ -616,7 +619,7 @@ function update_play_map()
   act_useitem=act_item
   -- candy
   if act_item==1 then
-   add(act_wrld_items,{spridx=inv_items[act_item].spridx,x=act_x,y=act_y,mapid=act_mapsid})
+   add_world_item(join_all{'255',act_mapsid,act_x,act_y})
   -- bird art
   elseif act_item==2 then
    local wmnpc = get_npc_by_charid'm'
