@@ -55,7 +55,7 @@ local triggers,maplocking={
   function() return player_sel_location(7,10,'woods3')end,
   function() queue_dialog_by_idx'8'end,
   function() return dialog_is_complete'8'end,
-  function() add(party,{charid='b',x=7,y=10,mapid=act_mapsid}) end,
+  function() add_npc(join_all{'b',act_mapsid,7,10},true) end,
   function() return playmap_npc_visible'millandriver,m' end,
   function() queue_dialog_by_idx'9' end,
   function() return dialog_is_complete'9' end,
@@ -63,11 +63,11 @@ local triggers,maplocking={
   function() return act_mapsid=='mill' and #party==2 end,
   function()
     act_item = nil 
-    remove_charids_in_party{'k'}
+    remove_charids_in_party'k'
     local k=get_npc_by_charid'k'
     k.mapid,k.x,k.y='millandriver',11,6
     get_map_by_id('millandriver').discvrdtiles={}
-    add_npc('?','millandriver',12,6)
+    add_npc'?,millandriver,12,6'
     queue_dialog_by_idx'16'
     add(act_wrld_items,{spridx=inv_items[2].spridx,x=2,y=12,mapid=act_mapsid})
   end,
@@ -115,7 +115,7 @@ local triggers,maplocking={
   function() return dialog_is_complete'19' end,
   function() 
     act_item=1
-    remove_charids_in_party{'w'}
+    remove_charids_in_party'w'
     queue_move_npcs'w,2|9'
    end,
   function() 
@@ -125,10 +125,10 @@ local triggers,maplocking={
   function()
      transition_to_map('millandriver',7,4)
      del(npcs,get_npc_by_charid'?')
-     add_npc('d','millandriver',5,4)
-     add_npc('t','millandriver',5,5)
+     add_npc'd,millandriver,5,4'
+     add_npc't,millandriver,5,5'
      del(npcs,get_npc_by_charid'm')
-     add_npc('m','millandriver',6,5)
+     add_npc'm,millandriver,6,5'
      queue_dialog_by_idx'22'
      act_item=nil
    end,
@@ -179,7 +179,7 @@ local triggers,maplocking={
   function() return player_location_match'school,below,13' end,
   function() 
     queue_dialog_by_idx'29'
-    remove_charids_in_party{'w','b'}
+    remove_charids_in_party'w,b'
     transfer_npc_to_party'y'
     queue_move_npcs'w,5|11,b,4|11'
   end,
@@ -224,7 +224,8 @@ local triggers,maplocking={
       del(complete_trigs,37)
     else
       queue_dialog_by_idx'31'
-      add_npc('l',act_mapsid,act_x,act_y-1)
+      local qx,qy=get_available_loc(act_mapsid,act_x,act_y)
+      add_npc(join_all{'l',act_mapsid,qx,qy})
       get_npc_by_charid('l').intent = 'chase_candy_and_player'
     end
     del(act_wrld_items,closest)
@@ -233,7 +234,8 @@ local triggers,maplocking={
   function() 
     queue_dialog_by_idx'32'
     del(npcs,get_npc_by_charid'l')
-    queue_move_npcs'r,3|5,w,7|5,b,8|5,u,6|2,c,7|2'
+    remove_charids_in_party'y,k'
+    queue_move_npcs'r,3|5,w,6|5,b,8|5,u,6|2,c,7|2,y,12|5,k,5|5'
   end,
   function() return trigger_is_complete(38) and player_location_match'school,below,6' end,
   function() queue_dialog_by_idx'33' end,
@@ -256,7 +258,7 @@ local triggers,maplocking={
   function() return dialog_is_complete'36' end,
   function() 
     queue_dialog_by_idx'37'
-    add_npc('C','school',7,6)
+    add_npc'C,school,7,6'
     queue_move_npcs'C,7|14,r,7|9'
     music(-1)
     for i in all(act_wrld_items) do 
@@ -505,8 +507,9 @@ function get_available_loc(mapid, x, y, qcharid)
  return r[1],r[2]
 end
 
-function add_npc(charid,mapid,x,y)
-  add(npcs,{charid=charid,mapid=mapid,x=x,y=y})
+function add_npc(chardata,is_party)
+  chardata=split(chardata)
+  add(ternary(is_party or false,party,npcs),{charid=chardata[1],mapid=chardata[2],x=chardata[3],y=chardata[4]})
 end
 
 function update_play_map()
@@ -631,7 +634,7 @@ function update_play_map()
       end
       if digcount==4 then 
         mset(x,y,127)
-        add_npc('s',act_mapsid,act_x+1,act_y)
+        add_npc(join_all{'s',act_mapsid,act_x+1,act_y})
         act_y-=1
         act_item=nil
         get_char_by_id('e').idle={'what a wonderful harvest'}
@@ -698,6 +701,15 @@ end
 function queue_achievement_text(text)
   queue_dialog_by_txt('\f9\146 '..text..' \146','A',true)
   if (not is_element_in(achievs, text)) add(achievs, text)
+end
+
+function join_all(blob)
+  local r=''
+  for i,b in ipairs(blob) do
+    r=r..b
+    if (i!=#blob)r=r..','
+  end
+  return r
 end
 
 menuitem(1,'achievements',function() 
@@ -867,6 +879,7 @@ function transfer_npc_to_party(charid)
 end
 
 function remove_charids_in_party(charids)
+  charids=split(charids)
   while is_element_in(charids,act_charid) do 
     perform_active_party_swap()
   end
@@ -879,7 +892,7 @@ function remove_charids_in_party(charids)
 end
 
 function perform_active_party_swap()
- add(party,{charid=act_charid,x=act_x,y=act_y,mapid=act_mapsid})
+ add_npc(join_all{act_charid,act_mapsid,act_x,act_y},true)
  act_charid = party[1].charid
  act_x = party[1].x
  act_y = party[1].y
