@@ -1013,9 +1013,9 @@ function draw_introduction()
  local anchrx,anchry=32,16
  cls(0)
  -- draw bg
- draw_fancy_box(anchrx,anchry,64,52,0,4,5)
+ draw_fancy_box(anchrx,anchry,66,52,0,4,5)
  -- draw frog
- sspr(80,72,32,24,anchrx,anchry+4,64,48)
+ sspr(80,72,32,24,anchrx+1,anchry+4,64,48)
  -- draw frog dialog box
  draw_dialog_if_needed()
 end
