@@ -900,6 +900,7 @@ function update_boot()
  boot_age += 1
  if boot_age > 220 then
   act_stagetype = "scene"
+  pal(13,132,1)
   music'23'
  end
 end
