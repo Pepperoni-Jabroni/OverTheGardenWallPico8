@@ -5,11 +5,7 @@ __lua__
 -- made by pepperoni-jabroni
 -- configs, state vars & core fns
 local walkable=split("43,110,158,185,106,190,191,202,203,205,207,222,223,238,239,240,241,242,244,245,246,247,248,249")
--- of the form "<src_sprite_idx>;<dst_sprite_idxs>"
-local alttiles_list="206;206,221,237#238;222,238#207;207,223,239#235;235,251,218#205;202,203,205#236;204,236"
 local altsset={}
--- of the form "<obj_sprite_idxs>;<obj_text>#"
-local objdescript_list="122,123,138,139;what a nice old wagon#124,125,140,141;the poor old mill...#158;look at these pumpkins!#159;it says pottsfield \148#174;looks like its harvest time!#204,236;its just a bush...#218,235,251;this tree sure is tall#220;a stump of some weird tree?#219;a creepy tree with a face on it#224,225,240,241;pottsfield old barn#226,227,242,243;the old grist mill#228,229,244,245;the animal schoolhouse#232,233,248,249;pottsfield old church#108;a rickety old fence#109;a scarecrow of sorts#110;the ground is higher here#127;a deep hole in the ground#42;what a nice view out this window#43;this is the door#58;its a large cabinet#59;its a comfortable chair#74;its a small desk#75;its a school desk#90;its a lounge chair#91;its a bundle of logs#106;its a ladder (i swear)#107;its a railing#143;its a piano!#177;its the mill\'s grinder!#178;its a jar of thick oil#179;its a broken jar of oil#200;its a chalk board#215;i found a rock fact!#216;its warm by the fireplace#217;a bundle of black oily sticks#180,181;a cafeteria bench and table#230,231,246,247;the town gazebo#232,233,248,249;pottsfield home"
 local inv_items=(function()
   local items={}
   for i in all(split('255,candy,g#214,bird art,g#252,pumpkin shoe,g;w#253,shovel,g;w;b#254,old cat,g;k', '#')) do
@@ -269,7 +265,7 @@ local triggers,maplocking={
   end
 },split('|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|||woods3,search the bushes||millandriver,talk with the woodsman||millandriver,enter the mill|millandriver,find the frog!|pottsfield,visit the home|woods1,spot the turtle||millandriver,run back to your brother!|||mill,find a club|mill,use the club!|mill,jump the window to escape!,14||woods3,acquire new shoes||pottsfield,meet the residents|barn,meet the host|pottsfield,collect wheat,28|pottsfield,collect pumpkin,28||pottsfield,dig at the flower,31|school,start the lesson|grounds,go play outside,33|grounds,play 2 old cat,34|||school,run back to school!,37|school,cheer folks up,38|school,talk to the teacher,39|||', '|')
 local menuchars,achievs={},{}
-local stagefns,stagenames={
+local stagefns={
   function()update_boot()end,
   function()draw_boot()end,
   function()update_scene()end,
@@ -282,7 +278,7 @@ local stagefns,stagenames={
   function()draw_introduction()end,
   function()update_play_map()end,
   function()draw_play_map()end
-},'boot,scene,mainmenu,controls,intro,playmap'
+}
 local title_line_data,frog_names='128#129#130#131#132#132,true#131,true#130,true#129,true#128,true#144#0#133#134#135#136#137#145#0#144,true#144#0#146#147#148#149#150#151#0#144,true#144#0#152#153#160#161#162#163#0#144,true#144#0#0#164#165#166#167#0#0#144,true#168#169#176#176#176#176#176#176#169,true#168,true',split('kitty,wirt,wirt jr.,george washington,mr. president,benjamin franklin,doctor cucumber,greg jr.,skipper,ronald,jason funderburker')
 
 -- base functions
@@ -664,7 +660,7 @@ function update_play_map()
    local x=act_x+i
    local y=act_y+j
    if player_sel_location(x,y,act_mapsid) and not x_consumed then
-    for descpt in all(split(objdescript_list,'#')) do
+    for descpt in all(split("122,123,138,139;what a nice old wagon#124,125,140,141;the poor old mill...#158;look at these pumpkins!#159;it says pottsfield \148#174;looks like its harvest time!#204,236;its just a bush...#218,235,251;this tree sure is tall#220;a stump of some weird tree?#219;a creepy tree with a face on it#224,225,240,241;pottsfield old barn#226,227,242,243;the old grist mill#228,229,244,245;the animal schoolhouse#232,233,248,249;pottsfield old church#108;a rickety old fence#109;a scarecrow of sorts#110;the ground is higher here#127;a deep hole in the ground#42;what a nice view out this window#43;this is the door#58;its a large cabinet#59;its a comfortable chair#74;its a small desk#75;its a school desk#90;its a lounge chair#91;its a bundle of logs#106;its a ladder (i swear)#107;its a railing#143;its a piano!#177;its the mill\'s grinder!#178;its a jar of thick oil#179;its a broken jar of oil#200;its a chalk board#215;i found a rock fact!#216;its warm by the fireplace#217;a bundle of black oily sticks#180,181;a cafeteria bench and table#230,231,246,247;the town gazebo#232,233,248,249;pottsfield home",'#')) do
      local splt = split(descpt, ';')
      local selspr=mget(x+get_map_by_id(act_mapsid).cellx,y+get_map_by_id(act_mapsid).celly)
      if is_element_in(split(splt[1]),selspr) and initialdialoglen==0 then
@@ -958,11 +954,11 @@ end
 
 function draw_controls()
  cls(0)
- draw_two_colored("\148\131\139\145, move",16,20)
- draw_two_colored("\151, progress dialog or\n use item",16,40)
- draw_two_colored("\142, switch characters",16,60)
- draw_two_colored("\148\131\139\145+\151, select object\n or npc",16,80)
- draw_two_colored("\142, back to menu",8,118)
+ print("\fa\148\131\139\145\f7 move",16,20)
+ print("\fa\151\f7 progress dialog or\n use item",16,40)
+ print("\fa\142\f7 switch characters",16,60)
+ print("\fa\148\131\139\145+\151\f7 select object\n or npc",16,80)
+ print("\fa\142\f7 back to menu",8,118)
 end
 
 function draw_main_menu()
@@ -1382,7 +1378,7 @@ function distance(x1, y1, x2, y2)
 end
 
 function get_stage_by_type(stagetype)
- local sns=split(stagenames)
+ local sns=split('boot,scene,mainmenu,controls,intro,playmap')
  for i=1,#sns do
   if (sns[i]==stagetype) return {update=stagefns[i*2-1],draw=stagefns[i*2]}
  end
@@ -1509,13 +1505,7 @@ function draw_fancy_box(x,y,w,h,fg,otlntl,otlnbr)
  line(xone,yhei+1,xwid-1,yhei+1,0) -- bottom black line
 end
 
-function draw_two_colored(s,x,y)
- local st=split(s)
- print(st[1],x,y,10)
- print(st[2],x+(#st[1]*8),y,7)
-end
-
-local alttiles = split(alttiles_list, '#')
+local alttiles = split("206;206,221,237#238;222,238#207;207,223,239#235;235,251,218#205;202,203,205#236;204,236", '#')
 function get_dsts_by_source(source)
  for altstr in all(alttiles) do
   local alt = split(altstr, ';')
