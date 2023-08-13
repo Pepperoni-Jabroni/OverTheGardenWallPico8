@@ -1011,17 +1011,15 @@ function draw_introduction()
  -- draw bg
  draw_fancy_box(anchrx,anchry,64,52,0,4,5)
  -- draw frog
- pal(14,128,1)
- pal(5,133,1)
- pal(12,130,1)
- pal(1,132,1)
- pal(13,139,1)
+ pal(14,128)
+ pal(5,133)
+ pal(12,130)
+ pal(1,132)
  sspr(80,72,32,24,anchrx,anchry+4,64,48)
  pal(14,14)
  pal(5,5)
  pal(12,12)
  pal(1,1)
- pal(13,13)
  -- draw frog dialog box
  draw_dialog_if_needed()
 end
@@ -1455,12 +1453,10 @@ function draw_character_dialog_box(dialogobj)
   printsp(sub(partial,1,chi).."\n"..sub(partial,chi+1), 29, 110, 0)
  end
  draw_fancy_box(10,103,17,17,1,6,5)
- palt(13, true)
  spr(c.chrsprdailogueidx, 11, 104, 2, 2)
  if dialogobj.large then
   draw_fancy_box(30,22,68,68,1,6,5)
   draw_spr_w_outline(0, c.chrsprdailogueidx, 4, 3, 4, false, false, 16)
-  palt(13, false)
  end
  local y,col=117,2
  if (#dialogtxt == #partial) y,col=117,10
