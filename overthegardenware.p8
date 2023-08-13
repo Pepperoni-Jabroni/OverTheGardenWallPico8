@@ -957,7 +957,7 @@ function draw_controls()
  print("\fa\148\131\139\145\f7 move",16,20)
  print("\fa\151\f7 progress dialog or\n use item",16,40)
  print("\fa\142\f7 switch characters",16,60)
- print("\fa\148\131\139\145+\151\f7 select object\n or npc",16,80)
+ print("\fa\151+\148\131\139\145\f7 select object\n or npc",16,80)
  print("\fa\142\f7 back to menu",8,118)
 end
 
