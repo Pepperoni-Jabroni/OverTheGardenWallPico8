@@ -259,11 +259,12 @@ local triggers,maplocking={
   function() 
     queue_dialog_by_idx'37'
     add_npc'C,school,7,6'
-    queue_move_npcs'C,7|14,r,7|9'
+    queue_move_npcs'C,7|14|11|4,r,7|9'
     music(-1)
     for i in all(act_wrld_items) do 
       if(i.spridx==126) del(act_wrld_items,i)
     end
+    add(act_wrld_items,{spridx=126,x=12,y=4,mapid='grounds'})
   end
 },split('|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|||woods3,search the bushes||millandriver,talk with the woodsman||millandriver,enter the mill|millandriver,find the frog!|pottsfield,visit the home|woods1,spot the turtle||millandriver,run back to your brother!|||mill,find a club|mill,use the club!|mill,jump the window to escape!,14||woods3,acquire new shoes||pottsfield,meet the residents|barn,meet the host|pottsfield,collect wheat,28|pottsfield,collect pumpkin,28||pottsfield,dig at the flower,31|school,start the lesson|grounds,go play outside,33|grounds,play 2 old cat,34|||school,run back to school!,37|school,cheer folks up,38|school,talk to the teacher,39|||', '|')
 local menuchars,achievs={},{}
@@ -376,7 +377,7 @@ end)()
 
 local map_trans = (function()
   local cmaptrans = {}
-  for m in all(split('woods1;woods2;15,5|15,4;0,14|0,15#woods2;millandriver;14,0|15,0;0,13|0,14|0,15#millandriver;woods3;0,0|1,0;13,15|14,15|15,15#millandriver;mill;7,3;8,14#woods3;pottsfield;7,0|8,0;7,15|8,15#pottsfield;barn;4,2|5,2;7,13|8,13#pottsfield;woods4;9,0|10,0;6,15|7,15#woods4;grounds;7,0|8,0;6,15|7,15#grounds;school;3,4|4,4;7,14|8,14|11,1#pottsfield;home;10,8|11,8;7,12', '#')) do
+  for m in all(split('woods1;woods2;15,5|15,4;0,14|0,15#woods2;millandriver;14,0|15,0;0,13|0,14|0,15#millandriver;woods3;0,0|1,0;13,15|14,15|15,15#millandriver;mill;7,3;8,14#woods3;pottsfield;7,0|8,0;7,15|8,15#pottsfield;barn;4,2|5,2;7,13|8,13#pottsfield;woods4;9,0|10,0;6,15|7,15#woods4;grounds;7,0|8,0;6,15|7,15#grounds;school;4,4|3,4;7,14|8,14|11,1#pottsfield;home;10,8|11,8;7,12', '#')) do
    local mdata = split(m, ';')
    add(cmaptrans,{mp_one=mdata[1],mp_two=mdata[2],mp_one_locs=split(mdata[3],'|'),mp_two_locs=split(mdata[4],'|')})
   end
@@ -660,11 +661,9 @@ function update_play_map()
    end
   end
  end
- for n in all(npcs) do
+ -- tick npc mvmt
+ for n in all(get_all_npcs()) do
   exec_npc_intent(n)
- end
- for p in all(party) do
-  exec_npc_intent(p)
  end
  -- check for obj selection
  for i=-1,1 do
