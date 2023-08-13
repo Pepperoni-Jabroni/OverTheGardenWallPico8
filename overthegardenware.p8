@@ -1069,7 +1069,9 @@ function draw_play_map()
  end
  -- draw items
  for i in all(act_wrld_items) do
-  if (i.mapid==act_mapsid) draw_spr_w_outline(0, i.spridx, i.x,i.y, 1, false, false)
+  local ix,iy=i.x,i.y
+  local ofst=ternary(is_loc_available(i.mapid,ix,iy),0,-0.5)
+  if (i.mapid==act_mapsid) draw_spr_w_outline(0, i.spridx, ix+ofst,iy, 1, false, false)
  end
  -- draw selection direction
  if act_lookingdir != nil then
