@@ -105,9 +105,7 @@ local triggers,maplocking={
   function() return player_sel_location(2,12,'mill') end,
   function()
     act_item=2
-    for i in all(act_wrld_items) do 
-     if (i.spridx == 214) del(act_wrld_items, i)
-    end
+    remove_world_items'214'
     queue_dialog_by_idx'17'
    end,
   function() return dialog_is_complete'19' end,
@@ -181,7 +179,7 @@ local triggers,maplocking={
     transfer_npc_to_party'y'
     queue_move_npcs'w,5|11,b,4|11'
   end,
-  function() return get_npc_by_charid'y'.mapid=='grounds' end,
+  function() return act_mapsid=='grounds' and #party==2 end,
   function() queue_dialog_by_idx'30' end,
   function() 
     if (not trigger_is_complete(34)) return false
@@ -219,6 +217,7 @@ local triggers,maplocking={
     catscollected+=1
     if catscollected<2 then
       queue_dialog_by_txt'haha yeah we got one!'
+      act_item=5
       del(complete_trigs,37)
     else
       queue_dialog_by_idx'31'
@@ -232,6 +231,7 @@ local triggers,maplocking={
   function() 
     queue_dialog_by_idx'32'
     del(npcs,get_npc_by_charid'l')
+    act_item=nil
     remove_charids_in_party'y,k'
     queue_move_npcs'r,3|5,w,6|5,b,8|5,u,6|2,c,7|2,y,12|5,k,5|5'
   end,
@@ -259,12 +259,65 @@ local triggers,maplocking={
     add_npc'C,school,7,6'
     queue_move_npcs'C,7|14|11|4,r,7|9'
     music(-1)
-    for i in all(act_wrld_items) do 
-      if(i.spridx==126) del(act_wrld_items,i)
-    end
-    add_world_item'126,grounds,12,4'
+    remove_world_items'126'
+    add_world_item'126,grounds,10,4'
+  end,
+  function() 
+    local l=get_npc_by_charid'C'
+    return l!=nil and l.mapid=='grounds' end,
+  function() queue_dialog_by_idx'38' end,
+  function() 
+    local l=get_npc_by_charid'C'
+    return l!=nil and l.intent==nil and playmap_npc_visible'grounds,C' end,
+  function() queue_dialog_by_idx'39' end,
+  function() return dialog_is_complete'39' end,
+  function() 
+    queue_dialog_by_idx'40'
+    get_npc_by_charid('C').flipv=true
+  end,
+  function() return trigger_is_complete(46) and player_sel_location(10,4,'grounds') end,
+  function() 
+    act_item=6
+    queue_dialog_by_txt'we got em!'
+    remove_world_items'126'
+  end,
+  function() return act_item==6 and act_mapsid=='school' end,
+  function() 
+    act_item=nil
+    queue_dialog_by_idx'41'
+    queue_move_npcs'r,7|14|13|10,c,7|14|12|9,u,7|14|11|9,y,7|14|10|10,C,11|11'
+    get_npc_by_charid('C').flipv=false
+    transfer_npc_to_party'k'
+    transfer_npc_to_party'w'
+    transfer_npc_to_party'b'
+  end,
+  function() return trigger_is_complete(48) and act_mapsid=='grounds' end,
+  function() 
+    add_npc'l,grounds,11,4'
+    get_npc_by_charid('l').intent = 'chase_candy_and_player'
+  end,
+  function() 
+    local n=get_npc_by_charid'l'
+    return trigger_is_complete(49) and distance(act_x,act_y,n.x,n.y)<1
+  end,
+  function() 
+    queue_dialog_by_idx'42'
+    local l,r=get_npc_by_charid'l',get_npc_by_charid'r'
+    add_npc(join_all{'j,grounds',l.x,l.y-1})
+    set_walk_intent(get_npc_by_charid'j','13|11')
+    del(npcs,l)
+  end,
+  function() 
+    local j=get_npc_by_charid'j'
+    return j!=nil and j.x==13 and j.y==11 and distance(act_x,act_y,j.x,j.y)<5
+  end,
+  function() 
+    add_world_item'126,grounds,12,9'
+    add_world_item'126,grounds,11,9'
+    add_world_item'126,grounds,10,10'
+    queue_dialog_by_idx'43'
   end
-},split('|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|||woods3,search the bushes||millandriver,talk with the woodsman||millandriver,enter the mill|millandriver,find the frog!|pottsfield,visit the home|woods1,spot the turtle||millandriver,run back to your brother!|||mill,find a club|mill,use the club!|mill,jump the window to escape!,14||woods3,acquire new shoes||pottsfield,meet the residents|barn,meet the host|pottsfield,collect wheat,28|pottsfield,collect pumpkin,28||pottsfield,dig at the flower,31|school,start the lesson|grounds,go play outside,33|grounds,play 2 old cat,34|||school,run back to school!,37|school,cheer folks up,38|school,talk to the teacher,39|||', '|')
+},split('|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|||woods3,search the bushes||millandriver,talk with the woodsman||millandriver,enter the mill|millandriver,find the frog!|pottsfield,visit the home|woods1,spot the turtle||millandriver,run back to your brother!|||mill,find a club|mill,use the club!|mill,jump the window to escape!,14||woods3,acquire new shoes||pottsfield,meet the residents|barn,meet the host|pottsfield,collect wheat,28|pottsfield,collect pumpkin,28||pottsfield,dig at the flower,31|school,start the lesson|grounds,go play outside,33|grounds,play 2 old cat,34|||school,run back to school!,37|school,cheer folks up,38|school,talk to the teacher,39|||||||grounds,grab the instruments!,46|school,talk with ms langtree,47||grounds,confront the gorilla,48|', '|')
 local menuchars,achievs={},{}
 local stagefns={
   function()update_boot()end,
@@ -384,7 +437,7 @@ end)()
 
 local dialogs = (function()
   local cdialogs,i = {},1
-  for d in all(split("k;led through the mist-k;by the milk light of moon-k;all that was lost is revealed-k;our long bygone burdens-k;mere echoes of the spring-k;but where have we come?-k;and where shall we end?-k;if dreams can't come true-k;then why not pretend?-k;how the gentle wind-k;beckons through the leaves-k;as autumn colors fall-k;dancing in a swirl-k;of golden memories-k;the loveliest lies of all+g;i sure do love my frog!-w;greg, please stop...-k;4;ribbit.-g;haha, yeah!+w;i dont like this at all-g;its a tree face!+w;is that some sort of deranged lunatic?-w;with an axe waiting for victims?-m;*swings axe and chops tree*;large-w;what is that strange tree?-g;we should ask him for help!-*;5+w;whoa... wait greg...;large-w;... where are we?;large-g;we\'re in the woods!;large-w;no, i mean;large-w;... where are we?!;large+w;we're really lost greg...-g;i can leave a candy trail from my pants!-g;candytrail. candytrail. candytrail!-*;2+b;help! help!-w;i think its coming from a bush?-*;9+b;help me!;large-g;wow, a talking bush!-b;i\'m not a talking bush! i\'m a bird!-b;and i\'m stuck!-g;wow, a talking bird!-b;if you help me get unstuck, i\'ll-b;owe you one-g;ohhhh! you'll grant me a wish?!-b;no but i can take you to...-b;adalaid, the good woman of the woods!-g;*picks up beatrice out of bush*-w;uh uh! no!+m;these woods are a dangerous place-m;for two kids to be alone-w;we... we know, sir-g;yeah! i\'ve been leaving a trail-g;of candy from my pants!-m;please come inside...;large-w;i don\'t like the look of this-k;ribbit.-g;haha, yeah!-*;13+w;oh! terribly sorry to have-w;disturbed you sir!-z;gobble. gobble. gobble.;large+g;wow, look at this turtle!-w;well thats strange-g;i bet he wants some candy!-t;*stares blankly*-*;3+?;*glares at you, panting*;large-g;you have beautiful eyes!-g;ahhhh!-*;18+w;wow this place is dingey-g;yeah! crazy axe person!-w;we should find a way to take him out-w;before he gets a chance to hurt us-g;i can handle it!-*;21+w;i dont think we should-w;go back the way we came+m;whats the rucus out here?-w;oh nothing sir!-g;nows my chance!+m;i work as a woodsman in these woods-n;keeping the light in this lantern lit;large-m;by processing oil of the edelwood trees-m;you boys are welcome to stay here-m;ill be in the workshop-g;okey dokey!+g;this bird art sculpture is perfect!-*;22+g;there! this little guy wanted a snack-t;*stares blankly*;large+m;ow! *falls onto ground*-g;haha yeah, i did it!-w;greg! what have you done!-w;hey greg... where did your frog go?-g;where is that frog o mine?-*;14+g;ahhh! the beast!-w;quick, greg, to the workshop!-w;we should be able to make it-w;out through a window out back!-?;*crashes through the wall*;large-*;23+g;we made it!-w;hopefully hes stuck there!-?;*gets stuck in the window*-?;*spits out a candy*-d;*looks at you happily*;large-g;look! hes my best friend now!+m;what have you boys done?!-m;the mill is destroyed-w;but we solved your beast problem!-m;you silly boys-m;that silly dog was not the beast-d;*bark! bark!*;large-m;he just swallowed that turtle-t;*stares blankly*;large-m;go now and continue your journey-w;we\'re sorry sir-m;beware the beast!+g;oh wow! i stepped on a pumpkin!-w;huh oh that's strange-w;i did too-g;haha i have a pumpkin shoe!-k;ribbit.+w;wow, greg, look!-w;a home! maybe they have a phone-b;oh this is just great-*;15+o;hey -o;who are you?;large-w;uh hello! we're just passing through-o;folks dont just pass through here-b;nope, i dont like this!-*;28+e;well, well, well,...-e;what do we have here?;large-b;nothing sir!-o;they tramped our crops!-i;look at their shoes!-e;for this you are sentenced-e;to...-e;a few hours of manual labour-w;oh uh okay?-e;come outside with me+e;you must collect 5 pumpkins-e;and 5 bundles of wheat-e;go now, and pay your dues!-*;29-*;30+e;now for your final act-e;you must dig a hole-e;6 feet deep, at the flower-e;take these shovels and-e;start digging-b;oh god!-*;32+r;and that children-r;is how you do addition-r;well hi there children!;large-r;please, take your seats-w;oh ok sure!-b;no wirt! ugh!-g;school? no way-g;lets go play outside-k;ribbit!-y;hmph!-*;34+g;i know, lets play 2 old cat-g;come on lets grab the cats!-k;ribbit.-y;hmph!-*;35+g;we did it!-g;isnt 2 old cat great?-l;*roaaar!*;large-g;aaaah! run!-y;*scatters*-*;38+g;phew, we made it!-r;how i do miss that-r;*jimmy brown*-r;time for lunch children;large-w;oh, ok!-b;ugh wirt please!-g;haha yay!+g;whats the matter rac?-y;*looks sad at food*;large-g;*takes a bite*-g;kinda bland-g;i got an idea!+g;here play like this!-g;*smashes piano keys*-r;like this?-g;good enough!+g;Oh, potatoes and molasses-g;If you want some, oh, just ask us-g;They're warm and soft like puppies in socks-g;Filled with cream and candy rocks+g;Oh, potatoes and molasses -g;They're so much sweeter than Algebra class-g;If you're stomach is grumblin'-g;And your mouth starts mumblin'-g;There's only only one thing to -g;keep your brain from crumblin'-g;Oh, potatoes and molasses-g;If you can't see 'em put on your glasses-g;They're shiny and large like a fisherman's barge-g;You know you eat enough when you start seeing stars-g;Oh, potatoes and molasses-g;It's the only thing left on your task list-g;They're short and stout,-g;They'll make everyone shout-g;For potatoes and molasses-g;For potatoes and+C;thats enough!;large-r;father!-C;this is a school-C;not a marching band;large-C;give me those instruments-C;goodbye!-r;oh father!",'+')) do
+  for d in all(split("k;led through the mist-k;by the milk light of moon-k;all that was lost is revealed-k;our long bygone burdens-k;mere echoes of the spring-k;but where have we come?-k;and where shall we end?-k;if dreams can't come true-k;then why not pretend?-k;how the gentle wind-k;beckons through the leaves-k;as autumn colors fall-k;dancing in a swirl-k;of golden memories-k;the loveliest lies of all+g;i sure do love my frog!-w;greg, please stop...-k;4;ribbit.-g;haha, yeah!+w;i dont like this at all-g;its a tree face!+w;is that some sort of deranged lunatic?-w;with an axe waiting for victims?-m;*swings axe and chops tree*;large-w;what is that strange tree?-g;we should ask him for help!-*;5+w;whoa... wait greg...;large-w;... where are we?;large-g;we\'re in the woods!;large-w;no, i mean;large-w;... where are we?!;large+w;we're really lost greg...-g;i can leave a candy trail from my pants!-g;candytrail. candytrail. candytrail!-*;2+b;help! help!-w;i think its coming from a bush?-*;9+b;help me!;large-g;wow, a talking bush!-b;i\'m not a talking bush! i\'m a bird!-b;and i\'m stuck!-g;wow, a talking bird!-b;if you help me get unstuck, i\'ll-b;owe you one-g;ohhhh! you'll grant me a wish?!-b;no but i can take you to...-b;adalaid, the good woman of the woods!-g;*picks up beatrice out of bush*-w;uh uh! no!+m;these woods are a dangerous place-m;for two kids to be alone-w;we... we know, sir-g;yeah! i\'ve been leaving a trail-g;of candy from my pants!-m;please come inside...;large-w;i don\'t like the look of this-k;ribbit.-g;haha, yeah!-*;13+w;oh! terribly sorry to have-w;disturbed you sir!-z;gobble. gobble. gobble.;large+g;wow, look at this turtle!-w;well thats strange-g;i bet he wants some candy!-t;*stares blankly*-*;3+?;*glares at you, panting*;large-g;you have beautiful eyes!-g;ahhhh!-*;18+w;wow this place is dingey-g;yeah! crazy axe person!-w;we should find a way to take him out-w;before he gets a chance to hurt us-g;i can handle it!-*;21+w;i dont think we should-w;go back the way we came+m;whats the rucus out here?-w;oh nothing sir!-g;nows my chance!+m;i work as a woodsman in these woods-n;keeping the light in this lantern lit;large-m;by processing oil of the edelwood trees-m;you boys are welcome to stay here-m;ill be in the workshop-g;okey dokey!+g;this bird art sculpture is perfect!-*;22+g;there! this little guy wanted a snack-t;*stares blankly*;large+m;ow! *falls onto ground*-g;haha yeah, i did it!-w;greg! what have you done!-w;hey greg... where did your frog go?-g;where is that frog o mine?-*;14+g;ahhh! the beast!-w;quick, greg, to the workshop!-w;we should be able to make it-w;out through a window out back!-?;*crashes through the wall*;large-*;23+g;we made it!-w;hopefully hes stuck there!-?;*gets stuck in the window*-?;*spits out a candy*-d;*looks at you happily*;large-g;look! hes my best friend now!+m;what have you boys done?!-m;the mill is destroyed-w;but we solved your beast problem!-m;you silly boys-m;that silly dog was not the beast-d;*bark! bark!*;large-m;he just swallowed that turtle-t;*stares blankly*;large-m;go now and continue your journey-w;we\'re sorry sir-m;beware the beast!+g;oh wow! i stepped on a pumpkin!-w;huh oh that's strange-w;i did too-g;haha i have a pumpkin shoe!-k;ribbit.+w;wow, greg, look!-w;a home! maybe they have a phone-b;oh this is just great-*;15+o;hey -o;who are you?;large-w;uh hello! we're just passing through-o;folks dont just pass through here-b;nope, i dont like this!-*;28+e;well, well, well,...-e;what do we have here?;large-b;nothing sir!-o;they tramped our crops!-i;look at their shoes!-e;for this you are sentenced-e;to...-e;a few hours of manual labour-w;oh uh okay?-e;come outside with me+e;you must collect 5 pumpkins-e;and 5 bundles of wheat-e;go now, and pay your dues!-*;29-*;30+e;now for your final act-e;you must dig a hole-e;6 feet deep, at the flower-e;take these shovels and-e;start digging-b;oh god!-*;32+r;and that children-r;is how you do addition-r;well hi there children!;large-r;please, take your seats-w;oh ok sure!-b;no wirt! ugh!-g;school? no way-g;lets go play outside-k;ribbit!-y;hmph!-*;34+g;i know, lets play 2 old cat-g;come on lets grab the cats!-k;ribbit.-y;hmph!-*;35+g;we did it!-g;isnt 2 old cat great?-l;*roaaar!*;large-g;aaaah! run!-y;*scatters*-*;38+g;phew, we made it!-r;how i do miss that-r;*jimmy brown*-r;time for lunch children;large-w;oh, ok!-b;ugh wirt please!-g;haha yay!+g;whats the matter rac?-y;*looks sad at food*;large-g;*takes a bite*-g;kinda bland-g;i got an idea!+g;here play like this!-g;*smashes piano keys*-r;like this?-g;good enough!+g;Oh, potatoes and molasses-g;If you want some, oh, just ask us-g;They're warm and soft like puppies in socks-g;Filled with cream and candy rocks+g;Oh, potatoes and molasses -g;They're so much sweeter than Algebra class-g;If you're stomach is grumblin'-g;And your mouth starts mumblin'-g;There's only only one thing to -g;keep your brain from crumblin'-g;Oh, potatoes and molasses-g;If you can't see 'em put on your glasses-g;They're shiny and large like a fisherman's barge-g;You know you eat enough when you start seeing stars-g;Oh, potatoes and molasses-g;It's the only thing left on your task list-g;They're short and stout,-g;They'll make everyone shout-g;For potatoes and molasses-g;For potatoes and+C;thats enough!;large-C;give me those instruments-r;father!-C;this is a school-C;not a marching band;large-C;we cant be losing money-C;goodbye!-r;oh father!+r;oh the poor school!-r;who could help finance us?-r;if only that no good-r;two timin *jimmy brown* were here;large-y;*rolls eyes*;large-g;i have an idea!;large+C;oof those poor animals-C;i have no funds left;large-C;to teach them proper math-C;all i have are these instruments+C;...zzz;large-g;nows our chance!+g;here ms langtree!-g;*hands over instruments*-g;*whispers*;large-r;come children-r;to the town plaza!;large-c;*meow*!-u;*bark*!+l;*roaar*!;large-g;hya! *chops*-l;*hit on the head*-j;oh my word!;large-j;this boy saved me-r;oh *jimmy*!-j;darlin...+u;*grabs instrument*-c;*grabs instrument*-y;*grabs instrument*-r;*passes donations*-r;my my were saved!;large-C;what excellent news!-j;oh darlin!-k;ribbit!-w;nice job greg;large",'+')) do
    local dlg_objs = split(d, '-')
    add(cdialogs,{})
    for g in all(dlg_objs) do 
@@ -514,6 +567,12 @@ end
 function add_world_item(itemdata)
   itemdata=split(itemdata)
   add(act_wrld_items,{spridx=itemdata[1],mapid=itemdata[2],x=itemdata[3],y=itemdata[4],cldwn=1})
+end
+
+function remove_world_items(spridx)
+  for i in all(act_wrld_items) do 
+    if (i.spridx==tonum(spridx)) del(act_wrld_items, i)
+  end
 end
 
 function update_play_map()
