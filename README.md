@@ -1,6 +1,8 @@
 # OverTheGardenWallPico8
 A Pico-8 Zelda-style game about Over the Garden Wall
 
+[Play it here!](https://pepperoni-jabroni.github.io/OverTheGardenWallPico8/)
+
 # Alpha 7
 ![overthegardenware_3](https://user-images.githubusercontent.com/17690401/192128924-c4b473e1-cd2f-4dc7-983b-2ae681a4446c.gif)
 
