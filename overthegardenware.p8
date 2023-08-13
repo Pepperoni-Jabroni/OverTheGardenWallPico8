@@ -1373,12 +1373,10 @@ function transition_to_playmap()
  act_stagetype = "playmap"
  act_charid='g'
  act_dialogspeakidx=1
---  act_item=1
+ act_item=1
  act_text_dialog = {}
---  transition_to_map('woods1',8,8)
---  party={{charid='w',mapid='woods1',x=act_x,y=act_y},{charid='k',mapid='woods1',x=act_x,y=act_y}}
- transition_to_map('grounds',8,8)
- party={{charid='w',mapid='grounds',x=act_x,y=act_y},{charid='k',mapid='grounds',x=act_x,y=act_y},{charid='b',mapid='grounds',x=act_x,y=act_y}}
+ transition_to_map('woods1',8,8)
+ party={{charid='w',mapid='woods1',x=act_x,y=act_y},{charid='k',mapid='woods1',x=act_x,y=act_y}}
  pal(14,14,1)
  pal(15,15,1)
  pal(12,12,1)
