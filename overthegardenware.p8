@@ -140,7 +140,7 @@ local triggers,maplocking={
    end,
   function() 
      local m=get_map_by_id'home'
-     return act_mapsid=='pottsfield' and distance(act_x,act_y,m.playmaplocx,m.playmaplocy)<3
+     return act_mapsid=='pottsfield' and distance(m.playmaplocx,m.playmaplocy)<3
    end,
   function() queue_dialog_by_idx'24' end,
   function() return playmap_npc_visible'barn,o' end,
@@ -239,7 +239,7 @@ local triggers,maplocking={
   function() queue_dialog_by_idx'33' end,
   function() 
     local r=get_npc_by_charid'r'
-    return trigger_is_complete(39) and distance(act_x,act_y,r.x,r.y) <= 1
+    return trigger_is_complete(39) and distance(r.x,r.y) <= 1
   end,
   function() queue_dialog_by_idx'34' end,
   function() return dialog_is_complete'34' end,
@@ -291,14 +291,14 @@ local triggers,maplocking={
     transfer_npc_to_party'w'
     transfer_npc_to_party'b'
   end,
-  function() return trigger_is_complete(48) and act_mapsid=='grounds' end,
+  function() return trigger_is_complete(48) and player_location_match'grounds,above,8' end,
   function() 
     add_npc'l,grounds,11,4'
     get_npc_by_charid('l').intent = 'chase_candy_and_player'
   end,
   function() 
     local n=get_npc_by_charid'l'
-    return trigger_is_complete(49) and distance(act_x,act_y,n.x,n.y)<1
+    return trigger_is_complete(49) and distance(n.x,n.y)<1
   end,
   function() 
     queue_dialog_by_idx'42'
@@ -309,7 +309,7 @@ local triggers,maplocking={
   end,
   function() 
     local j=get_npc_by_charid'j'
-    return j!=nil and j.x==13 and j.y==11 and distance(act_x,act_y,j.x,j.y)<5
+    return j!=nil and j.x==13 and j.y==11 and distance(j.x,j.y)<3
   end,
   function() 
     add_world_item'126,grounds,12,9'
@@ -682,7 +682,7 @@ function update_play_map()
   -- bird art
   elseif act_item==2 then
    local wmnpc = get_npc_by_charid'm'
-   if distance(act_x, act_y, wmnpc.x, wmnpc.y) < 2.0 and not dialog_is_complete'19' then
+   if distance(wmnpc.x, wmnpc.y) < 2.0 and not dialog_is_complete'19' then
     queue_dialog_by_idx'19'
     wmnpc.flipv=true
    end
@@ -1244,7 +1244,7 @@ function draw_play_map()
 end
 
 function draw_fancy_spr_box(y,spridx,title)
- local xanchor,is_close=1,distance(act_x,act_y,1,y/8) < 3
+ local xanchor,is_close=1,distance(1,y/8) < 3
  if (is_close) xanchor=114
  if title != nil then
   if (is_close) xanchor=90
@@ -1447,7 +1447,7 @@ function transition_to_map(dest_mp,dest_x,dest_y)
 end
 
 function distance(x1, y1, x2, y2)
- return sqrt((x2 - x1)^2 + (y2 - y1)^2)
+ return sqrt(((x2 or act_x) - x1)^2 + ((y2 or act_y) - y1)^2)
 end
 
 function get_stage_by_type(stagetype)
