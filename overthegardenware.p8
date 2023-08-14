@@ -245,7 +245,7 @@ local triggers,maplocking={
   function() return dialog_is_complete'34' end,
   function() 
     queue_dialog_by_idx'35'
-    music(17)
+    music'17'
   end,
   function() return dialog_is_complete'35' end,
   function() 
@@ -258,7 +258,7 @@ local triggers,maplocking={
     queue_dialog_by_idx'37'
     add_npcs'C,school,7,6'
     queue_move_npcs'C,7|14|11|4,r,7|9'
-    music(-1)
+    music'-1'
     remove_world_items'126'
     add_world_item'126,grounds,10,4'
   end,
@@ -316,6 +316,7 @@ local triggers,maplocking={
     add_world_item'126,grounds,11,9'
     add_world_item'126,grounds,10,10'
     queue_dialog_by_idx'43'
+    music'23'
     queue_achievement_text'you completed act 3!'
   end,
   function() return act_mapsid=='secret' end,
@@ -525,7 +526,7 @@ function update_main_menu()
    pal(8,139,1)
    act_stagetype="intro"
    queue_dialog_by_idx'1'
-   music(0)
+   music'0'
   elseif act_y==1 then
    act_stagetype="controls"
   else
@@ -1390,7 +1391,7 @@ function set_walk_intent(npc,intentdata)
 end
 
 function transition_to_playmap()
- music(-1)
+ music'-1'
  act_stagetype = "playmap"
  act_charid='g'
  act_dialogspeakidx=1
