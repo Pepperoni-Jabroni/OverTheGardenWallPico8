@@ -28,7 +28,7 @@ local act_stagetype="boot"
 local act_dialogspeakidx=1
 local act_mapsid=nil
 local edelwood_sels,rockfact_sels={},{}
-local party={}
+local party,characters={},{}
 local darkanims={}
 local compltdlgs,wheatcount,pumpkincount,digcount,oldcats,catscollected={},0,0,0,0,0
 local npcs,complete_trigs={},{}
@@ -55,7 +55,7 @@ local triggers,maplocking={
   function() return player_sel_location(7,10,'woods3')end,
   function() queue_dialog_by_idx'8'end,
   function() return dialog_is_complete'8'end,
-  function() add_npc(join_all{'b',act_mapsid,7,10},true) end,
+  function() add_npcs(join_all{'b',act_mapsid,7,10},true) end,
   function() return playmap_npc_visible'millandriver,m' end,
   function() queue_dialog_by_idx'9' end,
   function() return dialog_is_complete'9' end,
@@ -67,7 +67,7 @@ local triggers,maplocking={
     local k=get_npc_by_charid'k'
     k.mapid,k.x,k.y='millandriver',11,6
     get_map_by_id('millandriver').discvrdtiles={}
-    add_npc'?,millandriver,12,6'
+    add_npcs'?,millandriver,12,6'
     queue_dialog_by_idx'16'
     add_world_item'214,mill,2,12'
   end,
@@ -121,10 +121,8 @@ local triggers,maplocking={
   function()
      transition_to_map('millandriver',7,4)
      del(npcs,get_npc_by_charid'?')
-     add_npc'd,millandriver,5,4'
-     add_npc't,millandriver,5,5'
      del(npcs,get_npc_by_charid'm')
-     add_npc'm,millandriver,6,5'
+     add_npcs'd,millandriver,5,4|t,millandriver,5,5|m,millandriver,6,5'
      queue_dialog_by_idx'22'
      queue_achievement_text'you completed act 1!'
      act_item=nil
@@ -224,7 +222,7 @@ local triggers,maplocking={
     else
       queue_dialog_by_idx'31'
       local qx,qy=get_available_loc(act_mapsid,act_x,act_y)
-      add_npc(join_all{'l',act_mapsid,qx,qy})
+      add_npcs(join_all{'l',act_mapsid,qx,qy})
       get_npc_by_charid('l').intent = 'chase_candy_and_player'
     end
     del(act_wrld_items,closest)
@@ -258,7 +256,7 @@ local triggers,maplocking={
   function() return dialog_is_complete'36' end,
   function() 
     queue_dialog_by_idx'37'
-    add_npc'C,school,7,6'
+    add_npcs'C,school,7,6'
     queue_move_npcs'C,7|14|11|4,r,7|9'
     music(-1)
     remove_world_items'126'
@@ -295,7 +293,7 @@ local triggers,maplocking={
   end,
   function() return trigger_is_complete(48) and player_location_match'grounds,above,8' end,
   function() 
-    add_npc'l,grounds,11,4'
+    add_npcs'l,grounds,11,4'
     get_npc_by_charid('l').intent = 'chase_candy_and_player'
   end,
   function() 
@@ -305,7 +303,7 @@ local triggers,maplocking={
   function() 
     queue_dialog_by_idx'42'
     local l,r=get_npc_by_charid'l',get_npc_by_charid'r'
-    add_npc(join_all{'j,grounds',l.x,l.y-1})
+    add_npcs(join_all{'j,grounds',l.x,l.y-1})
     set_walk_intent(get_npc_by_charid'j','13|11')
     del(npcs,l)
   end,
@@ -321,7 +319,16 @@ local triggers,maplocking={
     queue_achievement_text'you completed act 3!'
   end,
   function() return act_mapsid=='secret' end,
-  function() queue_achievement_text'you found the secret room!' end
+  function() 
+    queue_achievement_text'you found the secret room!'
+    local i=1
+    for c in all(characters) do 
+      if c.mapspridx!=nil then 
+        add_world_item(join_all{c.mapspridx,'secret',((i*2+1)%10)+3,ceil(i/5)*2+1}) 
+        i+=1
+      end
+    end
+  end
 },split('|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|||woods3,search the bushes||millandriver,talk with the woodsman||millandriver,enter the mill|millandriver,find the frog!|pottsfield,visit the home|woods1,spot the turtle||millandriver,run back to your brother!|||mill,find a club|mill,use the club!|mill,jump the window to escape!,14||woods3,acquire new shoes||pottsfield,meet the residents|barn,meet the host|pottsfield,collect wheat,28|pottsfield,collect pumpkin,28||pottsfield,dig at the flower,31|school,start the lesson|grounds,go play outside,33|grounds,play 2 old cat,34|||school,run back to school!,37|school,cheer folks up,38|school,talk to the teacher,39|||||||grounds,grab the instruments!,46|school,talk with ms langtree,47||grounds,confront the gorilla,48||', '|')
 local menuchars,achievs={},{}
 local stagefns={
@@ -353,9 +360,9 @@ function ternary(cond, op1, op2)
  return op2
 end
 
-local characters = (function()
+characters = (function()
   local cchar={}
-  for c in all(split('g;greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?#w;wirt;1;4;uh, hi...|oh sorry, just thinking#b;beatrice;16;6;yes, i can talk...|lets get out of here!#k;;17;8;ribbit#a;the beast;32;34#m;the woodsman;33;36;i need more oil|beware these woods#?;the beast?;48;38;*glares at you*;2#d;dog;49;40;*barks*#t;black turtle;64;66;*stares blankly*#z;turkey;65;68;gobble. gobble. gobble.#o;pottsfield citizen 1;80;98;you\'re too early#i;pottsfield citizen 2;80;102;are you new here?#s;skeleton;81;70;thanks for digging me up!#p;partier;96;100;let\'s celebrate!#e;enoch;97;72;you don\'t look like you belong here;2#u;dog student;10;44;humph...|huh...#l;gorilla;113;12;*roaaar*!#j;jimmy brown;11;14#c;cat student;26;46;humph...|huh...#r;ms langtree;112;104;oh that jimmy brown|i miss him so...#n;the lantern;;76#F;rock fact;;78#E;edelwood;219;192#y;racoon student;27;194;humph...|huh...#A;achievement get!;;196#C;mr langtree;184;182;these poor animals', '#')) do
+  for c in all(split('g;greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?#w;wirt;1;4;uh, hi...|oh sorry, just thinking#b;beatrice;16;6;yes, i can talk...|lets get out of here!#k;;17;8;ribbit#a;the beast;32;34#m;the woodsman;33;36;i need more oil|beware these woods#?;the beast?;48;38;*glares at you*;2#d;dog;49;40;*barks*#t;black turtle;64;66;*stares blankly*#z;turkey;65;68;gobble. gobble. gobble.#o;pottsfield citizen 1;80;98;you\'re too early#i;pottsfield citizen 2;80;102;are you new here?#s;skeleton;81;70;thanks for digging me up!#p;partier;96;100;let\'s celebrate!#e;enoch;97;72;you don\'t look like you belong here;2#u;dog student;10;44;humph...|huh...#l;gorilla;113;12;*roaaar*!#j;jimmy brown;11;14#c;cat student;26;46;humph...|huh...#r;ms langtree;112;104;oh that jimmy brown|i miss him so...#n;the lantern;;76#F;rock fact;215;78#E;edelwood;219;192#y;racoon student;27;194;humph...|huh...#A;achievement get!;;196#C;mr langtree;184;182;these poor animals', '#')) do
    local cdata = split(c, ';')
    local mapspridx=cdata[3]
    mapspridx=ternary(mapspridx=='',nil,tonum(mapspridx))
@@ -564,9 +571,11 @@ function get_available_loc(mapid, x, y, qcharid)
  return r[1],r[2]
 end
 
-function add_npc(chardata,is_party)
-  chardata=split(chardata)
-  add(ternary(is_party or false,party,npcs),{charid=chardata[1],mapid=chardata[2],x=chardata[3],y=chardata[4]})
+function add_npcs(chardatas,is_party)
+  for chardata in all(split(chardatas, '|')) do
+   chardata=split(chardata)
+   add(ternary(is_party or false,party,npcs),{charid=chardata[1],mapid=chardata[2],x=chardata[3],y=chardata[4]}) 
+  end
 end
 
 function add_world_item(itemdata)
@@ -702,7 +711,7 @@ function update_play_map()
       end
       if digcount==4 then 
         mset(x,y,127)
-        add_npc(join_all{'s',act_mapsid,act_x+1,act_y})
+        add_npcs(join_all{'s',act_mapsid,act_x+1,act_y})
         act_y-=1
         act_item=nil
         get_char_by_id('e').idle={'what a wonderful harvest'}
@@ -965,7 +974,7 @@ function remove_charids_in_party(charids)
 end
 
 function perform_active_party_swap()
- add_npc(join_all{act_charid,act_mapsid,act_x,act_y},true)
+ add_npcs(join_all{act_charid,act_mapsid,act_x,act_y},true)
  act_charid = party[1].charid
  act_x = party[1].x
  act_y = party[1].y
@@ -1698,8 +1707,8 @@ ddddddddd3b3bdddd77333333333377d1197777777777911dcc7777777777ccddbb3333333333bbd
 d516165dddf0f0dd5511d6611665155dd65555555555552ddd0cac000cac00dd44476074476074440004740024555422ddd44dddccd44ddddddd99999eee9ddd
 ddd11dddd54ff44add51677667761ddddd666666666662ddddcaeac0caeac0dd44470074470074440004740004444400ddd4411111144dddddd99977997999dd
 d111111d460000a9d5dd67766776d5ddddff760ff760ffdddcaeeea0aeeeacdd44447744447744440004440029000020ddd44ccc11144dddddd27744774774dd
-d111111dd6000060dddd16611661ddddddff700ff700ffddddcaeac0caeac0dd4d444440044444440004740000000000ddd441cccc144dddddd24aa444aa44dd
-1d1dd1d1dd5dd5dddddd11111111ddddddfff7799f77ffdddd0cac000cac00dd4d44f700007744d40020202000000000dddd4aa444aaddddddd24a0444a044dd
+1d1111d1d6000060dddd16611661ddddddff700ff700ffddddcaeac0caeac0dd4d444440044444440004740000000000ddd441cccc144dddddd24aa444aa44dd
+dd1dd1dddd5dd5dddddd11111111ddddddfff7799f77ffdddd0cac000cac00dd4d44f700007744d40020202000000000dddd4aa444aaddddddd24a0444a044dd
 ddddddddddddddddddddd111111ddddddddfff9999fffdddd050c00000c00ddddd47f770077774dd4444444444444444ddd4a0092a009dddddd26444444446dd
 dddcacacdddddddddddddd1111dddddddddffff99f0ffdddd050e00000e00dddddd77ff777777ddd4425244444333344ddd4a0092a009dddddd24644004464dd
 dddaeaeadddddddddddd11111111ddddddddff0000ffdddd00557eeeee70dddddd57777ffff74ddd4225224443bbbb34ddd4299555994ddddddd446044064ddd
