@@ -62,7 +62,7 @@ local triggers,maplocking={
   function() queue_move_npcs'm,7|3|7|4' end,
   function() return act_mapsid=='mill' and #party==2 end,
   function()
-    act_item = nil 
+    act_item=nil 
     remove_charids_in_party'k'
     local k=get_npc_by_charid'k'
     k.mapid,k.x,k.y='millandriver',11,6
@@ -104,13 +104,13 @@ local triggers,maplocking={
   function() queue_dialog_by_idx'13' end,
   function() return player_sel_location(2,12,'mill') end,
   function()
-    act_item=2
+    equip_item'2'
     remove_world_items'214'
     queue_dialog_by_idx'17'
    end,
   function() return dialog_is_complete'19' end,
   function() 
-    act_item=1
+    equip_item'1'
     remove_charids_in_party'w'
     queue_move_npcs'w,2|9'
    end,
@@ -135,7 +135,7 @@ local triggers,maplocking={
    end,
   function() 
     queue_dialog_by_idx'23'
-    act_item=3
+    equip_item'3'
    end,
   function() 
      local m=get_map_by_id'home'
@@ -148,7 +148,7 @@ local triggers,maplocking={
   function() 
     queue_dialog_by_idx'26' 
     act_item=nil
-    queue_move_npcs'e,7|13|7|5'
+    queue_move_npcs'e,7|13|7|5,o,7|13|6|5,o,7|13|5|6,o,7|13|7|6,i,7|13|9|5,i,7|13|10|6'
   end,
   function() return player_sel_spr('pottsfield',174) and enoch_in_pottsfield() end,
   function() 
@@ -217,7 +217,7 @@ local triggers,maplocking={
     catscollected+=1
     if catscollected<2 then
       queue_dialog_by_txt'haha yeah we got one!'
-      act_item=5
+      equip_item'5'
       del(complete_trigs,37)
     else
       queue_dialog_by_idx'31'
@@ -277,7 +277,7 @@ local triggers,maplocking={
   end,
   function() return trigger_is_complete(46) and player_sel_location(10,4,'grounds') end,
   function() 
-    act_item=6
+    equip_item'6'
     queue_dialog_by_txt'we got em!'
     remove_world_items'126'
   end,
@@ -659,7 +659,7 @@ function update_play_map()
  -- check for player switch
  if btnp(4) and initialdialoglen == 0 then
   perform_active_party_swap()
-  act_text_charsel={txt=get_char_by_id(act_charid).name,frmcnt=32}
+  set_display_name()
  end
  -- check for map switch
  local i,maplocked=1
@@ -774,6 +774,15 @@ function update_play_map()
  end
 end
 
+function equip_item(itemidx)
+  act_item=tonum(itemidx)
+  set_display_name()
+end
+
+function set_display_name()
+  act_text_charsel={txt=get_char_by_id(act_charid).name,frmcnt=32}
+end
+
 function queue_achievement_text(text)
   queue_dialog_by_txt('\f9\146 '..text..' \146','A',true)
   if not is_element_in(achievs, text) then 
@@ -856,7 +865,7 @@ end
 function maybe_queue_collect_text()
   if wheatcount>4 and pumpkincount>4 then 
     queue_dialog_by_idx'28'
-    act_item=4
+    equip_item'4'
   end
 end
 
@@ -1379,9 +1388,21 @@ function maybe_queue_party_move(destx, desty)
 end
 
 function queue_move_npcs(chars_and_intents)
-  local s=split(chars_and_intents)
+  local s,sk,sc=split(chars_and_intents)
   for i=1,#s,2 do 
-    set_walk_intent(get_npc_by_charid(s[i]),s[i+1])
+    if sc!=s[i] then 
+      sc=s[i]
+      sk=1
+    else
+      sk+=1
+    end
+    local ns={}
+    for n in all(get_all_npcs()) do
+      if sc==n.charid then 
+        add(ns,n)
+      end
+    end
+    set_walk_intent(ns[sk],s[i+1]) 
   end
 end
 
@@ -1395,7 +1416,7 @@ function transition_to_playmap()
  act_stagetype = "playmap"
  act_charid='g'
  act_dialogspeakidx=1
- act_item=1
+ equip_item'1'
  act_text_dialog = {}
  transition_to_map('woods1',8,8)
  party={{charid='w',mapid='woods1',x=act_x,y=act_y},{charid='k',mapid='woods1',x=act_x,y=act_y}}
