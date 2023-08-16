@@ -340,8 +340,13 @@ local triggers,maplocking={
     add_npcs(join_all{'p,pottsfield',s.x,s.y})
     queue_achievement_text'you completed act 2!'
     del(npcs,s)
+  end,
+  function() return player_location_match'woods5,left_of,1' end,
+  function() 
+    queue_dialog_by_txt'the road ends here for now'
+    queue_dialog_by_txt'\f9thanks for playing!'
   end
-},split('|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|||woods3,search the bushes||millandriver,talk with the woodsman||millandriver,enter the mill|millandriver,find the frog!|pottsfield,visit the home|woods1,spot the turtle||millandriver,run back to your brother!|||mill,find a club|mill,use the club!|mill,jump the window to escape!,14||woods3,acquire new shoes||pottsfield,meet the residents|barn,meet the host|pottsfield,collect wheat,28|pottsfield,collect pumpkin,28||pottsfield,dig at the flower,31|school,start the lesson|grounds,go play outside,33|grounds,play 2 old cat,34|||school,run back to school!,37|school,cheer folks up,38|school,talk to the teacher,39|||||||grounds,grab the instruments!,46|school,talk with ms langtree,47||grounds,confront the gorilla,48|||', '|')
+},split('|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|||woods3,search the bushes||millandriver,talk with the woodsman||millandriver,enter the mill|millandriver,find the frog!|pottsfield,visit the home|woods1,spot the turtle||millandriver,run back to your brother!|||mill,find a club|mill,use the club!|mill,jump the window to escape!,14||woods3,acquire new shoes||pottsfield,meet the residents|barn,meet the host|pottsfield,collect wheat,28|pottsfield,collect pumpkin,28||pottsfield,dig at the flower,31|school,start the lesson|grounds,go play outside,33|grounds,play 2 old cat,34|||school,run back to school!,37|school,cheer folks up,38|school,talk to the teacher,39|||||||grounds,grab the instruments!,46|school,talk with ms langtree,47||grounds,confront the gorilla,48||||', '|')
 local menuchars,achievs={},{}
 local stagefns={
   function()update_boot()end,
@@ -1561,6 +1566,7 @@ function draw_character_dialog_box(dialogobj)
  print(cname, 30, 104, 2)
  print(cname, 29, 103, 9)
  local partial = dialogtxt
+ if (speakerid=='A'and dlgtime==1) sfx(4)
  if dlgtime < #dialogtxt then
   partial=sub(dialogtxt,1,dlgtime)
   dialogobj.time += 1
