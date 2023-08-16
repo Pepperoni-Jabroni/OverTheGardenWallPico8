@@ -362,7 +362,7 @@ local stagefns={
   function()update_play_map()end,
   function()draw_play_map()end
 }
-local title_line_data,frog_names='128#129#130#131#132#132,true#131,true#130,true#129,true#128,true#144#0#133#134#135#136#137#145#0#144,true#144#0#146#147#148#149#150#151#0#144,true#144#0#152#153#160#161#162#163#0#144,true#144#0#0#164#165#166#167#0#0#144,true#168#169#176#176#176#176#176#176#169,true#168,true',split('kitty,wirt,wirt jr.,george washington,mr. president,benjamin franklin,doctor cucumber,greg jr.,skipper,ronald,jason funderburker')
+local frog_names=split('kitty,wirt,wirt jr.,george washington,mr. president,benjamin franklin,doctor cucumber,greg jr.,skipper,ronald,jason funderburker')
 
 -- base functions
 function is_element_in(array, k)
@@ -1091,21 +1091,11 @@ end
 function draw_main_menu()
  cls(0)
  -- draw logo
- local anchrx,anchry=16,4
- local title_lines = split(title_line_data, '#')
- for i=1,6 do
-  for j=1,10 do
-   local ln=split(title_lines[(i-1)*10+j])
-   local fliph=false
-   if #ln > 1 then
-    fliph=true
-   end
-   if ln[1] != 0 then
-    spr(ln[1],anchrx+(j*8),anchry+(i*8),1,1,fliph,false)
-   else
-    rectfill(anchrx+(j*8),anchry+(i*8),anchrx+(j*8)+8,anchry+(i*8)+8,ln[1])
-   end
-  end
+ local anchrx,anchry=24,4
+ for n=1,60 do
+  local i,j,ln=ceil(n/10),(n-1)%10,split(split('128#129#130#131#132#132,#131,#130,#129,#128,#144#0#133#134#135#136#137#145#0#144,#144#0#146#147#148#149#150#151#0#144,#144#0#152#153#160#161#162#163#0#144,#144#0#0#164#165#166#167#0#0#144,#168#169#176#176#176#176#176#176#169,#168,', '#')[n])
+  local lno,tgtx,tgty=ln[1],j*8+anchrx,i*8+anchry
+  if (lno != 0) spr(lno,tgtx,tgty,1,1,#ln > 1)
  end
  -- draw buttons
  draw_fancy_text_box("start",48,65,act_y==0)
