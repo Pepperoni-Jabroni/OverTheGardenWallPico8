@@ -325,7 +325,7 @@ local triggers,maplocking={
     queue_achievement_text'you found the secret room!'
     local i=1
     for c in all(characters) do 
-      if c.mapspridx!=nil then 
+      if c.mapspridx!='' then 
         add_world_item(join_all{c.mapspridx,'secret',((i*2+1)%10)+3,ceil(i/5)*2+1}) 
         i+=1
       end
@@ -381,12 +381,10 @@ characters = (function()
   local cchar={}
   for c in all(split('g;greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?#w;wirt;1;4;uh, hi...|oh sorry, just thinking#b;beatrice;16;6;yes, i can talk...|lets get out of here!#k;;17;8;ribbit#a;the beast;32;34#m;the woodsman;33;36;i need more oil|beware these woods#?;the beast?;48;38;*glares at you*;2#d;dog;49;40;*barks*#t;black turtle;64;66;*stares blankly*#z;turkey;65;68;gobble. gobble. gobble.#o;pottsfield citizen 1;80;98;you\'re too early#i;pottsfield citizen 2;80;102;are you new here?#s;skeleton;81;70;thanks for digging me up!#p;partier;96;100;let\'s celebrate!#e;enoch;97;72;you don\'t look like you belong here;2#u;dog student;10;44;humph...|huh...#l;gorilla;113;12;*roaaar*!#j;jimmy brown;11;14#c;cat student;26;46;humph...|huh...#r;ms langtree;112;104;oh that jimmy brown|i miss him so...#n;the lantern;;76#F;rock fact;215;78#E;edelwood;219;192#y;racoon student;27;194;humph...|huh...#A;achievement get!;;196#C;mr langtree;184;182;these poor animals', '#')) do
    local cdata = split(c, ';')
-   local mapspridx=cdata[3]
-   mapspridx=ternary(mapspridx=='',nil,tonum(mapspridx))
    add(cchar,{
     id=cdata[1],
     name=cdata[2], 
-    mapspridx=mapspridx,
+    mapspridx=cdata[3],
     chrsprdailogueidx=tonum(cdata[4]),
     idle=ternary(#cdata>4,split(cdata[5],'|'),'huh?'),
     scaling=ternary(#cdata>5,tonum(cdata[6]),1)
