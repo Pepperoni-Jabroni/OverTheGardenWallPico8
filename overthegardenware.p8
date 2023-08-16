@@ -1484,7 +1484,7 @@ function transition_to_map(dest_mp,dest_x,dest_y)
   if m.type=='interior' and m.playmapid==act_mapsid then
    local x,y,spridx=m.playmaplocx+amcx,m.playmaplocy+amcy,m.playmapspr
    mset(x,y,spridx)
-   if spridx!=218 then 
+   if not is_element_in({202,218},spridx) then 
     mset(x+1,y,spridx+1)
     mset(x,y+1,spridx+16)
     mset(x+1,y+1,spridx+17)
