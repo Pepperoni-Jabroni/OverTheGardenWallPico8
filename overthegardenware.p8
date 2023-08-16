@@ -1040,7 +1040,7 @@ function draw_boot()
  elseif boot_age < 120 then
   subtitle_color = 6
  end
- print('\^i'..boot_subtitle, subtitle_x - #boot_subtitle, subtitle_y, subtitle_color)
+ ?'\^i'..boot_subtitle, subtitle_x - #boot_subtitle, subtitle_y, subtitle_color
  if boot_age > 130 and boot_age < 160 then
   line(subtitle_x - #boot_subtitle + (boot_age - 135), subtitle_y - 8, subtitle_x - #boot_subtitle + (boot_age - 130) + 4, subtitle_y  + 16, 7)
   line(subtitle_x - #boot_subtitle + (boot_age - 135) + 1, subtitle_y - 8, subtitle_x - #boot_subtitle + (boot_age - 130) + 5, subtitle_y  + 16, 7)
@@ -1083,11 +1083,11 @@ end
 
 function draw_controls()
  cls(0)
- print("\fa\148\131\139\145\f7 move",16,20)
- print("\fa\151\f7 progress dialog or\n use item",16,40)
- print("\fa\142\f7 switch characters",16,60)
- print("\fa\151+\148\131\139\145\f7 select object\n or npc",16,80)
- print("\fa\142\f7 back to menu",8,118)
+ ?"\fa\148\131\139\145\f7 move",16,20
+ ?"\fa\151\f7 progress dialog or\n use item",16,40
+ ?"\fa\142\f7 switch characters",16,60
+ ?"\fa\151+\148\131\139\145\f7 select object\n or npc",16,80
+ ?"\fa\142\f7 back to menu",8,118
 end
 
 function draw_main_menu()
@@ -1562,8 +1562,8 @@ function draw_character_dialog_box(dialogobj)
  local speakerid=dialogobj.speakerid
  local c = get_char_by_id(ternary(speakerid=='*',act_charid,speakerid))
  local cname,dialogtxt,dlgtime=c.name,dialogobj.text,dialogobj.time
- print(cname, 30, 104, 2)
- print(cname, 29, 103, 9)
+ ?cname, 30, 104, 2
+ ?cname, 29, 103, 9
  local partial = dialogtxt
  if (speakerid=='A'and dlgtime==1) sfx(4)
  if dlgtime < #dialogtxt then
@@ -1591,8 +1591,8 @@ function draw_character_dialog_box(dialogobj)
  local y,col=117,2
  if (#dialogtxt == #partial) y,col=117,10
  if (btn(5)) y,col=118,9
- if (y==117) print("\151",112,118,0)
- print("\151",112,y,col)
+ if (y==117) ?"\151",112,118,0
+ ?"\151",112,y,col
 end
 
 function get_sel_info_btn(lkdrbtn)
@@ -1710,7 +1710,7 @@ function print_big(text,x,y,col,factor)
  camera()
  fillp(0)
  rectfill(0,0,127,4,(16-peek(0x5f00))*0x0.1)
- print(text,0,0,col)
+ ?text,0,0,col
  mcpy(0x4300,0x6000)
  mcpy(0x6000,0x0)
  mcpy(0x0,0x4300)
