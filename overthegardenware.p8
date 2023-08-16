@@ -801,6 +801,7 @@ function queue_achievement_text(text)
     add(achievs, text) 
     if #achievs==5 then
       mset(73,16,202)
+      get_map_by_id('secret').playmapspr=202
     elseif #achievs==6 then
       queue_achievement_text'all achievements obtained!'
     end
