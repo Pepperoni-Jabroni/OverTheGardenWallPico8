@@ -60,15 +60,15 @@ local triggers,maplocking={
   function() queue_dialog_by_idx'9' end,
   function() return dialog_is_complete'9' end,
   function() queue_move_npcs'm,7|3|7|11' end,
-  function() return act_mapsid=='mill' and #party==2 end,
+  function() return act_mapsid=='mill' and #party==2 and get_npc_by_charid('m').mapid=='mill' end,
   function()
     act_item=nil 
     queue_move_npcs'm,7|4'
     remove_charids_in_party'k'
     local k=get_npc_by_charid'k'
-    k.mapid,k.x,k.y='millandriver',12,12
+    k.mapid,k.x,k.y='millandriver',11,12
     get_map_by_id('millandriver').discvrdtiles={}
-    add_npcs'?,millandriver,13,13'
+    add_npcs'?,millandriver,12,13'
     queue_dialog_by_idx'16'
     add_world_item'214,mill,2,12'
   end,
@@ -76,10 +76,9 @@ local triggers,maplocking={
   function()
     queue_dialog_by_idx'12'
     local dt = get_map_by_id(act_mapsid).discvrdtiles
-    add(dt, '12|6')
-    add(dt, '12|7')
-    add(dt, '13|6')
-    add(dt, '13|7')
+    add(dt, '12|14')
+    add(dt, '13|13')
+    add(dt, '13|14')
   end,
   function() return act_mapsid=='home' end,
   function() queue_dialog_by_idx'10' end,
@@ -385,9 +384,9 @@ characters = (function()
     id=cdata[1],
     name=cdata[2], 
     mapspridx=cdata[3],
-    chrsprdailogueidx=tonum(cdata[4]),
-    idle=ternary(#cdata>4,split(cdata[5],'|'),'huh?'),
-    scaling=ternary(#cdata>5,tonum(cdata[6]),1)
+    chrsprdailogueidx=cdata[4],
+    idle=split(cdata[5],'|') or {'huh?'},
+    scaling=cdata[6] or 1
    })
   end
   return cchar
