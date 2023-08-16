@@ -1111,10 +1111,11 @@ function draw_main_menu()
  palt(5,false)
  -- draw 4 random chars
  drawchoices = get_chars_w_dialog()
- local icon_locs={{x=4,y=4},{x=108,y=4},{x=4,y=108},{x=108,y=108}}
- for i=1,#icon_locs do
-  draw_fancy_box(icon_locs[i].x,icon_locs[i].y,17,17,2,10,9)
-  spr(drawchoices[menuchars[i]].chrsprdailogueidx, icon_locs[i].x+1, icon_locs[i].y+1, 2, 2)
+ for i,s in ipairs(split('4,4|108,4|4,108|108,108', '|')) do
+  local is=split(s)
+  local tgtx,tgty=is[1],is[2]
+  draw_fancy_box(tgtx,tgty,17,17,2,10,9)
+  spr(drawchoices[menuchars[i]].chrsprdailogueidx, tgtx+1, tgty+1, 2, 2)
  end
 end
 
