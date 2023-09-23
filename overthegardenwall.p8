@@ -737,8 +737,8 @@ function update_play_map()
     local x,y=act_x+m.cellx,act_y+m.celly
     if mget(x,y)==110 then 
       digcount+=1
-      if digcount==2 then
-        queue_dialog_by_txt'we\'re digging our own graves!'
+      if digcount<4 then
+        queue_dialog_by_txt(split('oh this is bad!,we\'re digging our own graves!,is that a bone?!')[digcount])
       end
       if digcount==4 then 
         mset(x,y,127)
