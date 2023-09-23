@@ -182,7 +182,7 @@ local triggers,maplocking={
   function() return act_mapsid=='grounds' and #party==2 end,
   function() queue_dialog_by_idx'30' end,
   function() 
-    if (not trigger_is_complete(34)) return false
+    if (not trigger_is_complete'34') return false
     local closest,clostdist=nearest_old_cat()
     return closest==nil
   end,
@@ -190,7 +190,7 @@ local triggers,maplocking={
     oldcats+=1
     local x,y=0,0
     while not is_loc_available('grounds',x,y,nil) do 
-      x,y=flr(rnd(16)),flr(rnd(16))
+      x,y=flr(rnd'16'),flr(rnd'16')
     end
     add_world_item(join_all{'254','grounds',x,y})
     if(oldcats<2) del(complete_trigs,35)
@@ -235,11 +235,11 @@ local triggers,maplocking={
     remove_charids_in_party'y,k'
     queue_move_npcs'r,3|5,w,6|5,b,8|5,u,6|2,c,7|2,y,12|5,k,5|5'
   end,
-  function() return trigger_is_complete(38) and player_location_match'school,below,6' end,
+  function() return trigger_is_complete'38' and player_location_match'school,below,6' end,
   function() queue_dialog_by_idx'33' end,
   function() 
     local r=get_npc_by_charid'r'
-    return trigger_is_complete(39) and distance(r.x,r.y) <= 1
+    return trigger_is_complete'39' and distance(r.x,r.y) <= 1
   end,
   function() queue_dialog_by_idx'34' end,
   function() return dialog_is_complete'34' end,
@@ -275,7 +275,7 @@ local triggers,maplocking={
     queue_dialog_by_idx'40'
     get_npc_by_charid('C').flipv=true
   end,
-  function() return trigger_is_complete(46) and player_sel_location(10,4,'grounds') end,
+  function() return trigger_is_complete'46' and player_sel_location(10,4,'grounds') end,
   function() 
     equip_item'6'
     queue_dialog_by_txt'i got em!'
@@ -292,7 +292,7 @@ local triggers,maplocking={
     transfer_npc_to_party'w'
     transfer_npc_to_party'b'
   end,
-  function() return trigger_is_complete(48) and player_location_match'grounds,above,8' end,
+  function() return trigger_is_complete'48' and player_location_match'grounds,above,8' end,
   function() 
     add_npcs'l,grounds,11,4'
     get_npc_by_charid('l').intent = 'chase_candy_and_player'
@@ -300,7 +300,7 @@ local triggers,maplocking={
   end,
   function() 
     local n=get_npc_by_charid'l'
-    return trigger_is_complete(49) and distance(n.x,n.y)<1
+    return trigger_is_complete'49' and distance(n.x,n.y)<1
   end,
   function() 
     queue_dialog_by_idx'42'
@@ -497,7 +497,7 @@ function _init()
 end
 
 function _update()
- if not stat(57) and repeatedmusic then
+ if not stat'57' and repeatedmusic then
   if act_stagetype=='playmap' then 
    if repeatedmusic=='23' then
     set_repeat_music'0'
@@ -527,22 +527,20 @@ function draw_scene()
 end
 
 function update_controls()
- if btnp(4) then
+ if btnp'4' then
   act_stagetype="mainmenu"
  end
 end
 
 function update_main_menu()
- if btnp(2) then
-  act_y = act_y-1
-  if (act_y==-1)act_y=2
-  sfx(0)
- elseif btnp(3) then
-  act_y = act_y+1
-  if (act_y==3)act_y=0
-  sfx(0)
+ if btnp'2' then
+  act_y = (act_y+2)%3
+  sfx'0'
+ elseif btnp'3' then
+  act_y = (act_y+1)%3
+  sfx'0'
  end
- if btnp(4) or btnp(5) then
+ if btnp'5' then
   if act_y==0 then
    pal(14,128,1)
    pal(15,133,1)
@@ -561,7 +559,7 @@ function update_main_menu()
 end
 
 function update_intro()
- if btnp(5) then
+ if btnp'5' then
   local curprogressdlg=get_first_active_dlg()[act_dialogspeakidx]
   if curprogressdlg != nil then
    local txtlen=#curprogressdlg.text
@@ -571,7 +569,7 @@ function update_intro()
     act_dialogspeakidx+=1
    end
   end
-  sfx(0)
+  sfx'0'
  end
  if act_dialogspeakidx>#dialogs[1] then
   transition_to_playmap()
@@ -624,9 +622,9 @@ function update_play_map()
  local initialdialoglen=#act_text_dialog
  -- check for dialog progress
  local x_consumed=false
- if btnp(5) and initialdialoglen > 0 then
+ if btnp'5' and initialdialoglen > 0 then
   x_consumed=true
-  sfx(0)
+  sfx'0'
   local curprogressdlg=get_first_active_dlg()[act_dialogspeakidx]
   if curprogressdlg != nil and curprogressdlg.time != nil then
    if curprogressdlg.time < #curprogressdlg.text then
@@ -644,7 +642,7 @@ function update_play_map()
   end
  end
  -- check selection direction
- if btn(5) then
+ if btn'5' then
   act_lookingdir=nil
   for i=0,3 do
    if btn(i) then
@@ -674,20 +672,20 @@ function update_play_map()
     break
    end
   end
-  if btnp(2) and act_y > 0 and is_walkable(act_x, act_y-1) then
+  if btnp'2' and act_y > 0 and is_walkable(act_x, act_y-1) then
    act_y = act_y - 1
-  elseif btnp(1) and act_x < 15 and is_walkable(act_x+1, act_y) then
+  elseif btnp'1' and act_x < 15 and is_walkable(act_x+1, act_y) then
    act_x = act_x + 1
    act_fliph=false
-  elseif btnp(3) and act_y < 15 and is_walkable(act_x, act_y+1) then
+  elseif btnp'3' and act_y < 15 and is_walkable(act_x, act_y+1) then
    act_y = act_y + 1
-  elseif btnp(0) and act_x > 0 and is_walkable(act_x-1, act_y) then
+  elseif btnp'0' and act_x > 0 and is_walkable(act_x-1, act_y) then
    act_x = act_x - 1
    act_fliph=true
   end
  end
  -- check for player switch
- if btnp(4) and initialdialoglen == 0 then
+ if btnp'4' and initialdialoglen == 0 then
   perform_active_party_swap()
   set_display_name()
  end
@@ -718,8 +716,8 @@ function update_play_map()
   is_on_trans_loc=false
  end
  -- check for item usage
- if btnp(5) and act_item!=nil and is_element_in(inv_items[act_item].charids,act_charid) and not x_consumed then
-  sfx(0)
+ if btnp'5' and act_item!=nil and is_element_in(inv_items[act_item].charids,act_charid) and not x_consumed then
+  sfx'0'
   act_useitem=act_item
   -- candy
   if act_item==1 then
@@ -800,7 +798,7 @@ function update_play_map()
  end
  -- play sound if new dialog triggered
  if #act_text_dialog>initialdialoglen or act_lookingdir!= nil then
-  sfx(2)
+  sfx'2'
  end
 end
 
@@ -844,7 +842,7 @@ menuitem(1,'achievements',function()
 end)
 
 function trigger_is_complete(idx)
-  return idx==nil or is_element_in(complete_trigs,idx) or false
+  return idx==nil or is_element_in(complete_trigs,tonum(idx)) or false
 end
 
 function do_edelwood_select()
@@ -1042,11 +1040,11 @@ function update_boot()
 end
 
 function draw_boot()
- cls(7)
+ cls'7'
  if boot_age == 1 then
-  sfx(3)
+  sfx'3'
  elseif boot_age == 135 then
-  sfx(4)
+  sfx'4'
  end
  local subtitle_x = 58
  local subtitle_y = 72
@@ -1098,7 +1096,7 @@ function draw_boot()
 end
 
 function draw_controls()
- cls(0)
+ cls'0'
  ?"\fa\148\131\139\145\f7 move",16,20
  ?"\fa\151\f7 progress dialog or\n use item",16,40
  ?"\fa\142\f7 switch characters",16,60
@@ -1107,7 +1105,7 @@ function draw_controls()
 end
 
 function draw_main_menu()
- cls(0)
+ cls'0'
  -- draw logo
  local anchrx,anchry=24,4
  for n=1,60 do
@@ -1139,7 +1137,7 @@ end
 
 function draw_introduction()
  local anchrx,anchry=32,16
- cls(0)
+ cls'0'
  -- draw bg
  draw_fancy_box(anchrx,anchry,66,52,0,4,5)
  -- draw frog
@@ -1162,7 +1160,7 @@ function draw_play_map()
  -- color handling
  palt(0,false)
  palt(13,true)
- cls(139)
+ cls'139'
  -- draw map
  map(activemap.cellx, activemap.celly)
   -- draw ring around new active char
@@ -1233,7 +1231,7 @@ function draw_play_map()
        pal(darkspr.clrmp_s[i],darkspr.clrmp_s[i])
       end
      else
-      if #darkanims==0 and flr(rnd(30000))==0 then
+      if #darkanims==0 and flr(rnd'30000')==0 then
        add(darkanims,{frmcnt=35,type='eyes',x=i,y=j})
       end
       rectfill(8*i, 8*j,(8*i)+7, (8*j)+7,0)
@@ -1403,7 +1401,7 @@ end
 
 function maybe_queue_party_move(destx, desty)
  for p in all(party) do
-  if flr(rnd(2)) == 0 and p.intent==nil then
+  if flr(rnd'2') == 0 and p.intent==nil then
     set_walk_intent(p,destx..'|'..desty)
   end
  end
@@ -1571,7 +1569,7 @@ function draw_character_dialog_box(dialogobj)
  ?cname, 30, 104, 2
  ?cname, 29, 103, 9
  local partial = dialogtxt
- if (speakerid=='A'and dlgtime==1) sfx(4)
+ if (speakerid=='A'and dlgtime==1) sfx'4'
  if dlgtime < #dialogtxt then
   partial=sub(dialogtxt,1,dlgtime)
   dialogobj.time += 1
@@ -1596,7 +1594,7 @@ function draw_character_dialog_box(dialogobj)
  end
  local y,col=117,2
  if (#dialogtxt == #partial) y,col=117,10
- if (btn(5)) y,col=118,9
+ if (btn'5') y,col=118,9
  if (y==117) ?"\151",112,118,0
  ?"\151",112,y,col
 end
@@ -1714,7 +1712,7 @@ function print_big(text,x,y,col,factor)
  mcpy(0x4440,0x0)
  mcpy(0x0,0x6000)
  camera()
- fillp(0)
+ fillp'0'
  rectfill(0,0,127,4,(16-peek(0x5f00))*0x0.1)
  ?text,0,0,col
  mcpy(0x4300,0x6000)
