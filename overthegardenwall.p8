@@ -14,7 +14,7 @@ local inv_items=(function()
   end
   return items
 end)()
-local is_on_trans_loc=false
+local is_on_trans_loc,repeatedmusic=false
 local act_item=nil
 local act_useitem=nil
 local act_wrld_items={}
@@ -245,7 +245,7 @@ local triggers,maplocking={
   function() return dialog_is_complete'34' end,
   function() 
     queue_dialog_by_idx'35'
-    music'17'
+    repeatedmusic='17'
   end,
   function() return dialog_is_complete'35' end,
   function() 
@@ -258,7 +258,7 @@ local triggers,maplocking={
     queue_dialog_by_idx'37'
     add_npcs'C,school,7,6'
     queue_move_npcs'C,7|14|11|4,r,7|9'
-    music'-1'
+    repeatedmusic='-1'
     remove_world_items'126'
     add_world_item'126,grounds,10,4'
   end,
@@ -317,7 +317,7 @@ local triggers,maplocking={
     add_world_item'126,grounds,11,9'
     add_world_item'126,grounds,10,10'
     queue_dialog_by_idx'43'
-    music'23'
+    repeatedmusic='23'
     queue_achievement_text'you completed act 3!'
   end,
   function() return act_mapsid=='secret' end,
@@ -496,6 +496,16 @@ function _init()
 end
 
 function _update()
+ if not stat(57) and repeatedmusic then
+  if act_stagetype=='playmap' then 
+   if repeatedmusic=='23' then
+    repeatedmusic='0'
+   elseif repeatedmusic=='0' then
+    repeatedmusic='23'
+   end
+  end
+  music(repeatedmusic)
+ end
  get_stage_by_type(act_stagetype).update()
 end
 
@@ -540,7 +550,8 @@ function update_main_menu()
    pal(8,139,1)
    act_stagetype="intro"
    queue_dialog_by_idx'1'
-   music'0'
+   repeatedmusic='0'
+   music(-1)
   elseif act_y==1 then
    act_stagetype="controls"
   else
@@ -571,7 +582,7 @@ function is_loc_available(mapid, x, y, qcharid)
  for n in all(get_npcs_for_map(mapid)) do
   if (n.charid != qcharid and n.x == x and n.y == y) return false
  end
- return is_walkable(x, y, mapid) and not (act_mapsid == mapid and x == act_x and y == act_y)
+ return is_walkable(x, y, mapid) and not (act_mapsid == mapid and x == act_x and y == act_y) and get_dest_for_loc(mapid, x, y)==nil
 end
 
 function get_available_loc(mapid, x, y, qcharid)
@@ -1021,7 +1032,7 @@ function update_boot()
  if boot_age > 220 then
   act_stagetype = "scene"
   pal(13,132,1)
-  music'23'
+  repeatedmusic='23'
  end
 end
 
@@ -1418,7 +1429,6 @@ function set_walk_intent(npc,intentdata)
 end
 
 function transition_to_playmap()
- music'-1'
  act_stagetype = "playmap"
  act_charid='g'
  act_dialogspeakidx=1
