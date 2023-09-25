@@ -252,6 +252,8 @@ local triggers,maplocking={
     queue_dialog_by_idx'36'
     add_world_item'126,school,6,2'
     add_world_item'126,school,7,2'
+    add_world_item'126,school,6,5'
+    add_world_item'126,school,12,5'
   end,
   function() return dialog_is_complete'36' end,
   function() 
@@ -318,7 +320,7 @@ local triggers,maplocking={
     add_world_item'126,grounds,11,9'
     add_world_item'126,grounds,10,10'
     queue_dialog_by_idx'43'
-    set_repeat_music'0'
+    set_repeat_music'17'
     queue_achievement_text'you completed act 3!'
   end,
   function() return act_mapsid=='secret' end,
