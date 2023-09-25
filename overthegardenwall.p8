@@ -879,12 +879,12 @@ end
 
 function get_dest_for_loc(mapid, x, y)
   for trans in all(map_trans) do 
-    if (trans.mp_one == mapid) then 
+    if trans.mp_one == mapid then 
       for loc in all(trans.mp_one_locs) do
         local locsplit,two_loc = split(loc),split(trans.mp_two_locs[1])
         if (0+locsplit[1] == x and 0+locsplit[2] == y) return trans.mp_two, two_loc[1], two_loc[2]
       end
-    elseif (trans.mp_two == mapid) then 
+    elseif trans.mp_two == mapid then 
       for loc in all(trans.mp_two_locs) do
         local locsplit,two_loc = split(loc),split(trans.mp_one_locs[1])
         if (0+locsplit[1] == x and 0+locsplit[2] == y) return trans.mp_one, two_loc[1], two_loc[2]
@@ -1473,8 +1473,10 @@ end
 
 function transition_to_map(dest_mp,dest_x,dest_y)
  act_mapsid = dest_mp
+ local m = get_map_by_id(act_mapsid)
  act_x = dest_x
  act_y = dest_y
+ if (m.type=='interior')act_y-=1
  -- update party loc
  for p in all(party) do
   p.mapid=act_mapsid
@@ -1483,8 +1485,6 @@ function transition_to_map(dest_mp,dest_x,dest_y)
   p.intent=nil
   p.intentdata=nil
  end
- local m = get_map_by_id(act_mapsid)
- if (m.type=='interior')act_y-=1
  local titlex=63-(2*#m.title)
  act_text_maptitle={x=titlex,y=12,txt=m.title,frmcnt=45}
  -- check alt tiles
