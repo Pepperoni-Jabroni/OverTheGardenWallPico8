@@ -292,9 +292,9 @@ local triggers,maplocking={
     transfer_npc_to_party'w'
     transfer_npc_to_party'b'
   end,
-  function() return trigger_is_complete'48' and player_location_match'grounds,above,8' end,
+  function() return trigger_is_complete'48' and player_location_match'grounds,above,0' end,
   function() 
-    add_npcs'l,grounds,11,4'
+    add_npcs'l,grounds,0,7'
     get_npc_by_charid('l').intent = 'chase_candy_and_player'
     queue_dialog_by_idx'2'
   end,
@@ -347,7 +347,7 @@ local triggers,maplocking={
     queue_dialog_by_txt'the road ends here for now'
     queue_sys_text'thanks for playing!'
   end
-},split('|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|||woods3,search the bushes||millandriver,talk with the woodsman||millandriver,enter the mill|millandriver,find the frog!|pottsfield,visit the home|woods1,spot the turtle||millandriver,run back to your brother!|||mill,find a club|mill,use the club!|mill,jump the window to escape!,14||woods3,acquire new shoes||pottsfield,meet the residents|barn,meet the host|pottsfield,collect wheat,28|pottsfield,collect pumpkin,28|pottsfield,carry out your sentence|pottsfield,dig at the flower,31|school,start the lesson|grounds,go play outside,33|grounds,play 2 old cat,34|||school,run back to school!,37|school,have lunch,38|school,talk to the teacher,39|||||grounds,explore outside||grounds,grab the instruments!,46|school,talk with ms langtree,47||grounds,confront the gorilla,48||||', '|')
+},split('|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|||woods3,search the bushes||millandriver,talk with the woodsman||millandriver,enter the mill|millandriver,find the frog!|pottsfield,visit the home|woods1,spot the turtle||millandriver,run back to your brother!|||mill,find a club|mill,use the club!|mill,jump the window to escape!,14||woods3,acquire new shoes||pottsfield,meet the residents|barn,meet the host|pottsfield,collect wheat,28|pottsfield,collect pumpkin,28|pottsfield,carry out your sentence|pottsfield,dig at the flower,31|school,start the lesson|grounds,go play outside,33|grounds,play 2 old cat,34|||school,run back to school!,37|school,have lunch,38|school,talk to the teacher,39|||||grounds,explore outside||grounds,grab the instruments!,46|school,talk with ms langtree,47||grounds,head to the plaza,48||||', '|')
 local menuchars,achievs={},{}
 local stagefns={
   function()update_boot()end,
@@ -1442,8 +1442,10 @@ function transition_to_playmap()
  act_dialogspeakidx=1
  equip_item'1'
  act_text_dialog = {}
- transition_to_map('woods1',8,8)
- party={{charid='w',mapid='woods1',x=act_x,y=act_y},{charid='k',mapid='woods1',x=act_x,y=act_y}}
+--  transition_to_map('woods1',8,8)
+--  party={{charid='w',mapid='woods1',x=act_x,y=act_y},{charid='k',mapid='woods1',x=act_x,y=act_y}}
+transition_to_map('grounds',8,8)
+party={{charid='w',mapid='grounds',x=act_x,y=act_y},{charid='k',mapid='grounds',x=act_x,y=act_y},{charid='b',mapid='grounds',x=act_x,y=act_y}}
  pal(14,14,1)
  pal(15,15,1)
  pal(12,12,1)
