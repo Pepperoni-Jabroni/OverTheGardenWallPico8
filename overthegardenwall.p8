@@ -1279,7 +1279,7 @@ function draw_play_map()
  draw_fancy_spr_box(1,get_char_by_id(act_charid).mapspridx,char_name)
  if has_item then
   local i=inv_items[act_item]
-  draw_fancy_spr_box(114,i.spridx,ternary(char_name!=nil,i.name,nil))
+  draw_fancy_spr_box(16,i.spridx,ternary(char_name!=nil,i.name,nil))
  end
  -- draw map title
  txtobj=act_text_maptitle
