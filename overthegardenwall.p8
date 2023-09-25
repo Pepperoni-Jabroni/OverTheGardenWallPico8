@@ -458,7 +458,7 @@ end)()
 
 local map_trans = (function()
   local cmaptrans = {}
-  for m in all(split('woods1;woods2;15,5|15,4;0,14|0,15#woods2;millandriver;14,0|15,0;0,13|0,14|0,15#millandriver;woods3;0,0|1,0;13,15|14,15|15,15#millandriver;mill;7,3;8,14#woods3;pottsfield;7,0|8,0;7,15|8,15#pottsfield;barn;4,2|5,2;7,13|8,13#pottsfield;woods4;9,0|10,0;6,15|7,15#woods4;grounds;7,0|8,0;6,15|7,15#grounds;school;4,4|3,4;7,14|8,14|11,1#pottsfield;home;10,8|11,8;7,12#grounds;woods5;0,7|0,8;15,12|15,13#woods5;secret;9,0;7,14|8,14', '#')) do
+  for m in all(split('woods1;woods2;15,5|15,4;0,14|0,15#woods2;millandriver;14,0|15,0;0,13|0,14|0,15#millandriver;woods3;0,0|1,0;13,15|14,15|15,15#millandriver;mill;7,3;8,14#woods3;pottsfield;7,0|8,0;7,15|8,15#pottsfield;barn;4,2|5,2;7,13|8,13#pottsfield;woods4;9,0|10,0;6,15|7,15#woods4;grounds;7,0|8,0;6,15|7,15#grounds;school;4,4|3,4;7,14|8,14|8,1#pottsfield;home;10,8|11,8;7,12#grounds;woods5;0,7|0,8;15,12|15,13#woods5;secret;9,0;7,14|8,14', '#')) do
    local mdata = split(m, ';')
    add(cmaptrans,{mp_one=mdata[1],mp_two=mdata[2],mp_one_locs=split(mdata[3],'|'),mp_two_locs=split(mdata[4],'|')})
   end
