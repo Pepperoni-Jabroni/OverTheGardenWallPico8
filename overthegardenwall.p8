@@ -66,9 +66,9 @@ local triggers,maplocking={
     queue_move_npcs'm,7|4'
     remove_charids_in_party'k'
     local k=get_npc_by_charid'k'
-    k.mapid,k.x,k.y='millandriver',11,12
+    k.mapid,k.x,k.y='millandriver',11,10
     get_map_by_id('millandriver').discvrdtiles={}
-    add_npcs'?,millandriver,12,13'
+    add_npcs'?,millandriver,12,11'
     queue_dialog_by_idx'16'
     add_world_item'214,mill,2,12'
   end,
@@ -279,7 +279,7 @@ local triggers,maplocking={
   function() 
     equip_item'6'
     queue_dialog_by_txt'i got em!'
-    queue_dialog_by_txt'\f9[head back to school]'
+    queue_sys_text'head back to school'
     remove_world_items'126'
   end,
   function() return act_item==6 and act_mapsid=='school' end,
@@ -345,7 +345,7 @@ local triggers,maplocking={
   function() return player_location_match'woods5,left_of,1' end,
   function() 
     queue_dialog_by_txt'the road ends here for now'
-    queue_dialog_by_txt'\f9thanks for playing!'
+    queue_sys_text'thanks for playing!'
   end
 },split('|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|||woods3,search the bushes||millandriver,talk with the woodsman||millandriver,enter the mill|millandriver,find the frog!|pottsfield,visit the home|woods1,spot the turtle||millandriver,run back to your brother!|||mill,find a club|mill,use the club!|mill,jump the window to escape!,14||woods3,acquire new shoes||pottsfield,meet the residents|barn,meet the host|pottsfield,collect wheat,28|pottsfield,collect pumpkin,28|pottsfield,carry out your sentence|pottsfield,dig at the flower,31|school,start the lesson|grounds,go play outside,33|grounds,play 2 old cat,34|||school,run back to school!,37|school,have lunch,38|school,talk to the teacher,39|||||grounds,explore outside||grounds,grab the instruments!,46|school,talk with ms langtree,47||grounds,confront the gorilla,48||||', '|')
 local menuchars,achievs={},{}
@@ -707,7 +707,7 @@ function update_play_map()
   elseif maplocked != nil then
     if initialdialoglen == 0 then
       queue_dialog_by_txt"we aren't done here yet... we should"
-      queue_dialog_by_txt('\f9['..maplocked..']')
+      queue_sys_text(maplocked)
     end
   else
     transition_to_map(to_map_id,to_x,to_y)
@@ -737,6 +737,7 @@ function update_play_map()
       digcount+=1
       if digcount<4 then
         queue_dialog_by_txt(split('oh this is bad!,we\'re digging our own graves!,is that a bone?!')[digcount])
+        queue_sys_text(digcount..' of 4 shovel-fulls done')
       end
       if digcount==4 then 
         mset(x,y,127)
@@ -809,6 +810,10 @@ end
 
 function set_display_name()
   act_text_charsel={txt=get_char_by_id(act_charid).name,frmcnt=32}
+end
+
+function queue_sys_text(txt,large)
+  queue_dialog_by_txt('\f9['..txt..']',act_charid,large or false)
 end
 
 function queue_achievement_text(text)
