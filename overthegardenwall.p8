@@ -25,7 +25,7 @@ local act_lookingdir=nil
 local act_fliph=false
 local act_text_dialog,act_text_maptitle,act_text_charsel={}
 local act_stagetype="boot"
-local act_dialogspeakidx=1
+local act_dialogspeakidx,numticks=1,0
 local ismusicdlg,act_mapsid=true
 local edelwood_sels,rockfact_sels={},{}
 local party,characters={},{}
@@ -351,8 +351,12 @@ local triggers,maplocking={
   function() 
     queue_dialog_by_txt'the road ends here for now'
     queue_sys_text'thanks for playing!'
+  end,
+  function() return trigger_is_complete'54' and #act_text_dialog==0 end,
+  function() 
+    act_stagetype='endgame'
   end
-},split('|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|||woods3,search the bushes||millandriver,talk with the woodsman||millandriver,enter the mill|millandriver,find the frog!|pottsfield,visit the home|woods1,spot the turtle||millandriver,run back to your brother!|||mill,find a club|mill,use the club!|mill,jump the window to escape!,14||woods3,acquire new shoes||pottsfield,meet the residents|barn,meet the host|pottsfield,collect wheat,28|pottsfield,collect pumpkin,28|pottsfield,carry out your sentence|pottsfield,dig at the flower,31|school,start the lesson|grounds,go play outside,33|grounds,play 2 old cat,34|||school,run back to school!,37|school,have lunch,38|school,talk to the teacher,39|||||grounds,explore outside||grounds,grab the instruments!,46|school,talk with ms langtree,47|grounds,visit the school|grounds,head to the plaza,48||||', '|')
+},split('|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|||woods3,search the bushes||millandriver,talk with the woodsman||millandriver,enter the mill|millandriver,find the frog!|pottsfield,visit the home|woods1,spot the turtle||millandriver,run back to your brother!|||mill,find a club|mill,use the club!|mill,jump the window to escape!,14||woods3,acquire new shoes||pottsfield,meet the residents|barn,meet the host|pottsfield,collect wheat,28|pottsfield,collect pumpkin,28|pottsfield,carry out your sentence|pottsfield,dig at the flower,31|school,start the lesson|grounds,go play outside,33|grounds,play 2 old cat,34|||school,run back to school!,37|school,have lunch,38|school,talk to the teacher,39|||||grounds,explore outside||grounds,grab the instruments!,46|school,talk with ms langtree,47|grounds,visit the school|grounds,head to the plaza,48|||||', '|')
 local menuchars,achievs={},{}
 local stagefns={
   function()update_boot()end,
@@ -366,7 +370,9 @@ local stagefns={
   function()update_intro()end,
   function()draw_introduction()end,
   function()update_play_map()end,
-  function()draw_play_map()end
+  function()draw_play_map()end,
+  function()end,
+  function()draw_end_game()end
 }
 local frog_names=split'kitty,wirt,wirt jr.,george washington,mr. president,benjamin franklin,doctor cucumber,greg jr.,skipper,ronald,jason funderburker'
 
@@ -512,6 +518,7 @@ function _update()
   end
   music(repeatedmusic)
  end
+ if (is_element_in(split'intro,playmap',act_stagetype)) numticks+=1
  get_stage_by_type(act_stagetype).update()
 end
 
@@ -561,6 +568,13 @@ function update_main_menu()
    stop()
   end
  end
+end
+
+function draw_end_game()
+ draw_bg_menu()
+ local na,nt=#achievs,flr(numticks/30)
+ local sa,st=na*1000,flr(1/((nt/100)+1)*10000)
+ ?'\fa\147 time\f7   '..nt..'\n\f9  +'..st..'\n\fa\146 achievements\f7   '..na..'/7\n\f9  +'..sa..'\n\n\fa\143 total score \f9'..(sa+st),16,68
 end
 
 function update_intro()
@@ -1114,7 +1128,7 @@ function draw_controls()
  ?"\fa\142\f7 back to menu",8,118
 end
 
-function draw_main_menu()
+function draw_bg_menu()
  cls'0'
  -- draw logo
  local anchrx,anchry=24,4
@@ -1123,6 +1137,18 @@ function draw_main_menu()
   local lno,tgtx,tgty=ln[1],j*8+anchrx,i*8+anchry
   if (lno != 0) spr(lno,tgtx,tgty,1,1,#ln > 1)
  end
+ -- draw 4 random chars
+ drawchoices = get_chars_w_dialog()
+ for i,s in ipairs(split('4,4|108,4|4,108|108,108', '|')) do
+  local is=split(s)
+  local tgtx,tgty=is[1],is[2]
+  draw_fancy_box(tgtx,tgty,17,17,2,10,9)
+  spr(drawchoices[menuchars[i]].chrsprdailogueidx, tgtx+1, tgty+1, 2, 2)
+ end
+end
+
+function draw_main_menu()
+ draw_bg_menu()
  -- draw buttons
  draw_fancy_text_box("start",48,65,act_y==0)
  draw_fancy_text_box("controls",42,85,act_y==1)
@@ -1135,14 +1161,6 @@ function draw_main_menu()
  spr(234,96,sel_y,1,1,true,false)
  pal(12,12)
  palt(5,false)
- -- draw 4 random chars
- drawchoices = get_chars_w_dialog()
- for i,s in ipairs(split('4,4|108,4|4,108|108,108', '|')) do
-  local is=split(s)
-  local tgtx,tgty=is[1],is[2]
-  draw_fancy_box(tgtx,tgty,17,17,2,10,9)
-  spr(drawchoices[menuchars[i]].chrsprdailogueidx, tgtx+1, tgty+1, 2, 2)
- end
 end
 
 function draw_introduction()
@@ -1447,10 +1465,8 @@ function transition_to_playmap()
  act_dialogspeakidx=1
  equip_item'1'
  act_text_dialog = {}
---  transition_to_map('woods1',8,8)
---  party={{charid='w',mapid='woods1',x=act_x,y=act_y},{charid='k',mapid='woods1',x=act_x,y=act_y}}
-transition_to_map('grounds',8,8)
-party={{charid='w',mapid='grounds',x=act_x,y=act_y},{charid='k',mapid='grounds',x=act_x,y=act_y},{charid='b',mapid='grounds',x=act_x,y=act_y}}
+ transition_to_map('woods1',8,8)
+ party={{charid='w',mapid='woods1',x=act_x,y=act_y},{charid='k',mapid='woods1',x=act_x,y=act_y}}
  pal(14,14,1)
  pal(15,15,1)
  pal(12,12,1)
@@ -1526,7 +1542,7 @@ function distance(x1, y1, x2, y2)
 end
 
 function get_stage_by_type(stagetype)
- local sns=split('boot,scene,mainmenu,controls,intro,playmap')
+ local sns=split('boot,scene,mainmenu,controls,intro,playmap,endgame')
  for i=1,#sns do
   if (sns[i]==stagetype) return {update=stagefns[i*2-1],draw=stagefns[i*2]}
  end
