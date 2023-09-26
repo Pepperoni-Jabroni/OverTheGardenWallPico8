@@ -366,7 +366,7 @@ local stagefns={
   function()update_play_map()end,
   function()draw_play_map()end
 }
-local frog_names=split('kitty,wirt,wirt jr.,george washington,mr. president,benjamin franklin,doctor cucumber,greg jr.,skipper,ronald,jason funderburker')
+local frog_names=split'kitty,wirt,wirt jr.,george washington,mr. president,benjamin franklin,doctor cucumber,greg jr.,skipper,ronald,jason funderburker'
 
 -- base functions
 function is_element_in(array, k)
