@@ -26,7 +26,7 @@ local act_fliph=false
 local act_text_dialog,act_text_maptitle,act_text_charsel={}
 local act_stagetype="boot"
 local act_dialogspeakidx=1
-local act_mapsid=nil
+local ismusicdlg,act_mapsid=true
 local edelwood_sels,rockfact_sels={},{}
 local party,characters={},{}
 local darkanims={}
@@ -246,6 +246,7 @@ local triggers,maplocking={
   function() 
     queue_dialog_by_idx'35'
     set_repeat_music'17'
+    ismusicdlg=true
   end,
   function() return dialog_is_complete'35' end,
   function() 
@@ -263,6 +264,7 @@ local triggers,maplocking={
     set_repeat_music'-1'
     remove_world_items'126'
     add_world_item'126,grounds,10,4'
+    ismusicdlg=false
   end,
   function() 
     local l=get_npc_by_charid'C'
@@ -1454,6 +1456,7 @@ party={{charid='w',mapid='grounds',x=act_x,y=act_y},{charid='k',mapid='grounds',
  pal(12,12,1)
  pal(1,1,1)
  pal(8,8,1)
+ ismusicdlg=false
 end
 
 function transition_npc_to_map(npc, dest_mapid, dest_x, dest_y)
@@ -1578,6 +1581,7 @@ function draw_character_dialog_box(dialogobj)
  local cname,dialogtxt,dlgtime=c.name,dialogobj.text,dialogobj.time
  ?cname, 30, 104, 2
  ?cname, 29, 103, 9
+ if (ismusicdlg) dialogtxt='\141'..dialogtxt..'\141'
  local partial = dialogtxt
  if (speakerid=='A'and dlgtime==1) sfx'4'
  if dlgtime < #dialogtxt then
