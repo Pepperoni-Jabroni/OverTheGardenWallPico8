@@ -547,10 +547,8 @@ end
 function update_main_menu()
  if btnp'2' then
   act_y = (act_y+2)%3
-  sfx'0'
  elseif btnp'3' then
   act_y = (act_y+1)%3
-  sfx'0'
  end
  if btnp'5' then
   if act_y==0 then
@@ -661,7 +659,7 @@ function update_play_map()
   end
  end
  -- check selection direction
- if btn'5' then
+ if btn'4' then
   act_lookingdir=nil
   for i=0,3 do
    if btn(i) then
@@ -702,11 +700,6 @@ function update_play_map()
    act_x = act_x - 1
    act_fliph=true
   end
- end
- -- check for player switch
- if btnp'4' and initialdialoglen == 0 then
-  perform_active_party_swap()
-  set_display_name()
  end
  -- check for map switch
  local i,maplocked=1
@@ -1025,23 +1018,12 @@ end
 
 function remove_charids_in_party(charids)
   charids=split(charids)
-  while is_element_in(charids,act_charid) do 
-    perform_active_party_swap()
-  end
   for c in all(charids) do 
     add(npcs,get_npc_by_charid(c))
   end
   for p in all(party) do 
     if (is_element_in(charids,p.charid)) del(party,p)
   end
-end
-
-function perform_active_party_swap()
- add_npcs(join_all{act_charid,act_mapsid,act_x,act_y},true)
- act_charid = party[1].charid
- act_x = party[1].x
- act_y = party[1].y
- party=drop_lead_elems(party)
 end
 
 local boot_age = 0
@@ -1123,8 +1105,7 @@ function draw_controls()
  cls'0'
  ?"\fa\148\131\139\145\f7 move",16,20
  ?"\fa\151\f7 progress dialog or\n use item",16,40
- ?"\fa\142\f7 switch characters",16,60
- ?"\fa\151+\148\131\139\145\f7 select object\n or npc",16,80
+ ?"\fa\142+\148\131\139\145\f7 select object\n or npc",16,80
  ?"\fa\142\f7 back to menu",8,118
 end
 
@@ -2149,4 +2130,3 @@ __music__
 00 80808080
 00 80808040
 04 40804040
-
