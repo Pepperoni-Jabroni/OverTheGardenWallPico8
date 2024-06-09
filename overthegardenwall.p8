@@ -524,6 +524,9 @@ end
 
 function _draw()
  get_stage_by_type(act_stagetype).draw()
+ -- draw framerate
+ print(stat(7),4,5,1)
+ print(stat(7),4,4,12)
 end
 -->8
 -- update & draw fns
@@ -691,18 +694,18 @@ function update_play_map()
   end
   if btnp'2' and act_y > 0 and is_walkable(act_x, act_y-1) then
    act_y = act_y - 1
-   compute_darktiles()
+   compute_darktiles(false)
   elseif btnp'1' and act_x < 15 and is_walkable(act_x+1, act_y) then
    act_x = act_x + 1
    act_fliph=false
-   compute_darktiles()
+   compute_darktiles(false)
   elseif btnp'3' and act_y < 15 and is_walkable(act_x, act_y+1) then
    act_y = act_y + 1
-   compute_darktiles()
+   compute_darktiles(false)
   elseif btnp'0' and act_x > 0 and is_walkable(act_x-1, act_y) then
    act_x = act_x - 1
    act_fliph=true
-   compute_darktiles()
+   compute_darktiles(false)
   end
  end
  -- check for map switch
@@ -1169,20 +1172,24 @@ function draw_dialog_if_needed()
 end
 
 local darktiles={}
-function compute_darktiles()
+function compute_darktiles(full)
   local activemap=get_map_by_id(act_mapsid)
-  darktiles={}
-  for i=0,15 do
-   for j=0,15 do
+  if(full)darktiles={}
+  for i=ternary(full,0,act_x-2),ternary(full,15,act_x+2) do
+   for j=ternary(full,0,act_y-2),ternary(full,15,act_y+2) do
     local nearforplayer=distance(i, j, act_x, act_y) < 2.7
     local idtfr=tostr(i)..'|'..tostr(j)
     if not activemap.discvrdtiles then
      activemap.discvrdtiles={}
     end
     if not nearforplayer and not is_element_in(activemap.discvrdtiles, idtfr) then
-     add(darktiles,{i,j})
+     if(full and not is_element_in(darktiles,idtfr))add(darktiles,idtfr)
     elseif not is_element_in(activemap.discvrdtiles, idtfr) then
      add(activemap.discvrdtiles,idtfr)
+    end
+    if not full and nearforplayer then 
+     del(darktiles, idtfr)
+     printh(tostr(#darktiles),'test.txt')
     end
    end
   end
@@ -1238,8 +1245,9 @@ function draw_play_map()
  end
  -- draw fog of war
  if activemap.type=='exterior' or activemap.id=='barn' then
-  for dt in all(darktiles) do 
-   local tgtx,tgty=dt[1],dt[2]
+  for dts in all(darktiles) do 
+   local dt = split(dts,'|')
+   local tgtx,tgty=tonum(dt[1]),tonum(dt[2])
    local mspr=mget(tgtx+get_map_by_id(act_mapsid).cellx, tgty+get_map_by_id(act_mapsid).celly)
    if is_element_in(darkspr.idxs,mspr) then
     -- draw "dark" sprite
@@ -1307,9 +1315,6 @@ function draw_play_map()
  -- draw dialog if necessary
  palt(13,false)
  draw_dialog_if_needed()
- -- draw framerate
- print(stat(7),4,5,1)
- print(stat(7),4,4,12)
 end
 
 function draw_fancy_spr_box(y,spridx,title)
@@ -1525,7 +1530,7 @@ function transition_to_map(dest_mp,dest_x,dest_y)
    end
   end
  end
- compute_darktiles()
+ compute_darktiles(true)
 end
 
 function distance(x1, y1, x2, y2)
