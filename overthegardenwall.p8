@@ -8,9 +8,9 @@ local walkable=split("43,110,158,185,106,190,191,202,203,205,207,222,223,238,239
 local altsset={}
 local inv_items=(function()
   local items={}
-  for i in all(split('255,candy,g#214,bird art,g#252,pumpkin shoe,g;w#253,shovel,g;w;b#254,old cat,g;k;y#126,instruments,g', '#')) do
+  for i in all(split('255,candy#214,bird art#252,pumpkin shoe#253,shovel#254,old cat#126,instruments', '#')) do
     local idata=split(i)
-    add(items,{spridx=idata[1],name=idata[2],charids=split(idata[3],';')})
+    add(items,{spridx=idata[1],name=idata[2]})
   end
   return items
 end)()
@@ -728,7 +728,7 @@ function update_play_map()
   is_on_trans_loc=false
  end
  -- check for item usage
- if btnp'5' and act_item!=nil and is_element_in(inv_items[act_item].charids,act_charid) and not x_consumed then
+ if btnp'5' and act_item!=nil and not x_consumed then
   sfx'0'
   act_useitem=act_item
   -- candy
@@ -1278,7 +1278,6 @@ function draw_play_map()
   end
  end
  -- draw active char & item hud
- local has_item=act_item!=nil and is_element_in(inv_items[act_item].charids,act_charid)
  local char_name=nil
  if act_text_charsel != nil and act_text_charsel.frmcnt>0 then
   char_name=act_text_charsel.txt
@@ -1286,7 +1285,7 @@ function draw_play_map()
  else
  end
  draw_fancy_spr_box(1,get_char_by_id(act_charid).mapspridx,char_name)
- if has_item then
+ if act_item!=nil then
   local i=inv_items[act_item]
   draw_fancy_spr_box(16,i.spridx,ternary(char_name!=nil,i.name,nil))
  end
@@ -1301,6 +1300,9 @@ function draw_play_map()
  -- draw dialog if necessary
  palt(13,false)
  draw_dialog_if_needed()
+ -- draw framerate
+ print(stat(7),4,5,1)
+ print(stat(7),4,4,12)
 end
 
 function draw_fancy_spr_box(y,spridx,title)
