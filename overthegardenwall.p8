@@ -691,14 +691,18 @@ function update_play_map()
   end
   if btnp'2' and act_y > 0 and is_walkable(act_x, act_y-1) then
    act_y = act_y - 1
+   compute_darktiles()
   elseif btnp'1' and act_x < 15 and is_walkable(act_x+1, act_y) then
    act_x = act_x + 1
    act_fliph=false
+   compute_darktiles()
   elseif btnp'3' and act_y < 15 and is_walkable(act_x, act_y+1) then
    act_y = act_y + 1
+   compute_darktiles()
   elseif btnp'0' and act_x > 0 and is_walkable(act_x-1, act_y) then
    act_x = act_x - 1
    act_fliph=true
+   compute_darktiles()
   end
  end
  -- check for map switch
@@ -1164,6 +1168,26 @@ function draw_dialog_if_needed()
  end
 end
 
+local darktiles={}
+function compute_darktiles()
+  local activemap=get_map_by_id(act_mapsid)
+  darktiles={}
+  for i=0,15 do
+   for j=0,15 do
+    local nearforplayer=distance(i, j, act_x, act_y) < 2.7
+    local idtfr=tostr(i)..'|'..tostr(j)
+    if not activemap.discvrdtiles then
+     activemap.discvrdtiles={}
+    end
+    if not nearforplayer and not is_element_in(activemap.discvrdtiles, idtfr) then
+     add(darktiles,{i,j})
+    elseif not is_element_in(activemap.discvrdtiles, idtfr) then
+     add(activemap.discvrdtiles,idtfr)
+    end
+   end
+  end
+end
+
 function draw_play_map()
  local activemap=get_map_by_id(act_mapsid)
  -- color handling
@@ -1214,40 +1238,23 @@ function draw_play_map()
  end
  -- draw fog of war
  if activemap.type=='exterior' or activemap.id=='barn' then
-  local dark={}
-  for i=0,15 do
-   for j=0,15 do
-    local nearforone=false
-    for member in all(union_arrs(party,{{x=act_x,y=act_y}})) do
-     if distance(i, j, member.x, member.y) < 2.7 then
-      nearforone=true
-     end
+  for dt in all(darktiles) do 
+   local tgtx,tgty=dt[1],dt[2]
+   local mspr=mget(tgtx+get_map_by_id(act_mapsid).cellx, tgty+get_map_by_id(act_mapsid).celly)
+   if is_element_in(darkspr.idxs,mspr) then
+    -- draw "dark" sprite
+    for i=1,#darkspr.clrmp_s do
+     pal(darkspr.clrmp_s[i],darkspr.clrmp_d[i])
     end
-    local idtfr=tostr(i)..'|'..tostr(j)
-    if not activemap.discvrdtiles then
-     activemap.discvrdtiles={}
+    spr(mspr,8*tgtx, 8*tgty)
+    for i=1,#darkspr.clrmp_s do
+     pal(darkspr.clrmp_s[i],darkspr.clrmp_s[i])
     end
-    if not nearforone and not is_element_in(activemap.discvrdtiles, idtfr) then
-     add(dark,{i,j})
-     local mspr=mget(i+get_map_by_id(act_mapsid).cellx, j+get_map_by_id(act_mapsid).celly)
-     if (is_element_in(darkspr.idxs,mspr)) then
-      -- draw "dark" sprite
-      for i=1,#darkspr.clrmp_s do
-       pal(darkspr.clrmp_s[i],darkspr.clrmp_d[i])
-      end
-      spr(mspr,8*i, 8*j)
-      for i=1,#darkspr.clrmp_s do
-       pal(darkspr.clrmp_s[i],darkspr.clrmp_s[i])
-      end
-     else
-      if #darkanims==0 and flr(rnd'30000')==0 then
-       add(darkanims,{frmcnt=35,type='eyes',x=i,y=j})
-      end
-      rectfill(8*i, 8*j,(8*i)+7, (8*j)+7,0)
-     end
-    elseif not is_element_in(activemap.discvrdtiles, idtfr) then
-     add(activemap.discvrdtiles,idtfr)
+   else
+    if #darkanims==0 and flr(rnd'30000')==0 then
+     add(darkanims,{frmcnt=35,type='eyes',x=tgtx,y=tgty})
     end
+    rectfill(8*tgtx, 8*tgty,(8*tgtx)+7, (8*tgty)+7,0)
    end
   end
  end
@@ -1518,6 +1525,7 @@ function transition_to_map(dest_mp,dest_x,dest_y)
    end
   end
  end
+ compute_darktiles()
 end
 
 function distance(x1, y1, x2, y2)
