@@ -8,7 +8,7 @@ local walkable=split("43,110,158,185,106,190,191,202,203,205,207,222,223,238,239
 local altsset={}
 local inv_items=(function()
   local items={}
-  for i in all(split('255,candy#214,bird art#252,pumpkin shoe#253,shovel#254,old cat#126,instruments', '#')) do
+  for i in all(split('', '#')) do
     local idata=split(i)
     add(items,{spridx=idata[1],name=idata[2]})
   end
@@ -33,330 +33,7 @@ local darkanims={}
 local compltdlgs,wheatcount,pumpkincount,digcount,oldcats,catscollected={},0,0,0,0,0
 local npcs,complete_trigs={},{}
 local triggers,maplocking={
-  function() return player_location_match"woods1,right_of,8" end,
-  function() queue_dialog_by_idx'5' end,
-  function() return player_use_item(1,'woods1') and (act_x!=8 or act_y!=8) end,
-  function() end,
-  function() return player_use_item(1,'woods1',13,7)end,
-  function() queue_dialog_by_idx'18' end,
-  function() return player_use_item(1,'woods2')end,
-  function() end,
-  function() return player_sel_location(5,7,'woods2')end,
-  function()
-    queue_dialog_by_idx'3'
-    do_edelwood_select()
-   end,
-  function() return playmap_npc_visible'woods2,m'end,
-  function() queue_dialog_by_idx'4'end,
-  function() return dialog_is_complete'4'end,
-  function() queue_move_npcs'm,15|0|7|7' end,
-  function() return #party==2 and player_location_match'woods3,below,13' end,
-  function() queue_dialog_by_idx'7' end,
-  function() return player_sel_location(7,10,'woods3')end,
-  function() queue_dialog_by_idx'8'end,
-  function() return dialog_is_complete'8'end,
-  function() add_npcs(join_all{'b',act_mapsid,7,10},true) end,
-  function() return playmap_npc_visible'millandriver,m' end,
-  function() queue_dialog_by_idx'9' end,
-  function() return dialog_is_complete'9' end,
-  function() queue_move_npcs'm,7|3|7|11' end,
-  function() return act_mapsid=='mill' and #party==2 and get_npc_by_charid('m').mapid=='mill' end,
-  function()
-    act_item=nil 
-    queue_move_npcs'm,7|4'
-    remove_charids_in_party'k'
-    local k=get_npc_by_charid'k'
-    k.mapid,k.x,k.y='millandriver',13,9
-    get_map_by_id('millandriver').discvrdtiles={}
-    add_npcs'?,millandriver,12,10'
-    queue_dialog_by_idx'16'
-    add_world_item'214,mill,2,12'
-  end,
-  function() return playmap_npc_visible'millandriver,?' end,
-  function()
-    queue_dialog_by_idx'12'
-    local dt = get_map_by_id(act_mapsid).discvrdtiles
-    add(dt, '12|11')
-    add(dt, '13|10')
-    add(dt, '13|11')
-  end,
-  function() return act_mapsid=='home' end,
-  function() queue_dialog_by_idx'10' end,
-  function() return playmap_npc_visible'woods1,t' end,
-  function() queue_dialog_by_idx'11' end,
-  function() return dialog_is_complete'12' end,
-  function()
-    get_npc_by_charid('?').intent = 'chase_candy_and_player'
-    transfer_npc_to_party'k'
-   end,
-  function() 
-     local beast=get_npc_by_charid('?')
-     return player_location_match'mill,above,0' and beast!=nil and beast.mapid=='mill'
-   end,
-  function()
-    transfer_npc_to_party'w'
-    get_map_by_id('mill').playmapspr=124
-    queue_dialog_by_idx'20'
-   end,
-  function() return player_location_match'woods1,left_of,1' end,
-  function() queue_dialog_by_idx'14' end,
-  function() return player_location_match'mill,left_of,7' end,
-  function() queue_dialog_by_idx'13' end,
-  function() return player_sel_location(2,12,'mill') end,
-  function()
-    equip_item'2'
-    remove_world_items'214'
-    queue_dialog_by_idx'17'
-   end,
-  function() return dialog_is_complete'19' end,
-  function() 
-    equip_item'1'
-    remove_charids_in_party'w'
-    queue_move_npcs'w,2|9'
-   end,
-  function() 
-     local beast=get_npc_by_charid'?'
-     return player_sel_location(1,4,'mill') and beast!=nil and beast.mapid=='mill'
-   end,
-  function()
-     transition_to_map('millandriver',7,4)
-     del(npcs,get_npc_by_charid'?')
-     del(npcs,get_npc_by_charid'm')
-     add_npcs'd,millandriver,5,4|t,millandriver,5,5|m,millandriver,6,5'
-     queue_dialog_by_idx'22'
-     queue_achievement_text'you completed act 1!'
-     act_item=nil
-   end,
-  function() return act_mapsid=='woods3' end,
-  function() end,
-  function() 
-    local m=get_map_by_id(act_mapsid)
-    return act_mapsid=='woods3' and mget(m.cellx+act_x,m.celly+act_y)==158
-   end,
-  function() 
-    queue_dialog_by_idx'23'
-    equip_item'3'
-   end,
-  function() 
-     local m=get_map_by_id'home'
-     return act_mapsid=='pottsfield' and distance(m.playmaplocx,m.playmaplocy)<3
-   end,
-  function() queue_dialog_by_idx'24' end,
-  function() return playmap_npc_visible'barn,o' end,
-  function() queue_dialog_by_idx'25' end,
-  function() return playmap_npc_visible'barn,e' end,
-  function() 
-    queue_dialog_by_idx'26' 
-    act_item=nil
-    queue_move_npcs'e,7|13|7|5,o,7|13|6|5,o,7|13|5|6,o,7|13|7|7,i,7|13|9|5,i,7|13|10|6'
-  end,
-  function() return player_sel_spr('pottsfield',174) and enoch_in_pottsfield() end,
-  function() 
-    replace_player_sel'190'
-    wheatcount+=1
-    if (wheatcount<5)del(complete_trigs,29)
-    maybe_queue_collect_text()
-  end,
-  function() return player_sel_spr('pottsfield',158) and enoch_in_pottsfield() end,
-  function() 
-    replace_player_sel'190'
-    pumpkincount+=1
-    if (pumpkincount<5)del(complete_trigs,30)
-    maybe_queue_collect_text()
-  end,
-  function() return enoch_in_pottsfield() and act_mapsid=='pottsfield' end,
-  function() queue_dialog_by_idx'27' end,
-  function() return digcount==4 end,
-  function() 
-    act_item=nil
-    queue_dialog_by_idx'44'
-    queue_move_npcs'o,8|10'
-  end,
-  function() return player_location_match'school,below,13' end,
-  function() 
-    queue_dialog_by_idx'29'
-    remove_charids_in_party'w,b'
-    transfer_npc_to_party'y'
-    queue_move_npcs'w,5|11,b,4|11'
-  end,
-  function() return act_mapsid=='grounds' and #party==2 end,
-  function() queue_dialog_by_idx'30' end,
-  function() 
-    if (not trigger_is_complete'34') return false
-    local closest,clostdist=nearest_old_cat()
-    return closest==nil
-  end,
-  function() 
-    oldcats+=1
-    local x,y=0,0
-    while not is_loc_available('grounds',x,y,nil) do 
-      x,y=flr(rnd'16'),flr(rnd'16')
-    end
-    add_world_item(join_all{'254','grounds',x,y})
-    if(oldcats<2) del(complete_trigs,35)
-  end,
-  function() 
-    local closest,clostdist=nearest_old_cat()
-    return closest != nil
-  end,
-  function()
-    local closest,clostdist=nearest_old_cat()
-    if (closest.cldwn==15) then
-      closest.x,closest.y=get_available_loc('grounds',closest.x,closest.y)
-      closest.cldwn=0
-    end
-    closest.cldwn+=1
-    del(complete_trigs,36)
-  end,
-  function() 
-    local closest,clostdist=nearest_old_cat()
-    return clostdist==0
-  end,
-  function()
-    local closest,clostdist=nearest_old_cat()
-    catscollected+=1
-    if catscollected<2 then
-      queue_dialog_by_txt'haha yeah we got one!'
-      equip_item'5'
-      del(complete_trigs,37)
-    else
-      queue_dialog_by_idx'31'
-      local qx,qy=get_available_loc(act_mapsid,act_x,act_y)
-      add_npcs(join_all{'l',act_mapsid,qx,qy})
-      get_npc_by_charid('l').intent = 'chase_candy_and_player'
-    end
-    del(act_wrld_items,closest)
-  end,
-  function() return catscollected>1 and act_mapsid=='school' end,
-  function() 
-    queue_dialog_by_idx'32'
-    del(npcs,get_npc_by_charid'l')
-    act_item=nil
-    remove_charids_in_party'y,k'
-    queue_move_npcs'r,3|5,w,6|5,b,8|5,u,6|2,c,7|2,y,12|5,k,5|5'
-  end,
-  function() return trigger_is_complete'38' and player_location_match'school,below,6' end,
-  function() queue_dialog_by_idx'33' end,
-  function() 
-    local r=get_npc_by_charid'r'
-    return trigger_is_complete'39' and distance(r.x,r.y) <= 1
-  end,
-  function() queue_dialog_by_idx'34' end,
-  function() return dialog_is_complete'34' end,
-  function() 
-    queue_dialog_by_idx'35'
-    set_repeat_music'17'
-    ismusicdlg=true
-  end,
-  function() return dialog_is_complete'35' end,
-  function() 
-    queue_dialog_by_idx'36'
-    add_world_item'126,school,6,2'
-    add_world_item'126,school,7,2'
-    add_world_item'126,school,6,5'
-    add_world_item'126,school,12,5'
-  end,
-  function() return dialog_is_complete'36' end,
-  function() 
-    queue_dialog_by_idx'37'
-    add_npcs'C,school,7,6'
-    queue_move_npcs'C,7|14|11|4,r,7|9'
-    set_repeat_music'-1'
-    remove_world_items'126'
-    add_world_item'126,grounds,10,4'
-    ismusicdlg=false
-  end,
-  function() 
-    local l=get_npc_by_charid'C'
-    return l!=nil and l.mapid=='grounds' end,
-  function() queue_dialog_by_idx'38' end,
-  function() 
-    local l=get_npc_by_charid'C'
-    return l!=nil and l.intent==nil and playmap_npc_visible'grounds,C' end,
-  function() queue_dialog_by_idx'39' end,
-  function() return dialog_is_complete'39' end,
-  function() 
-    queue_dialog_by_idx'40'
-    get_npc_by_charid('C').flipv=true
-  end,
-  function() return trigger_is_complete'46' and player_sel_location(10,4,'grounds') end,
-  function() 
-    equip_item'6'
-    queue_dialog_by_txt'i got em!'
-    queue_sys_text'head back to school'
-    remove_world_items'126'
-  end,
-  function() return act_item==6 and act_mapsid=='school' end,
-  function() 
-    act_item=nil
-    queue_dialog_by_idx'41'
-    queue_move_npcs'r,7|14|13|10,c,7|14|12|9,u,7|14|11|9,y,7|14|10|10,C,11|11'
-    get_npc_by_charid('C').flipv=false
-    transfer_npc_to_party'k'
-    transfer_npc_to_party'w'
-    transfer_npc_to_party'b'
-  end,
-  function() return trigger_is_complete'48' and player_location_match'grounds,above,0' end,
-  function() 
-    add_npcs'l,grounds,0,7'
-    get_npc_by_charid('l').intent = 'chase_candy_and_player'
-    queue_dialog_by_idx'2'
-  end,
-  function() 
-    local n=get_npc_by_charid'l'
-    return trigger_is_complete'49' and distance(n.x,n.y)<1
-  end,
-  function() 
-    queue_dialog_by_idx'42'
-    local l,r=get_npc_by_charid'l',get_npc_by_charid'r'
-    add_npcs(join_all{'j,grounds',l.x,l.y-1})
-    set_walk_intent(get_npc_by_charid'j','13|11')
-    del(npcs,l)
-  end,
-  function() 
-    local j=get_npc_by_charid'j'
-    return j!=nil and j.x==13 and j.y==11 and distance(j.x,j.y)<3
-  end,
-  function() 
-    add_world_item'126,grounds,12,9'
-    add_world_item'126,grounds,11,9'
-    add_world_item'126,grounds,10,10'
-    queue_dialog_by_idx'43'
-    set_repeat_music'17'
-    queue_achievement_text'you completed act 3!'
-  end,
-  function() return act_mapsid=='secret' end,
-  function() 
-    queue_achievement_text'you found the secret room!'
-    queue_dialog_by_idx'6'
-    local i=1
-    for c in all(characters) do 
-      if c.mapspridx!='' then 
-        add_world_item(join_all{c.mapspridx,'secret',((i*2+1)%10)+3,ceil(i/5)*2+1}) 
-        i+=1
-      end
-    end
-  end,
-  function() 
-    local o=get_npc_by_charid'o'
-    return join_all{o.mapid,o.x,o.y} == 'pottsfield,8,10' end,
-  function() 
-    queue_dialog_by_idx'45'
-    local s=get_npc_by_charid's'
-    add_npcs(join_all{'p,pottsfield',s.x,s.y})
-    queue_achievement_text'you completed act 2!'
-    del(npcs,s)
-  end,
-  function() return player_location_match'woods5,left_of,1' end,
-  function() 
-    queue_dialog_by_txt'the road ends here for now'
-    queue_sys_text'thanks for playing!'
-  end,
-  function() return trigger_is_complete'54' and #act_text_dialog==0 end,
-  function() 
-    act_stagetype='endgame'
-  end
-},split('|woods1,leave a trail of candy|woods1,give the turtle a candy|woods2,leave a trail of candy|woods2,inspect the strange tree|woods2,meet someone new|||woods3,search the bushes||millandriver,talk with the woodsman||millandriver,enter the mill|millandriver,find the frog!|pottsfield,visit the home|woods1,spot the turtle||millandriver,run back to your brother!|||mill,find a club|mill,use the club!|mill,jump the window to escape!,14||woods3,acquire new shoes||pottsfield,meet the residents|barn,meet the host|pottsfield,collect wheat,28|pottsfield,collect pumpkin,28|pottsfield,carry out your sentence|pottsfield,dig at the flower,31|school,start the lesson|grounds,go play outside,33|grounds,play 2 old cat,34|||school,run back to school!,37|school,have lunch,38|school,talk to the teacher,39|||||grounds,explore outside||grounds,grab the instruments!,46|school,talk with ms langtree,47|grounds,visit the school|grounds,head to the plaza,48|||||', '|')
+},split('', '|')
 local menuchars,achievs={},{}
 local stagefns={
   function()update_boot()end,
@@ -391,7 +68,7 @@ end
 
 characters = (function()
   local cchar={}
-  for c in all(split('g;greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?#w;wirt;1;4;uh, hi...|oh sorry, just thinking#b;beatrice;16;6;yes, i can talk...|lets get out of here!#k;;17;8;ribbit#a;the beast;32;34#m;the woodsman;33;36;i need more oil|beware these woods#?;the beast?;48;38;*glares at you*;2#d;dog;49;40;*barks*#t;black turtle;64;66;*stares blankly*#z;turkey;65;68;gobble. gobble. gobble.#o;pottsfield citizen 1;80;98;you\'re too early#i;pottsfield citizen 2;80;102;are you new here?#s;skeleton;81;70;thanks for digging me up!#p;partier;96;100;let\'s celebrate!#e;enoch;97;72;you don\'t look like you belong here;2#u;dog student;10;44;humph...|huh...#l;gorilla;113;12;*roaaar*!#j;jimmy brown;11;14#c;cat student;26;46;humph...|huh...#r;ms langtree;112;104;oh that jimmy brown|i miss him so...#n;the lantern;;76#F;rock fact;215;78#E;edelwood;219;192#y;racoon student;27;194;humph...|huh...#A;achievement get!;;196#C;mr langtree;184;182;these poor animals', '#')) do
+  for c in all(split('g;greg;0;2;where is that frog o\' mine!|wanna hear a rock fact?#w;wirt;1;4;uh, hi...|oh sorry, just thinking#b;beatrice;16;6;yes, i can talk...|lets get out of here!#k;;17;8;ribbit#a;the beast;32;34#m;the woodsman;33;36;i need more oil|beware these woods#?;the innkeeper;48;38;keep that bird out!#d;the highwayman;49;40;i\'m the highwayman#t;band frog;64;66;ribbit#z;band frog?;65;68#o;mr. frog;80;70;ribbit#i;ms. frog;81;72;ribbit#s;the midwife;96;98;well look at you!#p;the butcher;97;100;i\'m the butchah#e;the baker;112;102;i\'m the baker!#u;the whistler;113;104;*whistles*#l;the toymaker;10;12;hehe|oh hahaha#j;fred;11;14;*neighs*|*whinnies*#c;quincy endicott;26;44;oh dear nephew#r;marguerite grey;27;46;oh that quincy!#n;the lantern;;76#F;rock fact;215;78#E;edelwood;219;192#y;adelaide;184;182;i need a child!#A;achievement get!;;196#C;golden scissors;;194', '#')) do
    local cdata = split(c, ';')
    add(cchar,{
     id=cdata[1],
@@ -421,7 +98,7 @@ end)()
 
 local maps=(function()
   local cmaps={}
-  for m in all(split("exterior,woods1,somewhere in the unknown,0,16#exterior,woods2,somewhere in the unknown,0,0#interior,mill,the old grist mill,64,0,millandriver,226,7,2#exterior,millandriver,the mill and the river,16,0#exterior,woods3,somewhere in the unknown,32,0#interior,barn,harvest party,80,0,pottsfield,224,4,1#interior,home,pottsfield home,32,16,pottsfield,232,10,7#exterior,pottsfield,pottsfield,48,0#exterior,woods4,somewhere in the unknown,96,0,0#interior,school,schoolhouse,16,16,grounds,228,3,3#exterior,grounds,the schoolgrounds,112,0#exterior,woods5,somewhere in the unknown,64,16#interior,secret,the secret room,48,16,woods5,218,9,0", '#')) do
+  for m in all(split("exterior,woods1,somewhere in the unknown,0,0#exterior,woodsinn,the old inn,16,0#interior,inn,the inn,32,0,woodsinn,224,4,2#exterior,woods2,somewhere in the unknown,48,0#exterior,woodsmanor,the endicott manor,64,0#interior,manor1,the endicott manor,80,0,woodsmanor,227,6,6#interior,manor2,the endicott manor,96,0,woodsmanor,227,6,6#interior,manor3,the endicott manor,112,0,woodsmanor,227,6,6#exterior,woodsboat,the riverboat port,0,16#interior,riverboat,the riverboat,16,16,woodsboat,230,1,7#interior,riverboat2,the riverboat,16,16,woodsboat2,230,13,6#exterior,woodsboat2,the riverboat port,32,16#exterior,woodsadel,somewhere in the unknown,48,16#interior,adel,adelaide\'s home,64,16,woodsadel,232,12,4", '#')) do
    local mdata = split(m)
    local entry = {
     type=mdata[1],
@@ -453,7 +130,7 @@ end
 
 npcs = (function()
   local cnpcs = {}
-  for n in all(split('t,13,7,woods1#m,6,7,woods2#o,6,12,barn#o,7,4,barn,loop,7|4|10|7#o,7,7,barn,loop,7|4|10|7#i,10,4,barn,loop,7|4|10|7#i,10,7,barn,loop,7|4|10|7#e,8,5,barn#r,8,9,school#u,7,11,school#c,9,11,school#y,9,13,school#z,7,6,home', '#')) do
+  for n in all(split('m,8,9,woods2#?,8,12,inn#d,5,7,inn#t,6,7,riverboat#t,8,7,riverboat#o,3,8,riverboat#i,4,8,riverboat#o,10,3,riverboat#i,9,3,riverboat#s,10,7,inn#p,11,7,inn#e,4,12,inn#u,4,7,inn#l,7,5,inn#j,14,9,inn#c,7,11,manor1#r,8,8,manor3#y,5,5,adel', '#')) do
    local ns = split(n)
    local r = {charid=ns[1],x=ns[2],y=ns[3],mapid=ns[4]}
    if #ns > 4 then
@@ -467,7 +144,7 @@ end)()
 
 local map_trans = (function()
   local cmaptrans = {}
-  for m in all(split('woods1;woods2;15,5|15,4;0,14|0,15#woods2;millandriver;14,0|15,0;0,13|0,14|0,15#millandriver;woods3;0,0|1,0;13,15|14,15|15,15#millandriver;mill;7,3;8,14#woods3;pottsfield;7,0|8,0;7,15|8,15#pottsfield;barn;4,2|5,2;7,13|8,13#pottsfield;woods4;9,0|10,0;6,15|7,15#woods4;grounds;7,0|8,0;6,15|7,15#grounds;school;4,4|3,4;7,14|8,14|8,1#pottsfield;home;10,8|11,8;7,12#grounds;woods5;0,7|0,8;15,12|15,13#woods5;secret;9,0;7,14|8,14', '#')) do
+  for m in all(split('woods1;woodsinn;0,11|0,12|0,13;15,11|15,12|15,13#woodsinn;inn;4,3|5,3;7,14#woodsinn;woods2;0,5|0,6|0,7;15,6|15,7|15,8#woods2;woodsmanor;0,13|0,14|0,15;15,13|15,14|15,15#woodsmanor;manor1;6,7|7,7;5,14|7,14#manor1;manor2;15,5|15,6|15,7;0,5|0,6|0,7#manor2;manor3;15,9|15,10;0,9|0,10#woodsmanor;woodsboat;0,9|0,10|0,11;15,9|15,10|15,11#woodsboat;riverboat;2,7|2,8;8,12|8,13#riverboat;woodsboat2;3,11|3,12;12,6|12,7#woodsboat2;woodsadel;0,13|0,14;15,13|15,14#woodsadel;adel;12,5|13,5;7,13', '#')) do
    local mdata = split(m, ';')
    add(cmaptrans,{mp_one=mdata[1],mp_two=mdata[2],mp_one_locs=split(mdata[3],'|'),mp_two_locs=split(mdata[4],'|')})
   end
@@ -476,7 +153,7 @@ end)()
 
 local dialogs = (function()
   local cdialogs,i = {},1
-  for d in all(split("k;led through the mist-k;by the milk light of moon-k;all that was lost is revealed-k;our long bygone burdens-k;mere echoes of the spring-k;but where have we come?-k;and where shall we end?-k;if dreams can't come true-k;then why not pretend?-k;how the gentle wind-k;beckons through the leaves-k;as autumn colors fall-k;dancing in a swirl-k;of golden memories-k;the loveliest lies of all+C;the instruments!-C;they've been stolen!;L+w;i dont like this at all-g;its a tree face!+w;is that some sort of deranged lunatic?-w;with an axe waiting for victims?-m;*swings axe and chops tree*;L-w;what is that strange tree?-g;we should ask him for help!-*;5+w;whoa... wait greg...;L-w;... where are we?;L-g;we\'re in the woods!;L-w;no, i mean;L-w;... where are we?!;L-g;i can leave a candy trail from my pants!-g;candytrail. candytrail. candytrail!;L-*;2+g;whoa, what is this place?-w;it looks like something-w;from a world out west!;L+b;help! help!-w;i think its coming from a bush?-*;9+b;help me!;L-g;wow, a talking bush!-b;i\'m not a talking bush! i\'m a bird!-b;and i\'m stuck!-g;wow, a talking bird!-b;if you help me get unstuck, i\'ll-b;owe you one-g;ohhhh! you'll grant me a wish?!-b;no but i can take you to...-b;adelaide, the good woman of the woods!-g;*picks up beatrice out of bush*-w;uh uh! no!+m;these woods are a dangerous place-m;for two kids to be alone-w;we... we know, sir-g;yeah! i\'ve been leaving a trail-g;of candy from my pants!-m;please come inside...;L-w;i don\'t like the look of this-k;ribbit.-g;haha, yeah!-*;13+w;oh! terribly sorry to have-w;disturbed you sir!-z;gobble. gobble. gobble.;L+g;wow, look at this turtle!-w;well thats strange-g;i bet he wants some candy!-t;*stares blankly*-*;3+?;*glares at you, panting*;L-g;you have beautiful eyes!-g;ahhhh!-*;18+w;wow this place is dingey-g;yeah! crazy axe person!-w;we should find a way to take him out-w;before he gets a chance to hurt us-g;i can handle it!-*;21+w;i dont think we should-w;go back the way we came+UNUSED+m;i work as a woodsman in these woods-n;keeping the light in this lantern lit;L-m;by processing oil of the edelwood trees-m;you boys are welcome to stay here-m;ill be in the workshop-g;okey dokey!+g;this bird art sculpture is perfect!-*;22+g;there! this little guy wanted a snack-t;*stares blankly*;L+m;ow! *falls onto ground*-g;haha yeah, i did it!-w;greg! what have you done!-w;hey greg... where did your frog go?-g;where is that frog o mine?-*;14+g;ahhh! the beast!-w;quick, greg, to the workshop!-w;we should be able to make it-w;out through a window out back!-w;leave candy to distract him!-?;*crashes through the wall*;L-*;23+UNUSED+g;we made it out!-?;*gets stuck in the window*;L-?;*spits out turtle with a candy*-m;what have you boys done?!-m;the mill is destroyed-w;but we solved your beast problem!-m;you foolish boys-m;that silly dog was not the beast-d;*bark! bark!*;L-m;he just swallowed that turtle-t;*stares blankly*;L-w;he must have followed the candy trail!-m;go now and continue your journey-w;we\'re sorry sir-m;beware the beast!;L+g;oh wow! i stepped on a pumpkin!;L-w;huh oh that's strange-w;i did too-g;haha i have a pumpkin shoe!-k;ribbit.+w;wow, greg, look!-w;a home! maybe they have a phone;L-b;oh this is just great-*;15+o;hey -o;who are you?;L-w;uh hello! we're just passing through-o;folks dont just pass through here-b;nope, i dont like this!-*;28+e;well, well, well,...-e;what do we have here?;L-b;nothing sir!-o;they trampled our crops!-i;look at their shoes!-e;for this you are sentenced-e;to...-e;a few hours of manual labour-w;oh uh okay?-e;come outside with me-*;31+e;you must collect 5 pumpkins-e;and 5 bundles of wheat-e;go now, and pay your dues!-*;29-*;30+e;now for your final act-e;you must dig a hole-e;6 feet deep, at the flower-e;take these shovels and-e;start digging-b;oh god!-*;32+r;and that children-r;is how you do addition-r;well hi there children!;L-r;please, take your seats-w;oh ok sure!-b;no wirt! ugh!-g;school? no way-g;lets go play outside-k;ribbit!-y;hmph!-*;34+g;i know, lets play 2 old cat!-g;come on lets grab the cats!-k;ribbit.-y;hmph!-*;35+g;we did it!-g;isnt 2 old cat great?-l;*roaaar!*;L-g;aaaah! run!-y;*scatters*-*;38+g;phew, we made it!-r;how i do miss that-r;*jimmy brown*-r;time for lunch children;L-w;oh, ok!-b;ugh wirt please!-g;haha yay!-*;39+g;whats the matter rac?-y;*looks sad at food*;L-g;*takes a bite*-g;kinda bland-g;i got an idea!-*;40+g;here play like this!-g;*smashes piano keys*-r;like this?-g;good enough!+g;Oh, potatoes and molasses-g;If you want some, oh, just ask us-g;They're warm and soft like puppies in socks-g;Filled with cream and candy rocks+g;Oh, potatoes and molasses-g;They're so much sweeter than-g;Algebra class-g;If you're stomach is grumblin'-g;And your mouth starts mumblin'-g;There's only only one thing to -g;keep your brain from crumblin'-g;Oh, potatoes and molasses-g;If you can't see 'em put on your glasses-g;They're shiny and large-g;like a fisherman's barge-g;You know you eat enough when-g;you start seeing stars-g;Oh, potatoes and molasses-g;It's the only thing left -g;on your task list-g;They're short and stout,-g;They'll make everyone shout-g;For potatoes and molasses-g;For potatoes and+C;thats enough!;L-C;give me those instruments-r;father!-C;this is a school-C;not a marching band;L-C;we cant be losing money-C;goodbye!-r;oh father!+r;oh the poor school!-r;who could help finance us?-r;if only that no good-r;two timin *jimmy brown* were here;L-y;*rolls eyes*;L-g;i have an idea!;L-*;45+C;oof those poor animals-C;i have no funds left;L-C;to teach them proper math-C;all i have are these instruments+C;...zzz;L-g;nows my chance!-*;47+g;here ms langtree!-g;*hands over instruments*-g;*whispers*;L-r;come children-r;to the town plaza!;L-c;*meow*!-u;*bark*!+l;*roaar*!;L-g;hya! *chops*-l;*hit on the head*-j;oh my word!;L-j;this boy saved me-r;oh *jimmy*!-j;darlin...+u;*grabs instrument*-c;*begins playing*-y;*joins with tune*-r;*passes donations*-r;my my were saved!;L-C;what excellent news!-j;oh darlin!;L-k;ribbit!-w;nice job greg;L+s;hey!;L-s;thanks for digging me up-o;hey is that frank?-i;someone hand him a pumpkin!+o;here ya go!-p;hey thanks!-p;lets party!;L-e;what a wonderful havest;L",'+')) do
+  for d in all(split("k;led through the mist-k;by the milk light of moon-k;all that was lost is revealed-k;our long bygone burdens-k;mere echoes of the spring-k;but where have we come?-k;and where shall we end?-k;if dreams can't come true-k;then why not pretend?-k;how the gentle wind-k;beckons through the leaves-k;as autumn colors fall-k;dancing in a swirl-k;of golden memories-k;the loveliest lies of all",'+')) do
    local dlg_objs = split(d, '-')
    add(cdialogs,{})
    for g in all(dlg_objs) do 
@@ -2012,38 +1689,38 @@ __label__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 
 __map__
-ebebebebebebebebebebebebebcfcfcfcfcfcfebcececeebebebebebebebebebcdececbe9ebecfcfbebe9ecdcdcdcdebebebebebebebebebebcfcfcfebebebebebebcdcdcdcdcdcdcdcdcdebebebebebcdcd6ccdcdcdcdcdcdcdcdebebebebebebebebebebebebcfcfebebebebebebebebebebebebebebebebebebebebebebeb
-ebcdebcdebdccdeccdcdcdebcdcfcfcfcfcfcfecebcececdcdecebebebebebebcdcdcdbebe9ecfbebe9ecfcdcdcdceceebebebcdcdcdcdcdcdcfcfcdcdcdcdebebaf8e8e8e8e8e8e8e8e8e8e8e8eafebeb6ccdcdcdcdcdcdcdcdcdcdcdcdcdebebebd7cdcdcdcdcfcfcdcdcdcdcdcdebebebebebcdcdcdcdebebebebebebebeb
-ebcdeccdcdeccdcdcdcdececcfcfcfcfebcfcfcfcecececdcdcdcdebebebebebcdcdebcdbebe9e9eecbe9ecdebcececeebebcd6ccdcdcdcdcdcfcfcdbe9ecddcebafbf6bd9bfd9b1bfb2b2bfbfb2afebebcdaf8e8e8e8e8e8e8e8e8e8eafcdebebcdcdeccdebcdcfcfcdcdcdeccdcdebebebcdcdcdcdebcdebebcdcdcdebebeb
-ebcdcdebcdcdcdebcdeccfcfcfcfcfebebebcfcfeecececdcdcdcdcdcdebebebcdebebcdebcdbecfcdcdcdebcecececdebcd6ccfcfcfcf6ccfcfcfcd9e9ecdebcdafbf6bbfbfbfb2bfbfbfbfbfbfafcdebcdaf5b5b5bbfbfbfbfbf6abfafcdebebebcdcdcdcdcdcfcfcdebcdcdcdcdebebebcdcdcdcdcdcdebcdcdcfcfcdebeb
-ebcdcdcdecececececcfcfcfcfcfcdebebebceceeeeecfcfcfebececcddcebebcdcdcdcdebcdcfcfcdcdebebcececdebeb6ccfcfcfcfcfcfcfcfcd6d9e9ecdebcd2abf6abfbfbfbfbfbfbfbfd9bfafcdebcd2ab9bfbfbfbfbfbfbfbfbf2acdcdebcdcdebcdcd6ccfcfcdebebcdcdcdebebebcdcdcdcdcdcdcdcdcfcfcfcdebeb
-ebebcdeccfcfcfcfcfcfcfcfeccdcdebcecececeeecfcfcfcfcfcfcfcfcdebebcdebebcdebcdcfcf9fcdcdebceceebcdebcdcdcdcdcfcfcfcfcfcd9ebe9ecdebcdafbf6bbfbfbfbfbfbfbfbfbfbfafcdcdcdafbfbfbfbfbfbfbfbfbfbfafcdcdebcdeccdcdebcfcfcfcdebcdcdcdcdebebcdcdcfcfcdebcdcdcfcfcfcdebebeb
-ebcdcdcfcfcfcfcfcfcfcfcfeccdebebcececeebcfcfcfcfcfcfcfcfcfcfebebcdcdcdcdcdcdcfcfcfcdcdcdcecececdebebecececcfcfcfcfcfcdcdbe9ecdebcdafbf6bbfbfb2bfbfbfb2bfbfbfafcdcdcdafbfbfbfbfbfbfbfbfbfbfafcdcdebcdcdcdebcdcfcfcdebcdcdcdeccdebebcdcdcfcfcdcd6ccfcfcfcdebcdcdeb
-ebcdcdcfcddbcdcfcfcfececcdcdecebceceebebebcfcfcfcfcfcfcfcfcfebebebcdcdcdcdeccfcfcfcfcdcdcfcececeebcdcdcdcd6dcfcfcfcfcdcdececcdcdcdaf8e8e8e8e8e2b2b8e8e8e8e8eafcdcdcdafbfbfbfbfbfbfbfbfbfbfafcdcdebcdcdcdebcdcfcfeccdebcdcdcdcdebcfcfcfcfcfcfcfcfcfcfcdcdcdcdcdeb
-ebebcdcfcdcdcfcfcfeccdcdcdcdcdebebebebebeb6ccfcfcfcfcfcfcfcdebebcdcdebebcdcdeccfcfcfcdcfcfcfceceebcd9ebe9ecdeccfcfcfcdcdcdcdcdbecdafbfbfd8bfbfbfbf5b5bbfbf5bafcdcdcdafbfbfbfbfbfbfbfbfbfb9afcdcdebcdcdcdcdebcfcfcfecebebcdcdcdebcfcfcfcfcfcfcfcfcfcfcde6e7cdcdeb
-ebcddccfcfcfcfcfeccdebcdcdebcdebebebebeb6ccfcfcfcfcfcfebeccdebebd7ebcdcdcdcdeccfcfcfcfcfcfcdcdcdebcd9e9e9ebecdeccfcfcfcdcdaeaebecdaf5abfbfbf3bbfbfbfbfbfbfbfafcdcdcdaf3abfbfbfbfbfbfbfbfbfafcdcdebcdcdcdcdcdcdcfcfcdebcdcdcdcdebebcdcdcdeccfcfcfcfcfcdf6f7cdcdeb
-ebcdcdcfcfcfcfeccdcdcdcdeccdebebebebeb6ccfcfcfcfcfebebebcdcdebebcdcdcdcdebcdcdeccfcfcfcfcdcdebebebcdbe9ebe9ecdcdcfcfcdcdbebeaeaecdafbfbf3bbfbfbfbfbfbfbfbfbfafcdcdcdafbfbfbfbfbfbfbfbfbfbfafcdcdebcdcdcdcdcdcdcfcfcdcdcdcdcddbebebcdcdeccd6ccfcfcfcfcfcfcfcfcdeb
-ebcdcfcfcfcfeccdcdcdcdcdcdcdebebebeb6ccfcfcfcfebebebebebcdcdebebebcdcdcdebebcdcdeccfcfcfcfcdcdebebcd9e9ebecdcd6ecfcfcdcdaebeaeaecd2abfbfbfbfbfbfbfbfbfbfbfbf2acdcdcd2abfbfbfbfbfbfbfbfbfbf2acdebebcdeccdcdcdcdcfcfcdebcdcdcdcdebebcdcdcdcdcdcfcfcfcfcfcfcfcfcdeb
-ebcfcfcfcfcdcdcdcdeccdebcdcdebebeb6ccfcfcfcdcdcdcdebdbcdcdcdebebebcdcddccdebcdcdcdcdcfcfcfcfcdebebcdcdcdcdcdcfcfcfcfeccdaeaeaeaecdafbfbfbfbfbfbfbfbfbfbfbfbfafcdaecdafbfbfbfbfbfbfbfbfbfbfafcdebebcdcdcdcdcdeccfcfcdebcdcdcd9eebebebebcdcdcdcfcfcfcfcfcfcfcdcdeb
-cfcfcfcfcdcdebcdebcdcdcdcdeccdebebcfcfcfcdcdcdcdcdcdcdcdcdcdebebebcdcdcdcdcdcdcdcdcdcdcfcfcfcfcfebcdbeaebecdcfcfcfcf7a7baebebebecdaf4abfbfbf3abfbfbfbfbfbf4aafcdaecdaf8e8e8e8e2b2b8e8e8e8eafcdebebcdaeaeaeeccfcfcfcdebcdcd9eebebebebebcdcdcdcfcfeccdcdcdcdcdebeb
-cfcfcfcdcdcdeccdcdcdcdebcdcdcdebcfcfcfcfcdcdcdecdccdcdcdcdcdebebebdbcdcdcdcdcdcdcdcdcdcdcdcfcfcfebcdaeaeaecdcdcfcfcf8a8baeaeaebeccaf8e8e8e8e8e8e2b8e8e8e8e8eafccaeaecdeccdcdcfcfcfcfcdcdeccdcdebebaeaeaeaeaecfcfcdcdcdcd9eebebebebebebebcdcdcfcfcdcdcdcdebebebeb
-cfcfebebebebebebebebebebebebebebcfcfcfebebebebebebebebebebebebebebebebebebebebebebebebebebcfcfcfdbcdbeaeaeaecdcfcfcdcdcdcdaeaeaecdcdcccdcdcfcfcfcfcfcfcdcdcccdcdaeaeeccdcdcdcfcfcfcfcfcdcdeccdcdebaeaeaeaeaecfcfebebebebebebebebebebebebebebcfcfebebebebebebebeb
-ebebebebebebebebebebebebebebebebebebebcdcdcdcdcdcdcdcdebebebebebebebebebebcdcdcdcdcdcdcdcdebebebebebebebcdcdebebebebebebebebebebebebebebebebebebebebebebebebebeb000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdcdcdcdcdcdcdcdcdcdcdebebebebebaf8e8e8e8e8e8e2b8e8e8e8e8eafebebebebcdcdcdcdcdcdcdcdcdcdcdebebeb8e8e8e8e8e8e8e8e8e8e8e8e8e8eebebebebcdcdcdcdcdcdcfcdcdcdcdebeb000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdcdcdebcdcdcdcdcdcdcdcdcdebebeb2a5bbfbfbfbfbfbfbfbfbfbfbf2acdebcdcdcdcdcdcdcdcdcdcdcdcdcdcdebcdafbfbfbfbfbfbfbfbfbfbfbfbfafebebebcdcdebcdcdcdcdcfcdebcdcdcdeb000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdcdebebd7ebcdcdcdebebcdcdebebcdafbfbfbfb5b5b5b5b5b5b5b5b5afcdcdcdcdaf8e8e8e8e8e8e8e8eafcdcdebcd2abfbfbfbfbfbfbfbfbfbfbfbf2acdebcdcdcdcdcd7a7bcdcfcdcdcdeccdeb000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdebebecebebcdebcdecebebcdebcfcdafd8bfbfb4b4b4b4b4b4b4b4b4afcdcdcdcdafbfbfbfbfbfbfb9bfafcdcdebcdafbfbfbfbfbfbfbfbfbfbfbfbfafebebcdcdebcdcd8a8bcdcfcdcdcdcdcdeb000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdebeccdebcdcdebebcdcdebcdcfcfcd2abfbfbfbfbfbfbfbfbfbfbfbf2acdcdcdcd2abfb9bfbfbfbfbfbf2acdcdcdebafbfbfbfbfbfbfbfbfbfbfbfbfafebebcdcdcdeccdcdcdcfcfcdebcdebcdeb000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdcdcdcdcfcfcfcfcfcfcdcdcdcfcfcdafbf8fbfbfbfbfbfbfbfbfbfbfafcdcdcdcdafbfbfbf3bbfbfbfbfafcdcdcdebafbfbfbfbfbfbfbfbfbfbfbfbfafebcfcfcfcfcfcfcfcfcfcdcdcdcdcdcdeb000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-cfcfcfcfcfcfcfcfcfcfcfcdcfcfcfcfcdaf8e8e8e8e8ebfbf8e8e8e8e8eafcdcdcdcdafbfbfbf4abfbfb9bfafcdcdcdeb2abfbfbfbfbfbfbfbfbfbfbfbf2acdcfcfcfcfcfcfcfcf6ccdcdebcdcdcdeb000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-cfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcdaf4a3bbf3abfbfbfc8bfbfbf5bafcdcdcdcdafbfbfbfbfbfbfbfbfafcdcdcdebafbfbfbfbfbfbfbfbfbfbfbfbfafcdebcdcdebcfcfcfcfcfcdcdcdcdeccdeb000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdcdcfcfcfcfcfcfcfcfcfcfcfcdebcdafbfbfbfbfbfbfbfbfbfbfbfbfafcdcdcdcdafbfb9bfbfbfbfbfbfafcdcdcdebafbfbfbfbfbfbfbfbfbfbfbfbfafcdebcdcdcd6ccfcfcfcfcfcdbebecdcdeb000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdcdcdcdcfcfcfcfcfcfcdcdcdcdebcd2abfbfbf4bbf4bbf4bbf4bbf4b2acdcdcdcd2abfbfbfbfbfbfbfbf2acdcdcdcdafbfbfbfbfbfbfbfbfbfbfbfbfafcdebcdcdeccdcdcfcfcfcfcf6dbeebcdeb000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdcdebeccdcdcdcdcdcdcdcdcdcdebebafbfbfbfbfbfbfbfbfbfbfbfbfafcdcdcdcdafbfbfbfbfbfbfb9bfafcdcdcdcdafbfbfbfbfbfbfbfbfbfbfbfbfafcdebcdcdcdcdcdcdcfcfcfcfcfcdcdcdeb000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebcdcdebebebcdcdcdebebcdcdebebebeb2abfbfbf4bbfbfbfbfbf4bbf4b2acdcdcdcdaf8e8e8e2b8e8e8e8eafcdcdcdeb2abfbfbfbfbfbfbfbfbfbfbfbf2acdebcdcdcdcdcdbecdcdcfcfcfcfcfcfcf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebebebcdcdcdcdcdcdcdecebebebebebebaf4abfbfbfbfbfbfbfbfbfbfbfafcdebcdcdcdcdcdcfcfcfcdcdcdcdcdcdebebafbfbfbfbfbfbfbfbfbfbfbfbfafebebcddbcdcdebbe6dcdcdcfcfcfcfcfcf000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebebebebcdcdcdcdcdebebebcddbebebebaf8e8e8e8e8e2b2b8e8e8e8e8eafebebebcdcdcdcfcfcfcfcdcdcdcdcdebebeb8e8e8e8e8e8e2b2b8e8e8e8e8e8eebebcdcdcdcdcdcdbecdcdcdcdcdcdebeb000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-ebebebebebcdcdcdcdcdcdcdcdcdebebebebcdcdcdcdcfcfcfcfcdcdcdcdebebebebebcdcdcdcfcfcfcfcdcdcdcdebebebebebebebebebcfcfebebebebebebebebebebebebebebebebebebebebebebeb000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+cdcdcdcdcdcdcdcdcdebcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdebcdebcdebcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcddbcdcdebcdebcdcdcdcdcdebcdcdebcdcdcdcdcdebcdcdcdcdcdcdcdcddbebcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd
+cdebcdebcdcdebcdcdcdcdcdebcdebcdcdcdcdcdcdcdcdcdcdcdcddbebcdebcdcdcdaf8e8e8e8e8e8e8e8e8e8eafcdcdebcdcdcdcdcdcdcdcfcfcfcccdcdebcdcdebcdcdcdcdcdcdcdcdcdebcdcdcdcdcdaf8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8eafcd
+cdcdcdcdcdcdcdcdebebcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdebebcdebcdcdafbfbfbfbfbfbfbfbf3abfafcdcdcdebcdebcdcccfcfcfcfcfcfcfcdcdcdcdcde0cdcdcdcdcdcdcdcdcdcdcdcdcdccafbfbfbfbfbfbfbfbfbfbfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfbfbfafcd
+ebebcdcdcdcddbebcdcdebcdebcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdebebcdcdafbfbfbfbfbfbfbfbfbfbfafcdcdcdcdcdcdcccfcfcfcdebcdcfcfcfcdebcdcdebcdcdcdcdcdcdcdcdcdcdcdebcdcdafbfbfbfbfbfbfbfbfbfbfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfbfbfafcd
+cdcdcdcdebcdebcdebcdcdcdcdcdebcdcdcdcdcdcfcfcdcdcdcdcdcdcdcdcdebcdcd2ab5b5b5b5b5bfbfbfbfbfafcdcdcdcdcdcccfcfcfcdcdcdcdcdcfcfcdcdebcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdafbfbfbfbfbfbfbfbfbfbfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfbfbfafcd
+cdcdebcdebebcdcdcdcdcdcdcdcdcdcdcfcfcdcfcfcfcfcdcdcdcdcdcdebebebcdcdafbfbfbfbfbfbfbfbfbfbfaf8e8eebcdcdcfcfcfebcdcdebcdcdebcfcfcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdafbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfbfbfafcd
+cdebcdebcdcdcdcdcdeccfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcdcdcdcdcdebcdcdcdafbfbfbfbfbfbfbfbfbfbfafcfcfcdebcdcfcfcdcdebcdcdcdcdcdcfcfcfcdcdcdcdcde2cdcde5cdcdcdcdcdcdebcdafbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfbfbfafcd
+cdcdcdcdcdcdcdcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcf6ccdcdcdebcdcdafbfbfbfbfbfbfbfbfbfbfafcfcfcdcdcfcfcfebcdcdcdcdcdebcdcdcfcfcdcdcccdcdf2cdcdf5cdcdcdcdcdcdcdcdafbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfbfbfafcd
+cdebcdcdcdcfcfcfcfcfcfcfcfeccdcdcdcdcdcdcdcdcd6ccfcfcfcf6ccdcdcdcdcdafbfbfbfbfbfbfb4b4b4bf2acfcfcdcdcfcfcdcdcdcdebcdcdcdcdcdcccfcdcdcdcdcdcdcfcfcdcdcdcdcdcdcdcdcdafbfbfbfbfbfbfbfbfbfbfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfbfbfafcd
+ebcdcdeccfcfcfcfcfcfcfcdcdcdebcdcdcdcdcdcdcdcdcd6ccfcfcfcfcdcdcdcdcdafbfbfbfbfbfbfb5b5b5bfafcfcfebcfcfcfebcdcdcdcdcdcdcdebcdcdcdcfcfcfcfcfcfcfcfcfcfcdcdcdcccdcdcdafbfbfbfbfbfbfbfbfbfbfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfafcd
+cdcdcfcfcfcfcfcfcdcdebcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcfcfcfcdcdcdcdafbfb5b5b5bfbfbfbfbfbfafcfcfcdcfcfcdebcdcdebcdcdebcdcdebcdebcfcfcfcfcfcfcfcfcfcfcfcdcdcdcdcccdafbfbfbfbfbfbfbfbfbfbfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfbfafcd
+cfcfcfcfcfcfeccdcdcdcdcdebebcdcdaeaeaeaeaecdcdcdcd6dcdcdcfcfcfcfcdcd2abfb4b4b4bfbfbfbfbfbfafcdcdcdcfcfcdcdcdcdcdcdcdcdcdcdcdcdcdcfcfcfcfcfcfcfcfcfcfcfcfcfcdcdcdcdafbfbfbfbfbfbfbfbfbfbfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfbfbfafcd
+cfcfcfcfcdcdcdcdebcdebcdcdebebcdaeaeaeaeaeaecdcdcdcdcdcdcdcfcfcfcdcdafbfbfbfbfbfbfbfbfbfd8afcdcdcccfcfcdcdcdebcdcdebcdcdcdcdebcdcdcdcdcdcccdcdcdcdcfcfcfcfcfcdcdcdafbfbfbfbfbfbfbfbfbfbfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfbfbfafcd
+cfcfeccdcdcdcdebcdebcdebcdcdcdcdaeaeaeaeaeaeaecd9e9e9e9ecdcdcfcfcdcdafbfbfbfbfbfbfbfbfbf5bafcdcdcfcfcfccebcdcdcdcdcdcdcdcdcdcdcdcdebcdcdcdebcdcdcdcdcdcfcfcfcfcfcdafbfbfbfbfbfbfbfbfbfbfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfbfbfbfafafbfbfbfbfbfbfbfbfbfbfbfbfbfafcd
+cdcdcdebcdebebebcdcdcdcdcdcdcdcdaeaeaeaeaeaecdcdcdcdcdcdcdcdcdcdcdcdaf8e8e8e8e2b8e8e8e8e8eafcdcdcfcfcccdcdcdcdcdcdebcdcdcdebcdcdcdcdebcdcdcdcdebcdcdcdcdcfcfcfcfcdaf8e8e8e8e2b2b8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8e8eafcd
+cdebcdcdcdcdcdcdcdcdcdcdcdcdcdcdaeaeaeaeaeaecdcd9e9e9e9ecdcdcdcdcdcdcdcdcdcfcfcfcfcfcfcdcdcdcdcdcfcfcdcdcdebcdcdcdcdcdebcdcdcdcdcdebcdcdebcdcdcdcdcdcdcdcdcfcfcfcdcdcdcdcfcfcfcfcfcfcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd
+cececececdcdcdcdcdcdcdcdcdcdcdcdcecececececececececececececececedbcdebcdcdebcdcdebcdcdcdcdcecececdcdcdcdebcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+cecececececdebcdcdcdebcdcccdebcdcecececece8e8e8e8e8e8ecececececeebcdcdcdcdcdcdcdcdcdcdcccececececdcdcdcdcdcdcdebcdcdcdebcdcdebcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+cecececedecdebcdcdcdcdcdcdcdcdcdcececece8ebfbfbfbfbfbf8ececececeebcdcfcfcfcfcfcccdebebcdcececececdcddbcdcdcdcdcdcdcdcdcdcdcdcdebcdcdaf8e8e8e8e8e8e8e8e8e8eafcdcd000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+cececedececdcdcdcdcdcdcdebcdcdcdcecece8ebfbfbfbfbfbfbfbf8ececececdcfcfcfcfcfcfcfcdcdcdcdcecececeebcdcdcdebcdcdebcdcdcdcdcdcdcdcdcdcdafbfbfbfbfbfafbfbfbfbfafcdcd000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+cecececececdcdcdebcdebcdcdcdcdcdcecece8ebfbfbfbfbfbfbfbf8ececececdcfcfcfcfcfcfcfcdcdcdcdcdcecececdcdcdcdcdcdcdcdcdcdcdcdcdcdebcdcdcd2abfbfbfbfbfafbfbfbfbf2acdcd000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+cecececececdcdebcdcdcdcdcdcdebcdcecece8ebfbfbfbfbfbfbfbf8ececececdcdcfcfcfcfcfcdcdcdcdcdcececececdcdcdebcdcdebcdcdcdcdcdcdcdcdcdcdcdafbfbf5abfbfafbfbfbfbfafcdcd000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+cececececdcccdcdcdcdcdcdcdcdcdcdcece8ebfbfbfbfbfbfbfbfbfbf8ecececccdcdcfcfcfcfcfcfbfbfbfbfcecececfcfcdcdcdcdcdcdcdcdcdcfcfcdcdcdcdcdafbfbfbfbfbfafbfbfbfbfafcdcd000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+cececebfbfbfcfcfcfcfcfcfcfcdcdcdcece8ebfbfbfbfbfbfbfbfbfbf8ebfcecdcdcfcfcfcfcfcfcfbfbfbfbfcecececfcfcfcfcdcdcdcdcdcdcfcfcfcdcdebcdcdaf8ebfbfbf8eafbfbfbfbfafcdcd000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+cececebfbfbfcfcfcfcfcfcfcfcfcfcfcece8ebfbfbfbfbfbfbfbfbfbf8ebfcecdcdcdcfcfcfcdcdcdcdcdcdcececececccfcfcfcfcfcccdcdcfcfcfcdcdcdcdcdcd2abfbfbfbfbfbfbfbfbfbf2acdcd000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+cecececececdcdcccdcdcfcfcfcfcfcfcece8ebfbfbfbfbfbfbfbfbfbf8ebfbfcdcdcdcfcfcdcdcdcdcdcdebcdcecececdcfcfcfcfcfcfcfcfcfcfcdcdebcdcdcdcdafbfbfbfbfbfbfbfbfbfbfafcdcd000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+cecececececdcdcdcdcdcdcdcfcfcfcfcece8ebfbfbfbfd8d8bfbfbfbf8ebfbfebcdcdcfcfcdcdcdcdcdcdcdcecececeebcd6ccfcfcfcfcfcfcfcdebcdebcdcdcdcdafd8bfbfbfbfbfbfbfbfbfafcdcd000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+cececececdcdcdcdcdebcdcdcdcdcfcfcece8ebfbfbfbfbfbfbfbfbfbf8ebfcecdcdcdcfcfcdcdebcdcdcdcccececececdcdcdcdcfcfcfcfcfcfcdcdcdcdcdcdcdcdaf5bbfbfbfbfbfbfbfbfbfafcdcd000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+cececececdcdcdebcdcdcdebcdcdcdcdcece8e8ebfbfbfbfbfbfbfbf8e8ebfcecdcccccfcfcfcdcdcdcdebcdcececececdebcdebcd6ccfcfcfcfcfcfcfcccdebcdcdafbfbfbfbfbfbfbfbfbfbfafcdcd000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+cecececececdcdcdcdcdcdcccdebcdcdcecece8e8ebfbfbfbfbfbf8e8ececececfcfcfcfcfcfcdcdcdcdcdcdcdcecececdcdcdcdcdcdebcdcfcfcfcfcfcfcfcfcdcdaf8e8e8e8e2b8e8e8e8e8eafcdcd000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+cecececedecdcccdebcdcdcdcdcdcdcdcececece8e8e8e8e8e8e8e8ecececececfcfcfcfcfcfcccdebcdebcdcececececdcdebcdebcdcdcdcdebcdcfcfcfcfcfcdcdcdcdcdcdcfcfcfcdcdcdcdcdcdcd000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+cececedececdcdcdcdcdcdcdebcddbcdcececececececececececececececececdebcdcdebcdcdebcdcdcdcdcecececeebcdcdcdcdcdcdebcdcdcdcdcdcdcdcdcdcdcdcdcdcdcfcfcfcdcdcdcdcdcdcd000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __sfx__
 000200001a7201b7201d7201f72000700007000070000700007000070000700007000070000700007000070000700007000070000700007000070000700007000070000700007000070000700007000070000700
 9114000020552205522355221552205521e552205522c552245522a5522d5522c5522a5522c5522c5522a5522a5521c5521c5521c55230552305522a5001c5000050200502005020050200002000020000000000
